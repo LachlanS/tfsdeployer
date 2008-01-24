@@ -1,12 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer", "TfsDeployer\TfsDeployer.csproj", "{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{6D225FB9-130C-4074-8CF8-A344CDB990F1}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\System.Management.Automation.dll = Dependencies\System.Management.Automation.dll
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer", "TfsDeployer\TfsDeployer.csproj", "{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readify.Useful.TeamFoundation.Common", "Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj", "{7FEC9CED-38BA-4AA5-8270-CCA02AEA55EE}"
 EndProject
