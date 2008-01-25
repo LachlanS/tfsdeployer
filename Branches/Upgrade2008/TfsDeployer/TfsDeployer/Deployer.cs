@@ -109,9 +109,9 @@ namespace TfsDeployer
 
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
-            bool isComputerMatch = string.Compare(Environment.MachineName,mapping.Computer,true) == 0;
-            bool isOldValueMatch = string.Compare(mapping.OriginalQuality,statusChange.OldValue,true) == 0;
-            bool isNewValueMatch = string.Compare(mapping.NewQuality,statusChange.NewValue) == 0;
+            bool isComputerMatch = string.Compare(Environment.MachineName, mapping.Computer, true) == 0;
+            bool isOldValueMatch = string.Compare(mapping.OriginalQuality ?? string.Empty, statusChange.OldValue ?? string.Empty, true) == 0;
+            bool isNewValueMatch = string.Compare(mapping.NewQuality, statusChange.NewValue, true) == 0;
             bool isUserPermitted = this.IsUserPermitted(changeEvent, mapping);
 
             return isComputerMatch  && isOldValueMatch && isNewValueMatch && isUserPermitted;

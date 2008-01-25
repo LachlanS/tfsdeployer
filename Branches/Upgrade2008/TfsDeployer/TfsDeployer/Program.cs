@@ -58,7 +58,7 @@ namespace TfsDeployer
                         TextWriterTraceListener listener = new TextWriterTraceListener(Console.Out);
                         Trace.Listeners.Add(listener);
                         controller.OnStart(new string[] { });
-                        Console.WriteLine("HIt Enter to stop the service");
+                        Console.WriteLine("Hit Enter to stop the service");
                         Console.ReadKey();
                         controller.Stop();
                     }
@@ -77,7 +77,7 @@ namespace TfsDeployer
                     {
                         try
                         {
-                            Encrypter.Encryt(command);
+                            Encrypter.Encrypt(command);
                         }
                         catch (Exception ex)
                         {

@@ -188,7 +188,7 @@ namespace TfsDeployer
 
         }
 
-        public static void Encryt(CommandLine commandLine)
+        public static void Encrypt(CommandLine commandLine)
         {
             RSACryptoServiceProvider key = RetrieveKey(commandLine);
             if (commandLine.EncyptDeploymentFile)
