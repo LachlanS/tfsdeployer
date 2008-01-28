@@ -32,7 +32,7 @@ namespace TfsDeployer.Alert
 {
     public class EmailAlerter : IAlert
     {
-        public void Alert(Mapping mapping, BuildData build, IRunner runner)
+        public void Alert(Mapping mapping, IBuildData build, IRunner runner)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace TfsDeployer.Alert
             }
         }
 
-        private string GetBody(Mapping map, BuildData build, IRunner runner)
+        private string GetBody(Mapping map, IBuildData build, IRunner runner)
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine(string.Format("Team Project/Build: {0} to {1}",build.TeamProject,build.BuildType));
@@ -65,7 +65,7 @@ namespace TfsDeployer.Alert
             return builder.ToString();
         }
 
-        private string GetSubject(Mapping map, BuildData build, IRunner runner)
+        private string GetSubject(Mapping map, IBuildData build, IRunner runner)
         {
             string errorMessage = "Success: ";
             if (runner.ErrorOccured)

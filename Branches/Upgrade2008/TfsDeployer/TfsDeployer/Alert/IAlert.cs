@@ -28,6 +28,6 @@ namespace TfsDeployer.Notifier
 {
     internal interface IAlert
     {
-        void Alert(Mapping mapping, BuildData build, IRunner runner);
+        void Alert(Mapping mapping, IBuildData build, IRunner runner);
     }
 }

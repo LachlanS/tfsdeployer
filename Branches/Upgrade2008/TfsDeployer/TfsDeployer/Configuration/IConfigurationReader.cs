@@ -27,7 +27,7 @@ namespace TfsDeployer.Configuration
 {
     public interface IConfigurationReader
     {
-        DeploymentMappings Read(string teamProject, BuildData teamBuild);
+        DeploymentMappings Read(string teamProject, IBuildData teamBuild);
         string WorkingDirectory
         {
             get;

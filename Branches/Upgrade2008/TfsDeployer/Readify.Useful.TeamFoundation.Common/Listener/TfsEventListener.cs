@@ -19,9 +19,9 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
     {
         TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
         public static event EventHandler<NotificationEventArgs<T>> NotificationReceived;
-        internal delegate void OnNotificationEventRecieved(T eventRaised, TFSIdentity identity);
-        private static OnNotificationEventRecieved _onNotificationDelegate;
-	    public static OnNotificationEventRecieved NotificationDelegate
+        internal delegate void OnNotificationEventReceived(T eventRaised, TFSIdentity identity);
+        private static OnNotificationEventReceived _onNotificationDelegate;
+	    public static OnNotificationEventReceived NotificationDelegate
 	    {
 	      get { return _onNotificationDelegate;}
           set { _onNotificationDelegate = value;}
@@ -148,11 +148,11 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
         }
 
 
-        protected override void OnNotificationEvent(T eventRaised, TFSIdentity identify)
+        protected override void OnNotificationEvent(T eventRaised, TFSIdentity identity)
         {
             if (NotificationDelegate != null)
             {
-                NotificationDelegate(eventRaised, identify);
+                NotificationDelegate(eventRaised, identity);
             }
         }
     }

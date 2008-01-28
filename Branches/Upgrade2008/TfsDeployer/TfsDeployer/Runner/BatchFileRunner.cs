@@ -54,7 +54,7 @@ namespace TfsDeployer.Runner
             get { return _commandOutput; }
         }
 	
-        public bool Execute(string workingDirectory, Mapping mapToRun, BuildData buildData)
+        public bool Execute(string workingDirectory, Mapping mapToRun, BuildInformation buildInfo)
         {
             
 
@@ -79,7 +79,7 @@ namespace TfsDeployer.Runner
                 psi.RedirectStandardInput = true;
                 psi.RedirectStandardError = true;
                 psi.WorkingDirectory = workingDirectory;
-                psi.Arguments = CreateArguments(mapToRun, buildData);
+                psi.Arguments = CreateArguments(mapToRun, buildInfo.Data);
 
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", _scriptRun, psi.Arguments, psi.WorkingDirectory);
 
@@ -100,7 +100,7 @@ namespace TfsDeployer.Runner
             return !_errorOccured;
         }
 
-        private string CreateArguments(Mapping mapping, BuildData buildData)
+        private string CreateArguments(Mapping mapping, IBuildData buildData)
         {
             StringBuilder arguments = new StringBuilder(
             string.Format("{0}, {1} "

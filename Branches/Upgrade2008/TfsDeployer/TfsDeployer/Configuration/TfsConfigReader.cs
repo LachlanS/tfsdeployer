@@ -39,7 +39,7 @@ namespace TfsDeployer.Configuration
         #region IConfigurationReader Members
         const string ConfigurationFileName = "DeploymentMappings.xml";
         
-        public DeploymentMappings Read(string teamProjectName, Microsoft.TeamFoundation.Build.Proxy.BuildData teamBuild)
+        public DeploymentMappings Read(string teamProjectName, IBuildData teamBuild)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Projet:{0} Team Build:{1}", teamProjectName, teamBuild.BuildType);
             _workingDirectory = TfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType);

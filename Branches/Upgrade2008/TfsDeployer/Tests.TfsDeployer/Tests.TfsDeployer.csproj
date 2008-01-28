@@ -46,6 +46,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeployerTests\GetBuildUriFromArtifactUrlTests.cs" />
     <Compile Include="DeployerTests\IsInterestedStatusChangeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DeploymentMappingsTests.cs" />
@@ -64,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AbsentOriginalQuality.xml" />
+    <Content Include="SampleBuildStatusChangeEventNotification.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj">

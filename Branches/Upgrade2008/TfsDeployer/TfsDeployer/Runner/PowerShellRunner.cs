@@ -52,7 +52,7 @@ namespace TfsDeployer.Runner
             return command;
         }
 
-        private void PopulateCommonVariables(Runspace space, Mapping mapToRun, BuildData buildData)
+        private void PopulateCommonVariables(Runspace space, Mapping mapToRun, BuildInformation buildInfo)
         {
             space.SessionStateProxy.SetVariable( 
                 "TfsDeployerComputer",
@@ -72,13 +72,17 @@ namespace TfsDeployer.Runner
                 );
             space.SessionStateProxy.SetVariable(
                 "TfsDeployerBuildData",
-                buildData
+                buildInfo.Data 
+                );
+            space.SessionStateProxy.SetVariable(
+                "TfsDeployerBuildDetail",
+                buildInfo.Detail 
                 );
         }
 
-        private void PopulateVariables(Runspace space, Mapping mapToRun, BuildData buildData)
+        private void PopulateVariables(Runspace space, Mapping mapToRun, BuildInformation buildInfo)
         {
-            this.PopulateCommonVariables(space, mapToRun, buildData);
+            this.PopulateCommonVariables(space, mapToRun, buildInfo);
 
             foreach (ScriptParameter parameter in mapToRun.ScriptParameters)
             {
@@ -92,7 +96,7 @@ namespace TfsDeployer.Runner
 			executionPolicyPipeline.Invoke();
         }
 
-        public bool Execute(string directory, Mapping mapToRun, BuildData buildData)
+        public bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo)
         {
             try
             {
@@ -100,7 +104,7 @@ namespace TfsDeployer.Runner
                 Runspace space = RunspaceFactory.CreateRunspace(host);
                 space.Open();
 
-                this.PopulateVariables(space, mapToRun, buildData);
+                this.PopulateVariables(space, mapToRun, buildInfo);
 
                 string command = this.GeneratePipelineCommand(directory, mapToRun);
                 this._scriptRun = command;

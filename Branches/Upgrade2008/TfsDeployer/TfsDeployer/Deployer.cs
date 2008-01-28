@@ -29,6 +29,8 @@ using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.Runner;
 using TfsDeployer.Notifier;
 using TfsDeployer.Alert;
+using Microsoft.TeamFoundation.Build.Client;
+using System.Text.RegularExpressions;
 namespace TfsDeployer
 {
     /// <summary>
@@ -84,8 +86,9 @@ namespace TfsDeployer
             {
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
                     statusChanged.TeamProject, statusChanged.Id, statusChanged.StatusChange.OldValue, statusChanged.StatusChange.NewValue);
-                BuildData buildData = GetBuild(statusChanged.TeamProject, statusChanged.Id);
-                DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, buildData);
+                //BuildData buildData = GetBuild(statusChanged.TeamProject, statusChanged.Id);
+                var info = new BuildInformation(GetBuildDetail(statusChanged));
+                DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, info.Data);
                 if (mappings != null)
                 {
                     foreach (Mapping mapping in mappings.Mappings)
@@ -94,8 +97,8 @@ namespace TfsDeployer
                         if (IsInterestedStatusChange(statusChanged, mapping, statusChanged.StatusChange))
                         {
                             IRunner runner = DetermineRunner(mapping);
-                            runner.Execute(ConfigurationReader.WorkingDirectory, mapping, buildData);
-                            Alerter.Alert(mapping, buildData, runner);
+                            runner.Execute(ConfigurationReader.WorkingDirectory, mapping, info);
+                            Alerter.Alert(mapping, info.Data, runner);
                         }
                     }
                 }
@@ -155,13 +158,33 @@ namespace TfsDeployer
             return runner;
         }
 
-        private static BuildData GetBuild(string teamProject, string buildId)
+        //private static BuildData GetBuild(string teamProject, string buildId)
+        //{
+        //    BuildStore store = ServiceHelper.GetService<BuildStore>();
+        //    string buildUri = store.GetBuildUri(teamProject, buildId);
+        //    BuildData bd = store.GetBuildDetails(buildUri);
+        //    return bd;
+        //}
+
+        private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
-            BuildStore store = ServiceHelper.GetService<BuildStore>();
-            string buildUri = store.GetBuildUri(teamProject, buildId);
-            BuildData bd = store.GetBuildDetails(buildUri);
-            return bd;
+            var buildServer = ServiceHelper.GetService<IBuildServer>();
+            var buildUri = GetBuildUriFromArtifactUrl(statusChanged.Url);
+            return buildServer.GetBuild(buildUri);
+        }
+
+        /// <summary>
+        /// Gets the BuildUri from the Url in the BuildStatusChangeEvent data. 
+        /// </summary>
+        internal static Uri GetBuildUriFromArtifactUrl(string url)
+        {
+            // I'd like to find a better way to get the BuildUri
+            var rx = new Regex(@"artifactMoniker=(?<artifact>\d+)", RegexOptions.IgnoreCase);
+            var match = rx.Match(url);
+            string artifact = match.Groups["artifact"].Value;
+            return new Uri(String.Format(@"vstfs:///Build/Build/{0}", artifact));
         }
        
+
     }
 }
