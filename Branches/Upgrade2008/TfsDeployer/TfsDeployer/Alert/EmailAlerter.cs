@@ -61,6 +61,7 @@ namespace TfsDeployer.Alert
             builder.AppendLine(string.Format("Drop Location: {0}", build.DropLocation));
             builder.AppendLine(string.Format("Build Uri: {0}", build.BuildUri));
             builder.AppendLine(string.Format("Script: {0}", runner.ScriptRun));
+            builder.AppendLine(string.Format("Executed on Machine: {0}", map.Computer));
             builder.AppendLine(string.Format("Output: {0}", runner.Output));
             return builder.ToString();
         }
