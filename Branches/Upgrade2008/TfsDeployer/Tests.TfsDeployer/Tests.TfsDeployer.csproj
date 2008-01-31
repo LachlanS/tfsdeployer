@@ -59,11 +59,12 @@
   <ItemGroup>
     <EmbeddedResource Include="SerializedDeploymentMappings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SerializedDeploymentMappings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>SerializedDeploymentMappings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AbsentNewQuality.xml" />
     <Content Include="Resources\AbsentOriginalQuality.xml" />
     <Content Include="SampleBuildStatusChangeEventNotification.xml" />
   </ItemGroup>

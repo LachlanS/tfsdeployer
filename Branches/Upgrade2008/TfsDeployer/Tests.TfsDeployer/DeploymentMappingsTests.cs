@@ -11,13 +11,24 @@ namespace Tests.TfsDeployer
     {
 
         [TestMethod]
-        public void ShouldInterpretAbsentOriginalValueAttributeAsNull()
+        public void ShouldInterpretAbsentOriginalQualityAttributeAsNull()
         {
             using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentOriginalQuality))
             {
                 var serializer = new XmlSerializer(typeof(DeploymentMappings));
                 var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
                 Assert.IsNull(mappings.Mappings[0].OriginalQuality, "OriginalQuality");
+            }
+        }
+
+        [TestMethod]
+        public void ShouldInterpretAbsentNewQualityAttributeAsNull()
+        {
+            using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentNewQuality))
+            {
+                var serializer = new XmlSerializer(typeof(DeploymentMappings));
+                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                Assert.IsNull(mappings.Mappings[0].NewQuality, "NewQuality");
             }
         }
 

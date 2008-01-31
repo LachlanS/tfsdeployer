@@ -39,10 +39,10 @@ namespace TfsDeployer.Runner
             get { return _scriptRun; }
         }
 
-        private bool _errorOccured = true;
-        public bool ErrorOccured
+        private bool _errorOccurred = true;
+        public bool ErrorOccurred
         {
-            get { return _errorOccured; }
+            get { return _errorOccurred; }
         }
 
         private string GeneratePipelineCommand(string directory, Mapping mapToRun)
@@ -115,7 +115,7 @@ namespace TfsDeployer.Runner
 
                 if (pipeline.PipelineStateInfo.State != PipelineState.Failed)
                 {
-                    this._errorOccured = false;
+                    this._errorOccurred = false;
                 }
 
                 string output = this.GenerateOutputFromObjects(outputObjects);
@@ -125,11 +125,11 @@ namespace TfsDeployer.Runner
             }
             catch (Exception ex)
             {
-                this._errorOccured = true;
+                this._errorOccurred = true;
                 this._output = ex.ToString();
             }
 
-            return this.ErrorOccured;
+            return this.ErrorOccurred;
         }
 
         private string GenerateOutputFromObjects(Collection<PSObject> outputObjects)

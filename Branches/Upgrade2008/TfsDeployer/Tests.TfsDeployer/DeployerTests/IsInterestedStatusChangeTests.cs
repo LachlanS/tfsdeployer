@@ -120,5 +120,32 @@ namespace Tests.TfsDeployer.DeployerTests
             Assert.IsTrue(result, "IsInterestedStatusChange()");
         }
 
+        [TestMethod]
+        public void ShouldMatchNewQualityWhenEmptyInConfigButNullInTfs()
+        {
+            const string TestOriginalQuality = "Pass";
+
+            var changeEvent = new BuildStatusChangeEvent();
+
+            var mapping = new Mapping()
+            {
+                Computer = Environment.MachineName,
+                NewQuality = string.Empty,
+                PermittedUsers = null,
+                OriginalQuality = TestOriginalQuality
+            };
+
+            var statusChange = new Change()
+            {
+                NewValue = null,
+                OldValue = TestOriginalQuality
+            };
+
+            var deployer = new Deployer();
+            var result = deployer.IsInterestedStatusChange(changeEvent, mapping, statusChange);
+
+            Assert.IsTrue(result, "IsInterestedStatusChange()");
+        }
+
     }
 }

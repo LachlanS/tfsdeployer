@@ -69,7 +69,7 @@ namespace TfsDeployer.Alert
         private string GetSubject(Mapping map, IBuildData build, IRunner runner)
         {
             string errorMessage = "Success: ";
-            if (runner.ErrorOccured)
+            if (runner.ErrorOccurred)
             {
                 errorMessage = "Failed: ";
             }

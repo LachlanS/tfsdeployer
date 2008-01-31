@@ -41,10 +41,10 @@ namespace TfsDeployer.Runner
         }
 	
 
-        private bool _errorOccured;
-        public bool ErrorOccured
+        private bool _errorOccurred;
+        public bool ErrorOccurred
         {
-            get { return _errorOccured; }
+            get { return _errorOccurred; }
         }
 	
 
@@ -64,7 +64,7 @@ namespace TfsDeployer.Runner
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "BatchRunner - Could not find script: {0}", _scriptRun);
                 _commandOutput = string.Format("BatchRunner - Could not find script: {0}", _scriptRun);
-                _errorOccured = true;
+                _errorOccurred = true;
                 
             }
             else
@@ -93,11 +93,11 @@ namespace TfsDeployer.Runner
                     TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", _commandOutput);
                 }
 
-                _errorOccured = false;
+                _errorOccurred = false;
               
             }
 
-            return !_errorOccured;
+            return !_errorOccurred;
         }
 
         private string CreateArguments(Mapping mapping, IBuildData buildData)

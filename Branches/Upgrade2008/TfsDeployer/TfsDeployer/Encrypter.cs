@@ -82,7 +82,7 @@ namespace TfsDeployer
             }
             catch(Exception ex)
             {
-                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Cannot save key file {0}.", fileName);
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Cannot save key file {0}: {1}", fileName, ex);
                 throw;
             }
 
@@ -191,7 +191,7 @@ namespace TfsDeployer
         public static void Encrypt(CommandLine commandLine)
         {
             RSACryptoServiceProvider key = RetrieveKey(commandLine);
-            if (commandLine.EncyptDeploymentFile)
+            if (commandLine.EncryptDeploymentFile)
             {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(commandLine.DeploymentMappingFileName);

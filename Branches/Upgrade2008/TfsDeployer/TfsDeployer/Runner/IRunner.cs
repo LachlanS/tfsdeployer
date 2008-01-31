@@ -33,7 +33,7 @@ namespace TfsDeployer.Runner
             get;
         }
 
-        bool ErrorOccured
+        bool ErrorOccurred
         {
             get;
         }

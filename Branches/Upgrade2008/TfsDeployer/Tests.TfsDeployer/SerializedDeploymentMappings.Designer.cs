@@ -63,6 +63,21 @@ namespace Tests.TfsDeployer {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string AbsentNewQuality {
+            get {
+                return ResourceManager.GetString("AbsentNewQuality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;DeploymentMappings xmlns=&quot;http://www.readify.net/TFSDeployer/DeploymentMappings20061026&quot;&gt;
+        ///  &lt;Mapping xmlns=&quot;&quot;
+        ///           Computer=&quot;localhost&quot;
+        ///           NewQuality=&quot;Passed&quot;
+        ///           Script=&quot;Deploy.ps1&quot;
+        ///           NotificationAddress=&quot;nobody@nowhere.test&quot; /&gt;
+        ///&lt;/DeploymentMappings&gt;.
+        /// </summary>
         internal static string AbsentOriginalQuality {
             get {
                 return ResourceManager.GetString("AbsentOriginalQuality", resourceCulture);
