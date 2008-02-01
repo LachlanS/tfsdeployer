@@ -90,11 +90,11 @@ namespace TfsDeployer.Runner
             }
         }
 
-        private void EnsureExecutionPolicy(Runspace space)
-        {
-			Pipeline executionPolicyPipeline = space.CreatePipeline("Set-ExecutionPolicy Unrestricted");
-			executionPolicyPipeline.Invoke();
-        }
+        //private void EnsureExecutionPolicy(Runspace space)
+        //{
+        //    Pipeline executionPolicyPipeline = space.CreatePipeline("Set-ExecutionPolicy Unrestricted");
+        //    executionPolicyPipeline.Invoke();
+        //}
 
         public bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo)
         {
@@ -109,10 +109,12 @@ namespace TfsDeployer.Runner
                 string command = this.GeneratePipelineCommand(directory, mapToRun);
                 this._scriptRun = command;
 
-				this.EnsureExecutionPolicy(space);
+                // this prevents TfsDeployer running as a non-admin user.
+                // installation documentation should describe setting execution policy and possibly using signed scripts
+                //this.EnsureExecutionPolicy(space); 
+
                 Pipeline pipeline = space.CreatePipeline(command);
                 Collection<PSObject> outputObjects = pipeline.Invoke();
-
                 if (pipeline.PipelineStateInfo.State != PipelineState.Failed)
                 {
                     this._errorOccurred = false;
@@ -122,6 +124,15 @@ namespace TfsDeployer.Runner
                 this._output = output;
 
                 space.Close();
+            }
+            catch (RuntimeException ex)
+            {
+                this._errorOccurred = true;
+                ErrorRecord record = ex.ErrorRecord;
+                var sb = new StringBuilder();
+                sb.AppendLine(record.Exception.ToString());
+                sb.AppendLine(record.InvocationInfo.PositionMessage);
+                this._output = sb.ToString();
             }
             catch (Exception ex)
             {

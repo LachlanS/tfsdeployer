@@ -22,14 +22,14 @@ namespace Tests.TfsDeployer {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SerializedDeploymentMappings {
+    internal class PowerShellScripts {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SerializedDeploymentMappings() {
+        internal PowerShellScripts() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Tests.TfsDeployer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tests.TfsDeployer.SerializedDeploymentMappings", typeof(SerializedDeploymentMappings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tests.TfsDeployer.PowerShellScripts", typeof(PowerShellScripts).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,32 +61,12 @@ namespace Tests.TfsDeployer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;DeploymentMappings xmlns=&quot;http://www.readify.net/TFSDeployer/DeploymentMappings20061026&quot;&gt;
-        ///  &lt;Mapping xmlns=&quot;&quot;
-        ///           Computer=&quot;localhost&quot;
-        ///           OriginalQuality=&quot;Passed&quot;
-        ///           Script=&quot;Deploy.ps1&quot;
-        ///           NotificationAddress=&quot;nobody@nowhere.test&quot; /&gt;
-        ///&lt;/DeploymentMappings&gt;.
+        ///   Looks up a localized string similar to Get-ChildItem ;
+        ///.
         /// </summary>
-        internal static string AbsentNewQuality {
+        internal static string FailingPowerShellScript {
             get {
-                return ResourceManager.GetString("AbsentNewQuality", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;DeploymentMappings xmlns=&quot;http://www.readify.net/TFSDeployer/DeploymentMappings20061026&quot;&gt;
-        ///  &lt;Mapping xmlns=&quot;&quot;
-        ///           Computer=&quot;localhost&quot;
-        ///           NewQuality=&quot;Passed&quot;
-        ///           Script=&quot;Deploy.ps1&quot;
-        ///           NotificationAddress=&quot;nobody@nowhere.test&quot; /&gt;
-        ///&lt;/DeploymentMappings&gt;.
-        /// </summary>
-        internal static string AbsentOriginalQuality {
-            get {
-                return ResourceManager.GetString("AbsentOriginalQuality", resourceCulture);
+                return ResourceManager.GetString("FailingPowerShellScript", resourceCulture);
             }
         }
     }
