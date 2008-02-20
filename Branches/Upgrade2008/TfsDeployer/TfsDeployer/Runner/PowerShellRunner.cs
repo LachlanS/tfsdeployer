@@ -52,42 +52,28 @@ namespace TfsDeployer.Runner
             return command;
         }
 
-        private void PopulateCommonVariables(Runspace space, Mapping mapToRun, BuildInformation buildInfo)
+        private IDictionary<string,object> CreateCommonVariables(Mapping mapToRun, BuildInformation buildInfo)
         {
-            space.SessionStateProxy.SetVariable( 
-                "TfsDeployerComputer",
-                mapToRun.Computer
-                );
-            space.SessionStateProxy.SetVariable(
-                "TfsDeployerNewQuality",
-                mapToRun.NewQuality
-                );
-            space.SessionStateProxy.SetVariable(
-                "TfsDeployerOriginalQuality",
-                mapToRun.OriginalQuality
-                );
-            space.SessionStateProxy.SetVariable(
-                "TfsDeployerScript",
-                mapToRun.Script
-                );
-            space.SessionStateProxy.SetVariable(
-                "TfsDeployerBuildData",
-                buildInfo.Data 
-                );
-            space.SessionStateProxy.SetVariable(
-                "TfsDeployerBuildDetail",
-                buildInfo.Detail 
-                );
+            var dict = new Dictionary<string, object>();
+            dict.Add("TfsDeployerComputer", mapToRun.Computer);
+            dict.Add("TfsDeployerNewQuality", mapToRun.NewQuality);
+            dict.Add("TfsDeployerOriginalQuality", mapToRun.OriginalQuality);
+            dict.Add("TfsDeployerScript", mapToRun.Script);
+            dict.Add("TfsDeployerBuildData", buildInfo.Data);
+            dict.Add("TfsDeployerBuildDetail", buildInfo.Detail);
+            return dict;
         }
 
-        private void PopulateVariables(Runspace space, Mapping mapToRun, BuildInformation buildInfo)
+        private IDictionary<string, object> CreateVariables(Mapping mapToRun, BuildInformation buildInfo)
         {
-            this.PopulateCommonVariables(space, mapToRun, buildInfo);
+            var dict = CreateCommonVariables(mapToRun, buildInfo);
 
             foreach (ScriptParameter parameter in mapToRun.ScriptParameters)
             {
-                space.SessionStateProxy.SetVariable(parameter.name, parameter.value);
+                dict.Add(parameter.name, parameter.value);
             }
+
+            return dict;
         }
 
         //private void EnsureExecutionPolicy(Runspace space)
@@ -96,25 +82,34 @@ namespace TfsDeployer.Runner
         //    executionPolicyPipeline.Invoke();
         //}
 
-        public bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo)
+        public void ExecuteCommand(string command, IDictionary<string, object> variables)
         {
+            Runspace space = null;
             try
             {
-                DeploymentHost host = new DeploymentHost();
-                Runspace space = RunspaceFactory.CreateRunspace(host);
+                this._errorOccurred = true;
+
+                DeploymentHost host = new DeploymentHost(null);
+                space = RunspaceFactory.CreateRunspace(host);
                 space.Open();
 
-                this.PopulateVariables(space, mapToRun, buildInfo);
-
-                string command = this.GeneratePipelineCommand(directory, mapToRun);
-                this._scriptRun = command;
-
+                if (null != variables)
+                {
+                    foreach (string key in variables.Keys)
+                    {
+                        space.SessionStateProxy.SetVariable(key, variables[key]);
+                    }
+                }
                 // this prevents TfsDeployer running as a non-admin user.
                 // installation documentation should describe setting execution policy and possibly using signed scripts
-                //this.EnsureExecutionPolicy(space); 
+                //this.EnsureExecutionPolicy(space);
 
-                Pipeline pipeline = space.CreatePipeline(command);
-                Collection<PSObject> outputObjects = pipeline.Invoke();
+
+                Collection<PSObject> outputObjects;
+
+                Pipeline pipeline = space.CreatePipeline(command + " | Out-String -Stream ;");
+                outputObjects = pipeline.Invoke();
+
                 if (pipeline.PipelineStateInfo.State != PipelineState.Failed)
                 {
                     this._errorOccurred = false;
@@ -139,6 +134,19 @@ namespace TfsDeployer.Runner
                 this._errorOccurred = true;
                 this._output = ex.ToString();
             }
+            finally
+            {
+                if (null != space) space.Close();
+            }
+        }
+
+        public bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo)
+        {
+            var variables = CreateVariables(mapToRun, buildInfo);
+            string command = this.GeneratePipelineCommand(directory, mapToRun);
+            this._scriptRun = command;
+
+            ExecuteCommand(command, variables);
 
             return this.ErrorOccurred;
         }
@@ -146,12 +154,13 @@ namespace TfsDeployer.Runner
         private string GenerateOutputFromObjects(Collection<PSObject> outputObjects)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("\n");
 
             int lineCount = 0;
             foreach (PSObject outputObject in outputObjects)
             {
-                builder.AppendFormat("{0}:{1}\n", lineCount, outputObject);
+                //builder.AppendFormat("{0}:{1}", lineCount, outputObject);
+                builder.Append(outputObject);
+                builder.AppendLine();
                 lineCount++;
             }
 

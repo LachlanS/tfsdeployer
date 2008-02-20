@@ -50,7 +50,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeployerTests\GetBuildUriFromArtifactUrlTests.cs" />
     <Compile Include="DeployerTests\IsInterestedStatusChangeTests.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />

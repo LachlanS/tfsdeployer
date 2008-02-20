@@ -56,6 +56,25 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
 
         }
 
+        [TestMethod]
+        public void ShouldReturnValueOfEnvironmentVariable()
+        {
+            var pr = new PowerShellRunner();
+            pr.ExecuteCommand("$Env:TEMP", null);
+
+            Assert.IsFalse(pr.ErrorOccurred, "ErrorOccurred");
+            StringAssert.Contains(pr.Output, Environment.GetEnvironmentVariable("TEMP"));
+        }
+
+        [TestMethod]
+        public void ShouldReturnFormattedObjects()
+        {
+            var pr = new PowerShellRunner();
+            pr.ExecuteCommand("Get-ChildItem Env:", null);
+
+            Assert.IsFalse(pr.ErrorOccurred, "ErrorOccurred");
+            StringAssert.Contains(pr.Output, Environment.GetEnvironmentVariable("TEMP"));
+        }
 
     }
 }

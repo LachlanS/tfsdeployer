@@ -86,7 +86,6 @@ namespace TfsDeployer
             {
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
                     statusChanged.TeamProject, statusChanged.Id, statusChanged.StatusChange.OldValue, statusChanged.StatusChange.NewValue);
-                //BuildData buildData = GetBuild(statusChanged.TeamProject, statusChanged.Id);
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
                 DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, info.Data);
                 if (mappings != null)
@@ -113,11 +112,21 @@ namespace TfsDeployer
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
             bool isComputerMatch = string.Compare(Environment.MachineName, mapping.Computer, true) == 0;
-            bool isOldValueMatch = string.Compare(mapping.OriginalQuality ?? string.Empty, statusChange.OldValue ?? string.Empty, true) == 0;
-            bool isNewValueMatch = string.Compare(mapping.NewQuality ?? string.Empty, statusChange.NewValue ?? string.Empty, true) == 0;
+
+            string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
+            bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
+            bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
             bool isUserPermitted = this.IsUserPermitted(changeEvent, mapping);
 
-            return isComputerMatch  && isOldValueMatch && isNewValueMatch && isUserPermitted;
+            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
+        }
+
+        private bool IsQualityMatch(string eventQuality, string mappingQuality, string wildcardQuality)
+        {
+            eventQuality = eventQuality ?? string.Empty;
+            mappingQuality = mappingQuality ?? string.Empty;
+            if (string.Compare(mappingQuality, wildcardQuality, true) == 0) return true;
+            return string.Compare(mappingQuality, eventQuality, true) == 0;
         }
 
         private bool IsUserPermitted(BuildStatusChangeEvent changeEvent, Mapping mapping)
@@ -158,33 +167,13 @@ namespace TfsDeployer
             return runner;
         }
 
-        //private static BuildData GetBuild(string teamProject, string buildId)
-        //{
-        //    BuildStore store = ServiceHelper.GetService<BuildStore>();
-        //    string buildUri = store.GetBuildUri(teamProject, buildId);
-        //    BuildData bd = store.GetBuildDetails(buildUri);
-        //    return bd;
-        //}
-
         private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
             var buildServer = ServiceHelper.GetService<IBuildServer>();
-            var buildUri = GetBuildUriFromArtifactUrl(statusChanged.Url);
-            return buildServer.GetBuild(buildUri);
+            var buildSpec = buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
+            var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            return detail;
         }
-
-        /// <summary>
-        /// Gets the BuildUri from the Url in the BuildStatusChangeEvent data. 
-        /// </summary>
-        internal static Uri GetBuildUriFromArtifactUrl(string url)
-        {
-            // I'd like to find a better way to get the BuildUri
-            var rx = new Regex(@"artifactMoniker=(?<artifact>\d+)", RegexOptions.IgnoreCase);
-            var match = rx.Match(url);
-            string artifact = match.Groups["artifact"].Value;
-            return new Uri(String.Format(@"vstfs:///Build/Build/{0}", artifact));
-        }
-       
 
     }
 }

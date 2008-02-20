@@ -30,6 +30,11 @@ namespace TfsDeployer.Runner
 {
     public class DeploymentHost : PSHost
     {
+        public DeploymentHost(DeploymentHostUI ui)
+        {
+            _ui = ui;
+        }
+
         public override CultureInfo CurrentCulture
         {
             get { return Thread.CurrentThread.CurrentCulture; }
@@ -80,9 +85,10 @@ namespace TfsDeployer.Runner
         {
         }
 
+        private PSHostUserInterface _ui = null;
         public override PSHostUserInterface UI
         {
-            get { return null; }
+            get { return _ui; }
         }
 
         public override Version Version

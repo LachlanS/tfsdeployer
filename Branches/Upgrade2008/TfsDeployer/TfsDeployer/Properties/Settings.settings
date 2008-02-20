@@ -17,5 +17,8 @@
     <Setting Name="SmtpServer" Type="System.String" Scope="Application">
       <Value Profile="(Default)">mailserver</Value>
     </Setting>
+    <Setting Name="BuildQualityWildcard" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">*</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
