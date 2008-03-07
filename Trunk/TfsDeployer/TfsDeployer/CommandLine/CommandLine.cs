@@ -44,7 +44,7 @@ namespace TfsDeployer
                 return !string.IsNullOrEmpty(CreateKeyFileName);
             }
         }
-        public bool EncyptDeploymentFile
+        public bool EncryptDeploymentFile
         {
             get
             {

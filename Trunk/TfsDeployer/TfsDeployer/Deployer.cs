@@ -29,6 +29,8 @@ using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.Runner;
 using TfsDeployer.Notifier;
 using TfsDeployer.Alert;
+using Microsoft.TeamFoundation.Build.Client;
+using System.Text.RegularExpressions;
 namespace TfsDeployer
 {
     /// <summary>
@@ -84,8 +86,8 @@ namespace TfsDeployer
             {
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
                     statusChanged.TeamProject, statusChanged.Id, statusChanged.StatusChange.OldValue, statusChanged.StatusChange.NewValue);
-                BuildData buildData = GetBuild(statusChanged.TeamProject, statusChanged.Id);
-                DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, buildData);
+                var info = new BuildInformation(GetBuildDetail(statusChanged));
+                DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, info.Data);
                 if (mappings != null)
                 {
                     foreach (Mapping mapping in mappings.Mappings)
@@ -94,8 +96,8 @@ namespace TfsDeployer
                         if (IsInterestedStatusChange(statusChanged, mapping, statusChanged.StatusChange))
                         {
                             IRunner runner = DetermineRunner(mapping);
-                            runner.Execute(ConfigurationReader.WorkingDirectory, mapping, buildData);
-                            Alerter.Alert(mapping, buildData, runner);
+                            runner.Execute(ConfigurationReader.WorkingDirectory, mapping, info);
+                            Alerter.Alert(mapping, info.Data, runner);
                         }
                     }
                 }
@@ -109,12 +111,22 @@ namespace TfsDeployer
 
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
-            bool isComputerMatch = string.Compare(Environment.MachineName,mapping.Computer,true) == 0;
-            bool isOldValueMatch = string.Compare(mapping.OriginalQuality,statusChange.OldValue,true) == 0;
-            bool isNewValueMatch = string.Compare(mapping.NewQuality,statusChange.NewValue) == 0;
+            bool isComputerMatch = string.Compare(Environment.MachineName, mapping.Computer, true) == 0;
+
+            string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
+            bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
+            bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
             bool isUserPermitted = this.IsUserPermitted(changeEvent, mapping);
 
-            return isComputerMatch  && isOldValueMatch && isNewValueMatch && isUserPermitted;
+            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
+        }
+
+        private bool IsQualityMatch(string eventQuality, string mappingQuality, string wildcardQuality)
+        {
+            eventQuality = eventQuality ?? string.Empty;
+            mappingQuality = mappingQuality ?? string.Empty;
+            if (string.Compare(mappingQuality, wildcardQuality, true) == 0) return true;
+            return string.Compare(mappingQuality, eventQuality, true) == 0;
         }
 
         private bool IsUserPermitted(BuildStatusChangeEvent changeEvent, Mapping mapping)
@@ -155,13 +167,13 @@ namespace TfsDeployer
             return runner;
         }
 
-        private static BuildData GetBuild(string teamProject, string buildId)
+        private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
-            BuildStore store = ServiceHelper.GetService<BuildStore>();
-            string buildUri = store.GetBuildUri(teamProject, buildId);
-            BuildData bd = store.GetBuildDetails(buildUri);
-            return bd;
+            var buildServer = ServiceHelper.GetService<IBuildServer>();
+            var buildSpec = buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
+            var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            return detail;
         }
-       
+
     }
 }

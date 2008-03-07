@@ -41,10 +41,10 @@ namespace TfsDeployer.Runner
         }
 	
 
-        private bool _errorOccured;
-        public bool ErrorOccured
+        private bool _errorOccurred;
+        public bool ErrorOccurred
         {
-            get { return _errorOccured; }
+            get { return _errorOccurred; }
         }
 	
 
@@ -54,7 +54,7 @@ namespace TfsDeployer.Runner
             get { return _commandOutput; }
         }
 	
-        public bool Execute(string workingDirectory, Mapping mapToRun, BuildData buildData)
+        public bool Execute(string workingDirectory, Mapping mapToRun, BuildInformation buildInfo)
         {
             
 
@@ -64,7 +64,7 @@ namespace TfsDeployer.Runner
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "BatchRunner - Could not find script: {0}", _scriptRun);
                 _commandOutput = string.Format("BatchRunner - Could not find script: {0}", _scriptRun);
-                _errorOccured = true;
+                _errorOccurred = true;
                 
             }
             else
@@ -79,7 +79,7 @@ namespace TfsDeployer.Runner
                 psi.RedirectStandardInput = true;
                 psi.RedirectStandardError = true;
                 psi.WorkingDirectory = workingDirectory;
-                psi.Arguments = CreateArguments(mapToRun, buildData);
+                psi.Arguments = CreateArguments(mapToRun, buildInfo.Data);
 
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", _scriptRun, psi.Arguments, psi.WorkingDirectory);
 
@@ -93,14 +93,14 @@ namespace TfsDeployer.Runner
                     TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", _commandOutput);
                 }
 
-                _errorOccured = false;
+                _errorOccurred = false;
               
             }
 
-            return !_errorOccured;
+            return !_errorOccurred;
         }
 
-        private string CreateArguments(Mapping mapping, BuildData buildData)
+        private string CreateArguments(Mapping mapping, IBuildData buildData)
         {
             StringBuilder arguments = new StringBuilder(
             string.Format("{0}, {1} "

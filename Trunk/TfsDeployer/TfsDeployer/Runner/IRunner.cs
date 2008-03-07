@@ -27,13 +27,13 @@ namespace TfsDeployer.Runner
 {
     public interface IRunner
     {
-        bool Execute(string directory, Mapping mapToRun,BuildData buildData);
+        bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo);
         string Output
         {
             get;
         }
 
-        bool ErrorOccured
+        bool ErrorOccurred
         {
             get;
         }
