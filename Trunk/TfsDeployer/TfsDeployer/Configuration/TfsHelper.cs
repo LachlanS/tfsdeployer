@@ -18,33 +18,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using Microsoft.TeamFoundation.VersionControl.Common;
 using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer.Configuration
 {
     static class TfsHelper
     {
-        const string ConfigurationFileLocation = "{0}/TeamBuildTypes/{1}/Deployment/";
+        //const string ConfigurationFileLocation = "{0}/TeamBuildTypes/{1}/Deployment/";
         public static string GetDeploymentItems(string teamProjectName, string buildType)
         {
             string workspaceDirectory = SourceCodeControlHelper.GetWorkspaceDirectory("TFSDeployerConfiguration2");
             TeamProject teamProject = GetTeamProject(teamProjectName);
-            ItemSpec configurationFileItemSpec = new ItemSpec(string.Format(ConfigurationFileLocation,teamProject.ServerItem,buildType),RecursionType.Full);
+            var configurationFileLocation = GetConfigurationFileLocation(teamProjectName, buildType);
+            var configurationFileItemSpec = new ItemSpec(string.Format(configurationFileLocation, teamProject.ServerItem, buildType), RecursionType.Full);
             VersionSpec version = VersionSpec.Latest;
-            GetRequest[] request = new GetRequest[] { new GetRequest(configurationFileItemSpec, version) };
-            string directoryToPlaceFiles  = string.Format(ConfigurationFileLocation, teamProject.ServerItem, buildType);
+            var request = new [] { new GetRequest(configurationFileItemSpec, version) };
+            string directoryToPlaceFiles  = string.Format(configurationFileLocation, teamProject.ServerItem, buildType);
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting file from {0} to {1}",workspaceDirectory,directoryToPlaceFiles);
             SourceCodeControlHelper.GetLatestFromSourceCodeControl(directoryToPlaceFiles, workspaceDirectory, request);
             return workspaceDirectory;
         }
 
+        private static string GetConfigurationFileLocation(string teamProjectName, string buildType)
+        {
+            var buildServer = ServiceHelper.GetService<IBuildServer>();
+            var buildDefinition = buildServer.GetBuildDefinition(teamProjectName, buildType);
+            return VersionControlPath.Combine(buildDefinition.ConfigurationFolderPath, "Deployment/");
+        }
+
         private static TeamProject GetTeamProject(string teamProjectName)
         {
-            VersionControlServer versionControlServer = ServiceHelper.GetService<VersionControlServer>();
+            var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
             return versionControlServer.GetTeamProject(teamProjectName);
         }
 
