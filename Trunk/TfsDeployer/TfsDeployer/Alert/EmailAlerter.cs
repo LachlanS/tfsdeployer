@@ -19,10 +19,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using TfsDeployer.Notifier;
-using Microsoft.TeamFoundation.Build.Proxy;
 using TfsDeployer.Runner;
 using System.Net.Mail;
 using TfsDeployer.Properties;
@@ -36,15 +34,24 @@ namespace TfsDeployer.Alert
         {
             try
             {
-                SmtpClient client = new SmtpClient(Settings.Default.SmtpServer);
-                string subject = GetSubject(mapping, build, runner);
-                string body = GetBody(mapping, build, runner);
-                string toAddress = mapping.NotificationAddress ?? Settings.Default.ToAddress;
+                var client = new SmtpClient(Settings.Default.SmtpServer);
+                var subject = GetSubject(mapping, build, runner);
+                var body = GetBody(mapping, build, runner);
+                var toAddress = mapping.NotificationAddress ?? Settings.Default.ToAddress;
                 
-                MailMessage message = new MailMessage(Settings.Default.FromAddress,
-                    toAddress,
-                    subject,
-                    body); ;
+                var message = new MailMessage
+                                  {
+                                      From = new MailAddress(Settings.Default.FromAddress),
+                                      Subject = subject,
+                                      Body = body
+                                  };
+
+                // Allow multiple recipients separated by semi-colon
+                foreach (var address in toAddress.Split(';'))
+                {
+                    message.To.Add(address);
+                }
+
                 client.Send(message);
             }
             catch(Exception ex)
@@ -53,9 +60,9 @@ namespace TfsDeployer.Alert
             }
         }
 
-        private string GetBody(Mapping map, IBuildData build, IRunner runner)
+        private static string GetBody(Mapping map, IBuildData build, IRunner runner)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.AppendLine(string.Format("Team Project/Build: {0} to {1}",build.TeamProject,build.BuildType));
             builder.AppendLine(string.Format("Quality Change: {0} to {1}",map.OriginalQuality,map.NewQuality));
             builder.AppendLine(string.Format("Drop Location: {0}", build.DropLocation));
@@ -67,9 +74,9 @@ namespace TfsDeployer.Alert
             return builder.ToString();
         }
 
-        private string GetSubject(Mapping map, IBuildData build, IRunner runner)
+        private static string GetSubject(Mapping map, IBuildData build, IRunner runner)
         {
-            string errorMessage = "Success: ";
+            var errorMessage = "Success: ";
             if (runner.ErrorOccurred)
             {
                 errorMessage = "Failed: ";
