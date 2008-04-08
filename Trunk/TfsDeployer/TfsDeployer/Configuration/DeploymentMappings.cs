@@ -174,6 +174,18 @@ public partial class Mapping {
             this.runnerTypeFieldSpecified = value;
         }
     }
+
+    [XmlAttribute]
+    public bool RetainBuild
+    {
+        get; set;
+    }
+
+    [XmlIgnore]
+    public bool RetainBuildSpecified
+    {
+        get; set;
+    }
 }
 
 /// <remarks/>

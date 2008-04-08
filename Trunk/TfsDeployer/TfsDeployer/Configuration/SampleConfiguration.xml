@@ -1,6 +1,0 @@
-﻿
-<DeploymentMappings xmlns="http://www.readify.net/TFSDeployer/DeploymentMappings20061026">
-  <Mapping xmlns="http://www.readify.net/TFSDeployer/DeploymentMappings20061026"  Computer ="TEST1">
-    <ScriptParameter name="" value=""/>
-  </Mapping>
-</DeploymentMappings>

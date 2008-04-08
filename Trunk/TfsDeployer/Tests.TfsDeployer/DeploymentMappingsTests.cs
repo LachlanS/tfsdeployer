@@ -32,5 +32,16 @@ namespace Tests.TfsDeployer
             }
         }
 
+        [TestMethod]
+        public void ShouldInterpretAbsentRetainBuildAttributeAsNotSpecified()
+        {
+            using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentRetainBuild))
+            {
+                var serializer = new XmlSerializer(typeof(DeploymentMappings));
+                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                Assert.IsFalse(mappings.Mappings[0].RetainBuildSpecified, "RetainBuild");
+            }
+        }
+
     }
 }

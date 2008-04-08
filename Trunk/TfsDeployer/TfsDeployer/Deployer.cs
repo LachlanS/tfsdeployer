@@ -20,17 +20,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
-using Microsoft.TeamFoundation.Build.Proxy;
-//using Microsoft.TeamFoundation.Build.Common;
 using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.Runner;
 using TfsDeployer.Notifier;
 using TfsDeployer.Alert;
 using Microsoft.TeamFoundation.Build.Client;
-using System.Text.RegularExpressions;
+
 namespace TfsDeployer
 {
     /// <summary>
@@ -97,6 +94,7 @@ namespace TfsDeployer
                         {
                             IRunner runner = DetermineRunner(mapping);
                             runner.Execute(ConfigurationReader.WorkingDirectory, mapping, info);
+                            ApplyRetainBuild(mapping, runner, info.Detail);
                             Alerter.Alert(mapping, info.Data, runner);
                         }
                     }
@@ -109,6 +107,16 @@ namespace TfsDeployer
 
         }
 
+        private static void ApplyRetainBuild(Mapping mapping, IRunner runner, IBuildDetail detail)
+        {
+            if (!mapping.RetainBuildSpecified) return;
+            if (runner.ErrorOccurred) return;
+            if (detail.KeepForever == mapping.RetainBuild) return;
+
+            detail.KeepForever = mapping.RetainBuild;
+            detail.Save();
+        }
+
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
             bool isComputerMatch = string.Compare(Environment.MachineName, mapping.Computer, true) == 0;
@@ -116,7 +124,7 @@ namespace TfsDeployer
             string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
             bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
             bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
-            bool isUserPermitted = this.IsUserPermitted(changeEvent, mapping);
+            bool isUserPermitted = IsUserPermitted(changeEvent, mapping);
 
             return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
         }

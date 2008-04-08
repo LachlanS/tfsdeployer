@@ -18,7 +18,8 @@
 						<xs:attribute name="Script" form="unqualified" type="xs:string" />
 						<xs:attribute name="RunnerType" type="RunnerType" />
 						<xs:attribute name="NotificationAddress" type="xs:string" form="unqualified" />
-						<xs:attribute name="PermittedUsers" type="xs:string" form="unqualified" />
+            <xs:attribute name="PermittedUsers" type="xs:string" form="unqualified" />
+            <xs:attribute name="RetainBuild" type="xs:boolean" form="unqualified" />
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>

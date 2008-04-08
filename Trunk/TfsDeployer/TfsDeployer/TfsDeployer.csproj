@@ -166,7 +166,6 @@
     <None Include="Samples\Publish.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configuration\SampleConfiguration.xml" />
     <None Include="Samples\DeploymentMappings.xml" />
   </ItemGroup>
   <ItemGroup>
