@@ -518,6 +518,9 @@ namespace Genghis
                 // Only doing fields and properties
                 if ((info.MemberType != MemberTypes.Field) && (info.MemberType != MemberTypes.Property)) continue;
 
+                var propInfo = info as PropertyInfo;
+                if (propInfo != null && !propInfo.CanWrite) continue; // skip readonly properties
+
                 // Skip variables w/o usage
                 object[] attribs = info.GetCustomAttributes(typeof(UsageAttribute), true);
                 UsageAttribute usage = (UsageAttribute)(attribs.Length != 0 ? attribs[0] : null);
