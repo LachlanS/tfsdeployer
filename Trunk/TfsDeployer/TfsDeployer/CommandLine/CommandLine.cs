@@ -44,6 +44,7 @@ namespace TfsDeployer
                 return !string.IsNullOrEmpty(CreateKeyFileName);
             }
         }
+
         public bool EncryptDeploymentFile
         {
             get
@@ -58,17 +59,17 @@ namespace TfsDeployer
             base.Parse(args, ignoreFirstArg);
             if (!string.IsNullOrEmpty(CreateKeyFileName) && !string.IsNullOrEmpty(KeyFileName))
             {
-                throw new ApplicationException("Key File and Create Key File cannot be specified at the same time");
+                throw new ApplicationException("Key File and Create Key File cannot be specified at the same time.");
             }
 
             if (!CreateKeyFile && (!File.Exists(KeyFileName)))
             {
-                throw new ArgumentOutOfRangeException("Key File Name",KeyFileName,"Cannot find the specified key file.");
+                throw new ArgumentOutOfRangeException("Key File Name", KeyFileName, "Cannot find the specified key file.");
             }
 
             if (!CreateKeyFile && !File.Exists(DeploymentMappingFileName))
             {
-                throw new ArgumentOutOfRangeException("Deploymnet Mapping File", DeploymentMappingFileName, "Deploymentpping file is missing");
+                throw new ArgumentOutOfRangeException("Deployment Mapping File", DeploymentMappingFileName, "Deployment mapping file is missing.");
             }
         }
         
