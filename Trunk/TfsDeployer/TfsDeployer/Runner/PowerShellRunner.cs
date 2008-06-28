@@ -31,7 +31,6 @@ namespace TfsDeployer.Runner
 {
     public class PowerShellRunner : IRunner
     {
-        #region IRunner Members
 
         private string _scriptRun;
         public string ScriptRun
@@ -177,6 +176,5 @@ namespace TfsDeployer.Runner
             }
         }
 
-        #endregion
     }
 }

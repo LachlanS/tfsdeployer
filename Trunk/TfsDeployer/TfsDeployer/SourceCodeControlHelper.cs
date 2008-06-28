@@ -34,17 +34,16 @@ namespace TfsDeployer
     {
 
         
-        public static void GetLatestFromSourceCodeControl(string rootFolder,string workspaceDirectory,  GetRequest[] filesToRetrieve)
+        public static void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
         {
-            VersionControlServer versionControlServer = ServiceHelper.GetService<VersionControlServer>();
+            var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
             string workspaceName = GetWorkspaceName();
-            string workingDirectory = workspaceDirectory;
-            
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from Source code control. RootFolder{0}, Workspace Directory:{1}, Working Directory: {2}",rootFolder,workspaceDirectory,workingDirectory);
+
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from Source code control. RootFolder:{0}, Workspace Directory:{1}", serverPath, localPath);
             try
             {
 
-                Workspace workspace = GetWorkspace(rootFolder, versionControlServer, workspaceName, workingDirectory);
+                Workspace workspace = GetWorkspace(serverPath, versionControlServer, workspaceName, localPath);
                 workspace.Get(filesToRetrieve, GetOptions.Overwrite);
             }
             finally
@@ -77,12 +76,12 @@ namespace TfsDeployer
             }
         }
 
-        private static Workspace GetWorkspace(string rootFolder, VersionControlServer versionControlServer, string workspaceName, string workingDirectory)
+        private static Workspace GetWorkspace(string serverPath, VersionControlServer versionControlServer, string workspaceName, string localPath)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace:{0} RootFolder:{1}", workspaceName,rootFolder);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace:{0} RootFolder:{1}", workspaceName, serverPath);
             Workspace workspace = versionControlServer.CreateWorkspace(workspaceName, versionControlServer.AuthenticatedUser);
             
-            workspace.Map(rootFolder, workingDirectory);
+            workspace.Map(serverPath, localPath);
             return workspace;
         }
 

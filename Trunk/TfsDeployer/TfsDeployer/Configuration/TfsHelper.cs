@@ -27,19 +27,18 @@ namespace TfsDeployer.Configuration
 {
     static class TfsHelper
     {
-        //const string ConfigurationFileLocation = "{0}/TeamBuildTypes/{1}/Deployment/";
+
         public static string GetDeploymentItems(string teamProjectName, string buildType)
         {
-            string workspaceDirectory = SourceCodeControlHelper.GetWorkspaceDirectory("TFSDeployerConfiguration2");
-            TeamProject teamProject = GetTeamProject(teamProjectName);
-            var configurationFileLocation = GetConfigurationFileLocation(teamProjectName, buildType);
-            var configurationFileItemSpec = new ItemSpec(string.Format(configurationFileLocation, teamProject.ServerItem, buildType), RecursionType.Full);
-            VersionSpec version = VersionSpec.Latest;
-            var request = new [] { new GetRequest(configurationFileItemSpec, version) };
-            string directoryToPlaceFiles  = string.Format(configurationFileLocation, teamProject.ServerItem, buildType);
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting file from {0} to {1}",workspaceDirectory,directoryToPlaceFiles);
-            SourceCodeControlHelper.GetLatestFromSourceCodeControl(directoryToPlaceFiles, workspaceDirectory, request);
-            return workspaceDirectory;
+            var localPath = SourceCodeControlHelper.GetWorkspaceDirectory("TFSDeployerConfiguration2");
+            var serverPath = GetConfigurationFileLocation(teamProjectName, buildType);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", serverPath, localPath);
+
+            var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
+            var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
+            SourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
+
+            return localPath;
         }
 
         private static string GetConfigurationFileLocation(string teamProjectName, string buildType)
@@ -47,12 +46,6 @@ namespace TfsDeployer.Configuration
             var buildServer = ServiceHelper.GetService<IBuildServer>();
             var buildDefinition = buildServer.GetBuildDefinition(teamProjectName, buildType);
             return VersionControlPath.Combine(buildDefinition.ConfigurationFolderPath, "Deployment/");
-        }
-
-        private static TeamProject GetTeamProject(string teamProjectName)
-        {
-            var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
-            return versionControlServer.GetTeamProject(teamProjectName);
         }
 
     }
