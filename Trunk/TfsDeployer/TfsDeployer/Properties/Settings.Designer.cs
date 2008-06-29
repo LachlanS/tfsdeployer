@@ -52,7 +52,7 @@ namespace TfsDeployer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("release.manasger@yourcompany.com")]
+        [global::System.Configuration.DefaultSettingValueAttribute("release.manager@yourcompany.com")]
         public string FromAddress {
             get {
                 return ((string)(this["FromAddress"]));
@@ -74,6 +74,15 @@ namespace TfsDeployer.Properties {
         public string BuildQualityWildcard {
             get {
                 return ((string)(this["BuildQualityWildcard"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SharedResourceServerPath {
+            get {
+                return ((string)(this["SharedResourceServerPath"]));
             }
         }
     }

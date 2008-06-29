@@ -30,7 +30,7 @@ namespace TfsDeployer.Configuration
 
         public static string GetDeploymentItems(string teamProjectName, string buildType)
         {
-            var localPath = SourceCodeControlHelper.GetWorkspaceDirectory("TFSDeployerConfiguration2");
+            var localPath = GetLocalPath();
             var serverPath = GetConfigurationFileLocation(teamProjectName, buildType);
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", serverPath, localPath);
 
@@ -41,11 +41,28 @@ namespace TfsDeployer.Configuration
             return localPath;
         }
 
+        private static string GetLocalPath()
+        {
+            return SourceCodeControlHelper.GetWorkspaceDirectory("TFSDeployerConfiguration2");
+        }
+
         private static string GetConfigurationFileLocation(string teamProjectName, string buildType)
         {
             var buildServer = ServiceHelper.GetService<IBuildServer>();
             var buildDefinition = buildServer.GetBuildDefinition(teamProjectName, buildType);
             return VersionControlPath.Combine(buildDefinition.ConfigurationFolderPath, "Deployment/");
+        }
+
+        public static void GetSharedResources()
+        {
+            var serverPath = Properties.Settings.Default.SharedResourceServerPath;
+            if (string.IsNullOrEmpty(serverPath)) return;
+
+            var localPath = GetLocalPath();
+
+            var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
+            var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
+            SourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
         }
 
     }
