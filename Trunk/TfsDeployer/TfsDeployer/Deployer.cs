@@ -89,15 +89,17 @@ namespace TfsDeployer
                 {
                     foreach (Mapping mapping in mappings.Mappings)
                     {
-                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Processing Mapping: Computer:{0}, Script:{1}",mapping.Computer,mapping.Script);
+                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Processing Mapping: Computer:{0}, Script:{1}", mapping.Computer, mapping.Script);
                         if (IsInterestedStatusChange(statusChanged, mapping, statusChanged.StatusChange))
                         {
+                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Matching mapping found, running script {0}", mapping.Script);
                             IRunner runner = DetermineRunner(mapping);
                             runner.Execute(ConfigurationReader.WorkingDirectory, mapping, info);
                             ApplyRetainBuild(mapping, runner, info.Detail);
                             Alerter.Alert(mapping, info.Data, runner);
                         }
                     }
+
                 }
             }
             catch (Exception ex)
@@ -119,12 +121,26 @@ namespace TfsDeployer
 
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
-            bool isComputerMatch = string.Compare(Environment.MachineName, mapping.Computer, true) == 0;
-
+            // BUG: This will only match against the first 15 chars of the machine name due to NetBIOS name length limitations
+            bool isComputerMatch = string.Compare(Environment.MachineName, 0, mapping.Computer, 0, 15, true) == 0;
+            
             string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
             bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
             bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
             bool isUserPermitted = IsUserPermitted(changeEvent, mapping);
+
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                              "Mapping evaluation details:\n" +
+                              "    MachineName={0}, MappingComputer={1}\n"+
+                              "    BuildOldStatus={2}, BuildNewStatus={3}\n" +
+                              "    MappingOrigQuality={4}, MappingNewQuality={5}\n" +
+                              "    UserIsPermitted={6}, EventCausedBy={7}",
+                Environment.MachineName, mapping.Computer, statusChange.OldValue, statusChange.NewValue, mapping.OriginalQuality, mapping.NewQuality, isUserPermitted, changeEvent.ChangedBy);
+
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                              "Eval results:\n" +
+                              "    isComputerMatch={0}, isOldValueMatch={1}, isNewValueMatch={2}, isUserPermitted={3}",
+                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted);
 
             return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
         }
