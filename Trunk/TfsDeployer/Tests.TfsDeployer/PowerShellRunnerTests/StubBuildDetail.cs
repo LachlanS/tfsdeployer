@@ -281,14 +281,9 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             throw new NotImplementedException();
         }
 
-        #region IBuildDetail Members
-
-
         public BuildReason Reason
         {
             get { throw new NotImplementedException(); }
         }
-
-        #endregion
     }
 }

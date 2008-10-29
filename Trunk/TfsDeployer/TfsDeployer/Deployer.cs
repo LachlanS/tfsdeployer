@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
 using Readify.Useful.TeamFoundation.Common;
@@ -121,8 +122,7 @@ namespace TfsDeployer
 
         public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
         {
-            // BUG: This will only match against the first 15 chars of the machine name due to NetBIOS name length limitations
-            bool isComputerMatch = string.Compare(Environment.MachineName, 0, mapping.Computer, 0, 15, true) == 0;
+            bool isComputerMatch = IsComputerMatch(mapping.Computer);
             
             string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
             bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
@@ -143,6 +143,12 @@ namespace TfsDeployer
                               isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted);
 
             return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
+        }
+
+        private bool IsComputerMatch(string mappingComputerName)
+        {
+            var hostNameOnly = Dns.GetHostName().Split('.')[0];
+            return string.Equals(hostNameOnly, mappingComputerName, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private bool IsQualityMatch(string eventQuality, string mappingQuality, string wildcardQuality)
