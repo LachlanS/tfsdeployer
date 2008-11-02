@@ -280,10 +280,5 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         {
             throw new NotImplementedException();
         }
-
-        public BuildReason Reason
-        {
-            get { throw new NotImplementedException(); }
-        }
     }
 }
