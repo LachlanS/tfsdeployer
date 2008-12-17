@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2E5C759A-7EBE-4928-B673-7B124F1E607E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,7 +50,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeployerTests\IsInterestedStatusChangeTests.cs" />
+    <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />
     <Compile Include="PowerShellScripts.Designer.cs">

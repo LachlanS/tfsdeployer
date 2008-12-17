@@ -18,6 +18,7 @@ namespace TfsDeployer
         public void Stop()
         {
             _listener.Stop();
+            _listener.BuildStatusChangeEventReceived -= OnListenerBuildStatusChangeEventReceived;
         }
 
         private static void OnListenerBuildStatusChangeEventReceived(object sender, BuildStatusChangeEventArgs e)

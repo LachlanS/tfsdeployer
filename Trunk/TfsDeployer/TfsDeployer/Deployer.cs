@@ -19,8 +19,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Net;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -38,16 +36,18 @@ namespace TfsDeployer
         private readonly IRunnerProvider _runnerProvider;
         private readonly IConfigurationReader _configurationReader;
         private readonly IAlert _alerter;
+        private readonly IMappingEvaluator _mappingEvaluator;
 
-        public Deployer() : this (new RunnerProvider(), new TfsConfigReader(), new EmailAlerter())
+        public Deployer() : this (new RunnerProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
         {
         }
 
-        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert)
+        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert, IMappingEvaluator mappingEvaluator)
         {
             _runnerProvider = runnerProvider;
             _configurationReader = reader;
             _alerter = alert;
+            _mappingEvaluator = mappingEvaluator;
         }
 
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
@@ -73,7 +73,7 @@ namespace TfsDeployer
                     foreach (Mapping mapping in mappings.Mappings)
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Processing Mapping: Computer:{0}, Script:{1}", mapping.Computer, mapping.Script);
-                        if (IsInterestedStatusChange(statusChanged, mapping, statusChanged.StatusChange))
+                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
                         {
                             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Matching mapping found, running script {0}", mapping.Script);
                             IRunner runner = _runnerProvider.GetRunner(mapping);
@@ -100,58 +100,6 @@ namespace TfsDeployer
 
             detail.KeepForever = mapping.RetainBuild;
             detail.Save();
-        }
-
-        public bool IsInterestedStatusChange(BuildStatusChangeEvent changeEvent, Mapping mapping, Change statusChange)
-        {
-            bool isComputerMatch = IsComputerMatch(mapping.Computer);
-            
-            string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
-            bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
-            bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
-            bool isUserPermitted = IsUserPermitted(changeEvent, mapping);
-
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                              "Mapping evaluation details:\n" +
-                              "    MachineName={0}, MappingComputer={1}\n"+
-                              "    BuildOldStatus={2}, BuildNewStatus={3}\n" +
-                              "    MappingOrigQuality={4}, MappingNewQuality={5}\n" +
-                              "    UserIsPermitted={6}, EventCausedBy={7}",
-                Environment.MachineName, mapping.Computer, statusChange.OldValue, statusChange.NewValue, mapping.OriginalQuality, mapping.NewQuality, isUserPermitted, changeEvent.ChangedBy);
-
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                              "Eval results:\n" +
-                              "    isComputerMatch={0}, isOldValueMatch={1}, isNewValueMatch={2}, isUserPermitted={3}",
-                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted);
-
-            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
-        }
-
-        private bool IsComputerMatch(string mappingComputerName)
-        {
-            var hostNameOnly = Dns.GetHostName().Split('.')[0];
-            return string.Equals(hostNameOnly, mappingComputerName, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private bool IsQualityMatch(string eventQuality, string mappingQuality, string wildcardQuality)
-        {
-            eventQuality = eventQuality ?? string.Empty;
-            mappingQuality = mappingQuality ?? string.Empty;
-            if (string.Compare(mappingQuality, wildcardQuality, true) == 0) return true;
-            return string.Compare(mappingQuality, eventQuality, true) == 0;
-        }
-
-        private bool IsUserPermitted(BuildStatusChangeEvent changeEvent, Mapping mapping)
-        {
-            if (mapping.PermittedUsers == null) return true;
-
-            bool isUserPermitted;
-            string[] permittedUsers = mapping.PermittedUsers.Split(';');
-            List<string> permittedUsersList = new List<string>(permittedUsers);
-            isUserPermitted = permittedUsersList.Exists(
-                delegate(string value) { return string.Compare(changeEvent.ChangedBy, value, true) == 0; }
-                );
-            return isUserPermitted;
         }
 
         private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)

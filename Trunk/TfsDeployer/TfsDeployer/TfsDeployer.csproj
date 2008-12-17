@@ -127,7 +127,9 @@
     </Compile>
     <Compile Include="IBuildData.cs" />
     <Compile Include="BuildDetailToBuildDataAdapter.cs" />
+    <Compile Include="IMappingEvaluator.cs" />
     <Compile Include="IRunnerProvider.cs" />
+    <Compile Include="MappingEvaluator.cs" />
     <Compile Include="RunnerProvider.cs" />
     <Compile Include="TfsBuildStatusTrigger.cs" />
     <Compile Include="Program.cs">
