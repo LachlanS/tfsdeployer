@@ -19,27 +19,18 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections;
+using System.Configuration.Install;
 using System.Diagnostics;
 using System.ServiceProcess;
-using System.Configuration.Install;
-using Readify.Useful.TeamFoundation.Common.Listener;
-using System.Collections;
-using Genghis;
-using Readify.Useful.TeamFoundation.Common.Notification;
-using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
-    public class Program : ServiceBase
+    public static class Program 
     {
-        TfsListener listener = new TfsListener();
-        Deployer deployer = new Deployer();
+
         public static void Main(string[] args)
         {
-
-            Program controller = new Program();
             if (args.Length > 0)
             {
                 if (args[0] == "-i")
@@ -52,26 +43,10 @@ namespace TfsDeployer
                 }
                 else if (args[0] == "-d")
                 {
-                    try
-                    {
-                        //Start the service
-                        TextWriterTraceListener listener = new TextWriterTraceListener(Console.Out);
-                        Trace.Listeners.Add(listener);
-                        controller.OnStart(new string[] { });
-                        Console.WriteLine("Hit Enter to stop the service");
-                        Console.ReadKey();
-                        controller.Stop();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
+                    RunAsConsole();
                 }
                 else
                 {
-
-
                     CommandLine command = new CommandLine();
                     if (command.ParseAndContinue(args))
                     {
@@ -89,36 +64,30 @@ namespace TfsDeployer
                     {
                         Console.WriteLine(command.GetUsage());
                     }
-
-
                 }
-
             }
             else
             {
-                System.ServiceProcess.ServiceBase[] ServicesToRun;
-                ServicesToRun = new System.ServiceProcess.ServiceBase[] { controller };
-                System.ServiceProcess.ServiceBase.Run(ServicesToRun);
+                ServiceBase.Run(new TfsDeployerService());
             }
         }
 
-        protected override void OnStart(string[] args)
+        private static void RunAsConsole()
         {
-            listener.BuildStatusChangeEventReceived += new EventHandler<BuildStatusChangeEventArgs>(listener_BuildStatusChangeEventReceived);
-            listener.Start();
-        }
+            try
+            {
+                Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-        protected override void OnStop()
-        {
-            listener.Stop();
-        }
-
-        private delegate void ExecuteDeploymentProcessDelegate(BuildStatusChangeEvent ev);
-
-        void listener_BuildStatusChangeEventReceived(object sender, BuildStatusChangeEventArgs e)
-        {
-            ExecuteDeploymentProcessDelegate edpd = new ExecuteDeploymentProcessDelegate(deployer.ExecuteDeploymentProcess);
-            edpd.BeginInvoke(e.EventRaised, null, null);
+                var trigger = new TfsBuildStatusTrigger();
+                trigger.Start();
+                Console.WriteLine("Hit Enter to stop the service");
+                Console.ReadKey();
+                trigger.Stop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private static void Install()

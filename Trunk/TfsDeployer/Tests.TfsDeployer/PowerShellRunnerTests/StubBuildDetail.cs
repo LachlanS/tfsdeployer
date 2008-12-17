@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.TeamFoundation.Build.Client;
 
 namespace Tests.TfsDeployer.PowerShellRunnerTests
@@ -149,6 +146,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         }
 
         DateTime IBuildDetail.LastChangedOn
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public BuildReason Reason
         {
             get { throw new NotImplementedException(); }
         }

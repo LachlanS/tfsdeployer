@@ -21,71 +21,53 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Readify.Useful.TeamFoundation.Common.Notification;
-using TfsDeployer.Configuration;
-using Readify.Useful.TeamFoundation.Common;
-using TfsDeployer.Runner;
-using TfsDeployer.Notifier;
-using TfsDeployer.Alert;
 using Microsoft.TeamFoundation.Build.Client;
+using Readify.Useful.TeamFoundation.Common;
+using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Alert;
+using TfsDeployer.Configuration;
+using TfsDeployer.Notifier;
+using TfsDeployer.Runner;
 
 namespace TfsDeployer
 {
-    /// <summary>
-    /// Implemenation class for TFS Deployer
-    /// </summary>
     internal class Deployer
     {
-        private IRunner _runner;
-        public IRunner Runner
+        private static readonly object _lock = new object();
+
+        private readonly IRunnerProvider _runnerProvider;
+        private readonly IConfigurationReader _configurationReader;
+        private readonly IAlert _alerter;
+
+        public Deployer() : this (new RunnerProvider(), new TfsConfigReader(), new EmailAlerter())
         {
-            get { return _runner; }
         }
 
-        private IConfigurationReader _reader;
-        public IConfigurationReader ConfigurationReader
+        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert)
         {
-            get { return _reader; }
-        }
-        
-        private IAlert _alerter;
-        public IAlert Alerter
-        {
-            get { return _alerter; }
-        }
-	
-
-        public Deployer()
-        {
-            _reader = new TfsConfigReader();
-            _runner = null;
-            _alerter = new EmailAlerter();
+            _runnerProvider = runnerProvider;
+            _configurationReader = reader;
+            _alerter = alert;
         }
 
-        /// <summary>
-        /// Public Contructor of Deployer
-        /// </summary>
-        /// <param name="runnerToUser"></param>
-        /// <param name="reader"></param>
-        public Deployer(IRunner runnerToUser,IConfigurationReader reader)
-        {
-            _runner = runnerToUser;
-            _reader = reader;
-        }
-
-        /// <summary>
-        /// The main execution method for TFS Deployer it is this
-        /// method that does all the work
-        /// </summary>
-        /// <param name="statusChanged"></param>
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
+        {
+            // this prevents deployment folder corruption until the code uses a new folder per event
+            // but doesn't fix the "build types without deployment configured can be deployed" bug.
+            lock (_lock)
+            {
+                ExecuteDeploymentProcessWorker(statusChanged);
+            }
+        }
+
+        private void ExecuteDeploymentProcessWorker(BuildStatusChangeEvent statusChanged)
         {
             try
             {
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
                     statusChanged.TeamProject, statusChanged.Id, statusChanged.StatusChange.OldValue, statusChanged.StatusChange.NewValue);
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
-                DeploymentMappings mappings = ConfigurationReader.Read(statusChanged.TeamProject, info.Data);
+                DeploymentMappings mappings = _configurationReader.Read(statusChanged.TeamProject, info.Data);
                 if (mappings != null)
                 {
                     foreach (Mapping mapping in mappings.Mappings)
@@ -94,10 +76,10 @@ namespace TfsDeployer
                         if (IsInterestedStatusChange(statusChanged, mapping, statusChanged.StatusChange))
                         {
                             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Matching mapping found, running script {0}", mapping.Script);
-                            IRunner runner = DetermineRunner(mapping);
-                            runner.Execute(ConfigurationReader.WorkingDirectory, mapping, info);
+                            IRunner runner = _runnerProvider.GetRunner(mapping);
+                            runner.Execute(_configurationReader.WorkingDirectory, mapping, info);
                             ApplyRetainBuild(mapping, runner, info.Detail);
-                            Alerter.Alert(mapping, info.Data, runner);
+                            _alerter.Alert(mapping, info.Data, runner);
                         }
                     }
 
@@ -170,31 +152,6 @@ namespace TfsDeployer
                 delegate(string value) { return string.Compare(changeEvent.ChangedBy, value, true) == 0; }
                 );
             return isUserPermitted;
-        }
-
-        private IRunner DetermineRunner(Mapping map)
-        {
-            IRunner runner;
-            if (_runner == null)
-            {
-                switch (map.RunnerType)
-                {
-                    case RunnerType.PowerShell:
-                        runner = new PowerShellRunner();
-                        break;
-                    case RunnerType.BatchFile:
-                        runner = new BatchFileRunner();
-                        break;
-                    default:
-                        runner = new PowerShellRunner();
-                        break;
-                }
-            }
-            else
-            {
-                runner = _runner;
-            }
-            return runner;
         }
 
         private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
