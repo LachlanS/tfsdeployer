@@ -38,11 +38,13 @@ namespace TfsDeployer
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
 
-        public Deployer() : this (new RunnerProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
+        public Deployer()
+            : this(new RunnerProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
         {
         }
 
-        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert, IMappingEvaluator mappingEvaluator)
+        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert,
+                        IMappingEvaluator mappingEvaluator)
         {
             _runnerProvider = runnerProvider;
             _configurationReader = reader;
@@ -64,32 +66,40 @@ namespace TfsDeployer
         {
             try
             {
-                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
-                    statusChanged.TeamProject, statusChanged.Id, statusChanged.StatusChange.OldValue, statusChanged.StatusChange.NewValue);
-                var info = new BuildInformation(GetBuildDetail(statusChanged));
-                DeploymentMappings mappings = _configurationReader.Read(statusChanged.TeamProject, info.Data);
-                if (mappings != null)
-                {
-                    foreach (Mapping mapping in mappings.Mappings)
-                    {
-                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Processing Mapping: Computer:{0}, Script:{1}", mapping.Computer, mapping.Script);
-                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
-                        {
-                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Matching mapping found, running script {0}", mapping.Script);
-                            IRunner runner = _runnerProvider.GetRunner(mapping);
-                            runner.Execute(_configurationReader.WorkingDirectory, mapping, info);
-                            ApplyRetainBuild(mapping, runner, info.Detail);
-                            _alerter.Alert(mapping, info.Data, runner);
-                        }
-                    }
+                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                             "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
+                                             statusChanged.TeamProject, 
+                                             statusChanged.Id,
+                                             statusChanged.StatusChange.OldValue, 
+                                             statusChanged.StatusChange.NewValue);
 
+                var info = new BuildInformation(GetBuildDetail(statusChanged));
+                var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data);
+
+                foreach (var mapping in mappings)
+                {
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                 "Processing Mapping: Computer:{0}, Script:{1}", 
+                                                 mapping.Computer,
+                                                 mapping.Script);
+
+                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
+                    {
+                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                     "Matching mapping found, running script {0}", 
+                                                     mapping.Script);
+
+                        IRunner runner = _runnerProvider.GetRunner(mapping);
+                        runner.Execute(_configurationReader.WorkingDirectory, mapping, info);
+                        ApplyRetainBuild(mapping, runner, info.Detail);
+                        _alerter.Alert(mapping, info.Data, runner);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 TraceHelper.TraceError(TraceSwitches.TfsDeployer, ex);
             }
-
         }
 
         private static void ApplyRetainBuild(Mapping mapping, IRunner runner, IBuildDetail detail)
@@ -109,6 +119,5 @@ namespace TfsDeployer
             var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
             return detail;
         }
-
     }
 }

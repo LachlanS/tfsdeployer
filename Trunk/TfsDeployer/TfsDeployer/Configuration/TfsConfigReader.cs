@@ -18,10 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.TeamFoundation.VersionControl.Client;
 using System.IO;
 using Readify.Useful.TeamFoundation.Common;
 
@@ -39,14 +36,18 @@ namespace TfsDeployer.Configuration
         #region IConfigurationReader Members
         const string ConfigurationFileName = "DeploymentMappings.xml";
         
-        public DeploymentMappings Read(string teamProjectName, IBuildData teamBuild)
+        public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Projet:{0} Team Build:{1}", teamProjectName, teamBuild.BuildType);
             TfsHelper.GetSharedResources();
             _workingDirectory = TfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType);
-            return ConfigurationReaderHelper.Read(Path.Combine(_workingDirectory, ConfigurationFileName)); ;
+            var configuration = ConfigurationReaderHelper.Read(Path.Combine(_workingDirectory, ConfigurationFileName));
+            if (configuration == null)
+            {
+                return new Mapping[0];
+            }
+            return configuration.Mappings;
         }
-
       
         public string WorkingDirectory
         {
