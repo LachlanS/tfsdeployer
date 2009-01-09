@@ -19,11 +19,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
-using System.IO;
 
 namespace TfsDeployer
 {
@@ -33,7 +30,6 @@ namespace TfsDeployer
     public static class SourceCodeControlHelper
     {
 
-        
         public static void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
         {
             var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
@@ -42,28 +38,12 @@ namespace TfsDeployer
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from Source code control. RootFolder:{0}, Workspace Directory:{1}", serverPath, localPath);
             try
             {
-
                 Workspace workspace = GetWorkspace(serverPath, versionControlServer, workspaceName, localPath);
                 workspace.Get(filesToRetrieve, GetOptions.Overwrite);
             }
             finally
             {
                 RemoveWorkspace(workspaceName, versionControlServer);
-            }
-        }
-
-        
-        public static void RemoveWorkspaceDirectory(string workspaceDirectory)
-        {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Removing Workspace Directory {0}", workspaceDirectory);
-            if (Directory.Exists(workspaceDirectory))
-            {
-                string[] files = System.IO.Directory.GetFiles(workspaceDirectory, "*.*", SearchOption.AllDirectories);
-                foreach (string file in files)
-                {
-                    File.SetAttributes(file, FileAttributes.Normal);
-                }
-                Directory.Delete(workspaceDirectory, true);
             }
         }
 
@@ -85,21 +65,10 @@ namespace TfsDeployer
             return workspace;
         }
 
-        public static string GetWorkspaceName()
+        private static string GetWorkspaceName()
         {
-            string workspaceName = string.Format("{0}", Guid.NewGuid());
-            return workspaceName;
+            return Guid.NewGuid().ToString();
         }
 
-        public static string GetWorkspaceDirectory(string workspaceName)
-        {
-            string workingDirectory = Path.Combine(Path.GetTempPath(), workspaceName);
-            if (!Directory.Exists(workingDirectory))
-            {
-                Directory.CreateDirectory(workingDirectory);
-            }
-            return workingDirectory;
-        }
-          
     }
 }

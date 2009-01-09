@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SerializedDeploymentMappings.resx</DependentUpon>
     </Compile>
+    <Compile Include="WorkingDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PowerShellScripts.resx">

@@ -129,6 +129,7 @@
     <Compile Include="BuildDetailToBuildDataAdapter.cs" />
     <Compile Include="IMappingEvaluator.cs" />
     <Compile Include="IRunnerProvider.cs" />
+    <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="MappingEvaluator.cs" />
     <Compile Include="RunnerProvider.cs" />
     <Compile Include="TfsBuildStatusTrigger.cs" />
@@ -154,6 +155,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TraceSwitches.cs" />
+    <Compile Include="WorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

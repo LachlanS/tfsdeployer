@@ -31,8 +31,6 @@ namespace TfsDeployer
 {
     internal class Deployer
     {
-        private static readonly object _lock = new object();
-
         private readonly IRunnerProvider _runnerProvider;
         private readonly IConfigurationReader _configurationReader;
         private readonly IAlert _alerter;
@@ -54,45 +52,38 @@ namespace TfsDeployer
 
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
         {
-            // this prevents deployment folder corruption until the code uses a new folder per event
-            // but doesn't fix the "build types without deployment configured can be deployed" bug.
-            lock (_lock)
-            {
-                ExecuteDeploymentProcessWorker(statusChanged);
-            }
-        }
-
-        private void ExecuteDeploymentProcessWorker(BuildStatusChangeEvent statusChanged)
-        {
             try
             {
                 TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                                              "Build Status Changed: Team Project {0}  Team Build Version: {1} From {2} : {3}",
-                                             statusChanged.TeamProject, 
+                                             statusChanged.TeamProject,
                                              statusChanged.Id,
-                                             statusChanged.StatusChange.OldValue, 
+                                             statusChanged.StatusChange.OldValue,
                                              statusChanged.StatusChange.NewValue);
 
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
-                var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data);
-
-                foreach (var mapping in mappings)
+                using (var workingDirectory = new WorkingDirectory())
                 {
-                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                 "Processing Mapping: Computer:{0}, Script:{1}", 
-                                                 mapping.Computer,
-                                                 mapping.Script);
+                    var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory);
 
-                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
+                    foreach (var mapping in mappings)
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                     "Matching mapping found, running script {0}", 
+                                                     "Processing Mapping: Computer:{0}, Script:{1}",
+                                                     mapping.Computer,
                                                      mapping.Script);
 
-                        IRunner runner = _runnerProvider.GetRunner(mapping);
-                        runner.Execute(_configurationReader.WorkingDirectory, mapping, info);
-                        ApplyRetainBuild(mapping, runner, info.Detail);
-                        _alerter.Alert(mapping, info.Data, runner);
+                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
+                        {
+                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                         "Matching mapping found, running script {0}",
+                                                         mapping.Script);
+
+                            IRunner runner = _runnerProvider.GetRunner(mapping);
+                            runner.Execute(workingDirectory.DirectoryInfo.FullName, mapping, info);
+                            ApplyRetainBuild(mapping, runner, info.Detail);
+                            _alerter.Alert(mapping, info.Data, runner);
+                        }
                     }
                 }
             }

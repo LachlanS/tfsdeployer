@@ -24,10 +24,6 @@ namespace TfsDeployer.Configuration
 {
     public interface IConfigurationReader
     {
-        IEnumerable<Mapping> ReadMappings(string teamProject, IBuildData teamBuild);
-        string WorkingDirectory
-        {
-            get;
-        }
+        IEnumerable<Mapping> ReadMappings(string teamProject, IBuildData teamBuild, IWorkingDirectory workingDirectory);
     }
 }
