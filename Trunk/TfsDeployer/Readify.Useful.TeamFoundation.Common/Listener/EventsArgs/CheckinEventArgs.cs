@@ -8,8 +8,8 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 {
     public class CheckinEventArgs:NotificationEventArgs<CheckinEvent>
     {
-        public CheckinEventArgs(CheckinEvent eventRecieved, TFSIdentity identity)
-            : base(eventRecieved, identity)
+        public CheckinEventArgs(CheckinEvent eventReceived, TFSIdentity identity)
+            : base(eventReceived, identity)
         {
         }
     }
