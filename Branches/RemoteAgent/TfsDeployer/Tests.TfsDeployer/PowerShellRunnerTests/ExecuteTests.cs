@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer.DeployAgent;
 using System.IO;
+using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.PowerShellRunnerTests
 {
@@ -31,7 +32,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
                                       DeployScriptFile = TestScriptFileName,
                                       DeployScriptRoot = TestDirectory,
                                       DeployScriptParameters = new List<DeployScriptParameter>(),
-                                      Tfs2008BuildDetail = new StubBuildDetail()
+                                      Tfs2008BuildDetail = new BuildDetail()
                                   };
 
             var psAgent = new LocalPowerShellDeployAgent();

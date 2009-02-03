@@ -1,13 +1,12 @@
 ﻿using System;
-using Microsoft.TeamFoundation.Build.Client;
 
 namespace TfsDeployer.TeamFoundation
 {
     public class BuildDetailToBuildDataAdapter : IBuildData
     {
-        private readonly IBuildDetail _detail;
+        private readonly BuildDetail _detail;
 
-        public BuildDetailToBuildDataAdapter(IBuildDetail buildDetail)
+        public BuildDetailToBuildDataAdapter(BuildDetail buildDetail)
         {
             if (null == buildDetail) throw new ArgumentNullException("buildDetail");
             _detail = buildDetail;
@@ -67,7 +66,7 @@ namespace TfsDeployer.TeamFoundation
         {
             get
             {
-                return _detail.Status == Microsoft.TeamFoundation.Build.Client.BuildStatus.Succeeded;
+                return _detail.Status == TeamFoundation.BuildStatus.Succeeded;
             }
         }
 

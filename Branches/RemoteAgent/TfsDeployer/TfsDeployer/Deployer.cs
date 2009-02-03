@@ -27,6 +27,8 @@ using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.Notifier;
+using TfsDeployer.TeamFoundation;
+using BuildStatus=TfsDeployer.TeamFoundation.BuildStatus;
 
 namespace TfsDeployer
 {
@@ -62,7 +64,8 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.OldValue,
                                              statusChanged.StatusChange.NewValue);
 
-                var info = new BuildInformation(GetBuildDetail(statusChanged));
+                var tfsDetail = GetTfsBuildDetail(statusChanged);
+                var info = new BuildInformation(GetBuildDetail(tfsDetail));
                 using (var workingDirectory = new WorkingDirectory())
                 {
                     var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory);
@@ -85,7 +88,7 @@ namespace TfsDeployer
                             var deployData = CreateDeployAgentData(workingDirectory.DirectoryInfo.FullName, mapping, info);
                             var deployResult = deployAgent.Deploy(deployData);
 
-                            ApplyRetainBuild(mapping, deployResult, info.Detail);
+                            ApplyRetainBuild(mapping, deployResult, tfsDetail);
                             _alerter.Alert(mapping, info.Data, deployResult);
                         }
                     }
@@ -133,11 +136,40 @@ namespace TfsDeployer
             detail.Save();
         }
 
-        private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
+        private static IBuildDetail GetTfsBuildDetail(BuildStatusChangeEvent statusChanged)
         {
             var buildServer = ServiceHelper.GetService<IBuildServer>();
             var buildSpec = buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
-            var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            var tfsDetail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            return tfsDetail;
+        }
+
+        private static BuildDetail GetBuildDetail(IBuildDetail tfsDetail)
+        {
+            var detail = new BuildDetail
+                             {
+                                 BuildAgent = new BuildAgent
+                                                  {
+                                                      MachineName = tfsDetail.BuildAgent.MachineName
+                                                  },
+                                 BuildDefinition = new BuildDefinition
+                                                       {
+                                                           Name = tfsDetail.BuildDefinition.Name,
+                                                           TeamProject = tfsDetail.BuildDefinition.TeamProject
+                                                       },
+                                 BuildDefinitionUri = tfsDetail.BuildDefinitionUri,
+                                 BuildNumber = tfsDetail.BuildNumber,
+                                 DropLocation = tfsDetail.DropLocation,
+                                 FinishTime = tfsDetail.FinishTime,
+                                 LastChangedBy = tfsDetail.LastChangedBy,
+                                 LastChangedOn = tfsDetail.LastChangedOn,
+                                 LogLocation = tfsDetail.LogLocation,
+                                 Quality = tfsDetail.Quality,
+                                 RequestedBy = tfsDetail.RequestedBy,
+                                 StartTime = tfsDetail.StartTime,
+                                 Status = (BuildStatus)Enum.Parse(typeof(BuildStatus), tfsDetail.Status.ToString()),
+                                 Uri = tfsDetail.Uri
+                             };
             return detail;
         }
     }

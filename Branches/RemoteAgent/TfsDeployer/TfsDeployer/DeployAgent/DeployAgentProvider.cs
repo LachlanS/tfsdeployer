@@ -7,7 +7,7 @@
             IDeployAgent agent;
             if (mapping.RunnerType == RunnerType.BatchFile)
             {
-                agent = new BatchFileDeployAgent();
+                agent = new BatchFileDeployAgent(new TraceSwitchLog(TraceSwitches.TfsDeployer));
             }
             else
             {

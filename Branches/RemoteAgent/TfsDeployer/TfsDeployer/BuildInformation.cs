@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.TeamFoundation.Build.Client;
 using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
@@ -7,9 +6,9 @@ namespace TfsDeployer
     public class BuildInformation
     {
         private IBuildData _data;
-        private IBuildDetail _detail;
+        private BuildDetail _detail;
 
-        public BuildInformation(IBuildDetail buildDetail)
+        public BuildInformation(BuildDetail buildDetail)
         {
             if (null == buildDetail) throw new ArgumentNullException("buildDetail");
             _detail = buildDetail;
@@ -21,7 +20,7 @@ namespace TfsDeployer
             get { return _data; }
         }
 
-        public IBuildDetail Detail
+        public BuildDetail Detail
         {
             get { return _detail; }
         }

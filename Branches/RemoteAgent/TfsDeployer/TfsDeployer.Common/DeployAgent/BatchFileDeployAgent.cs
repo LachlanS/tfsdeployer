@@ -1,12 +1,18 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer.DeployAgent
 {
     public class BatchFileDeployAgent : IDeployAgent
     {
+        private ILog _log;
+
+        public BatchFileDeployAgent(ILog log)
+        {
+            _log = log;
+        }
+
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var errorOccurred = true;
@@ -16,7 +22,7 @@ namespace TfsDeployer.DeployAgent
 
             if (!File.Exists(scriptToRun))
             {
-                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "BatchRunner - Could not find script: {0}", scriptToRun);
+                _log.Warning("BatchRunner - Could not find script: {0}", scriptToRun);
                 output = string.Format("BatchRunner - Could not find script: {0}", scriptToRun);
             }
             else
@@ -29,13 +35,13 @@ namespace TfsDeployer.DeployAgent
                 psi.WorkingDirectory = deployAgentData.DeployScriptRoot;
                 psi.Arguments = CreateArguments(deployAgentData);
 
-                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
+                _log.Information("BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
 
                 // Start the process
                 var proc = Process.Start(psi);
                 if (proc == null)
                 {
-                    TraceHelper.TraceError(TraceSwitches.TfsDeployer, "Process.Start(...) returned null");
+                    _log.Error("Process.Start(...) returned null");
                 }
                 else 
                 {
@@ -44,7 +50,7 @@ namespace TfsDeployer.DeployAgent
                     {
                         proc.WaitForExit();
                         output = sOut.ReadToEnd().Trim();
-                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", output);
+                        _log.Information("BatchRunner - Output From Command: {0}", output);
                     }
 
                     errorOccurred = false;

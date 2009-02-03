@@ -1,24 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Readify.Useful.TeamFoundation.Common.Properties;
 using System.ServiceModel;
-using Microsoft.TeamFoundation.VersionControl.Common;
-using System.ServiceModel.Description;
 using System.Xml;
-using Readify.Useful.TeamFoundation.Common;
 using System.Diagnostics;
 
 namespace Readify.Useful.TeamFoundation.Common.Listener
 {
     
-    
-
     internal class TfsEventListener<T>:NotificationServiceType<T>,ITfsEventListener where T : new()
     {
-        TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
-        public static event EventHandler<NotificationEventArgs<T>> NotificationReceived;
+        readonly TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
         internal delegate void OnNotificationEventReceived(T eventRaised, TFSIdentity identity);
         private static OnNotificationEventReceived _onNotificationDelegate;
 	    public static OnNotificationEventReceived NotificationDelegate
@@ -27,10 +19,6 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
           set { _onNotificationDelegate = value;}
 	    }
     	
-        internal TfsEventListener()
-        { 
-        }
-        
         NotificationServiceHost<T> _host;
         public NotificationServiceHost<T> Host
         {
@@ -76,18 +64,11 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
         /// Add the endpoint for the checkin event to the host.
         /// </summary>
         /// <param name="host"></param>
-        /// <param name="binding"></param>
         private void AddHostEndpoint(NotificationServiceHost<T> host)
         {
-
             BasicHttpBinding binding = CreateHostBinding();
 
-            ServiceEndpoint endPoint = host.AddServiceEndpoint(
-                typeof(INotificationService),
-                binding,
-                typeof(T).Name
-                );
-
+            host.AddServiceEndpoint(typeof(INotificationService), binding, typeof(T).Name);
         }
 
         /// <summary>
@@ -121,11 +102,11 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
             NotificationServiceHost<T> host;
             if (!String.IsNullOrEmpty(Settings.Default.RegistrationUserName))
             {
-                host = new NotificationServiceHost<T>(this.GetType(), baseAddress, Settings.Default.RegistrationUserName);
+                host = new NotificationServiceHost<T>(GetType(), baseAddress, Settings.Default.RegistrationUserName);
             }
             else
             {
-                host = new NotificationServiceHost<T>(this.GetType(), baseAddress);
+                host = new NotificationServiceHost<T>(GetType(), baseAddress);
             }
             AddHostEndpoint(host);
             return host;

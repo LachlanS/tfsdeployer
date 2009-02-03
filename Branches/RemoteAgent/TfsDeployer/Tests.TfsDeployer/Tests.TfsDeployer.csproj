@@ -92,6 +92,10 @@
       <Project>{7FEC9CED-38BA-4AA5-8270-CCA02AEA55EE}</Project>
       <Name>Readify.Useful.TeamFoundation.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.Common\TfsDeployer.Common.csproj">
+      <Project>{B6E1184F-970A-4277-9A93-C8C02072FC94}</Project>
+      <Name>TfsDeployer.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TfsDeployer\TfsDeployer.csproj">
       <Project>{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}</Project>
       <Name>TfsDeployer</Name>
