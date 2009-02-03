@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer.DeployAgent;
-using TfsDeployer.Runner;
 using System.IO;
 
 namespace Tests.TfsDeployer.PowerShellRunnerTests
@@ -25,35 +24,29 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
                 writer.Write(PowerShellScripts.FailingPowerShellScript);
             }
 
-            var TestMapping = new Mapping
+            var TestDeployData = new DeployAgentData
                                   {
-                                      Computer = Environment.MachineName,
                                       NewQuality = "Released",
                                       OriginalQuality = null,
-                                      Script = TestScriptFileName,
-                                      ScriptParameters = new List<ScriptParameter>()
+                                      DeployScriptFile = TestScriptFileName,
+                                      DeployScriptRoot = TestDirectory,
+                                      DeployScriptParameters = new List<DeployScriptParameter>(),
+                                      Tfs2008BuildDetail = new StubBuildDetail()
                                   };
 
-            var TestBuildDetail = new StubBuildDetail();
-
-            var TestBuildInfo = new global::TfsDeployer.BuildInformation(TestBuildDetail);
-
-
-            IRunner pr = new RunnerToDeployAgentAdapter(new LocalPowerShellDeployAgent());
-            bool result;
+            var psAgent = new LocalPowerShellDeployAgent();
+            DeployAgentResult result;
             try
             {
-                result = pr.Execute(TestDirectory, TestMapping, TestBuildInfo);
+                result = psAgent.Deploy(TestDeployData);
             }
             finally
             {
                 ScriptFile.Delete();
             }
 
-            Assert.IsTrue(result, "bool IRunnerExecute( , , )");
-            Assert.IsTrue(pr.ErrorOccurred, "IRunner.ErrorOccurred");
-            StringAssert.Contains(pr.Output, "<<<<", "IRunner.Output"); // <<<< is pointer to error position
-
+            Assert.IsTrue(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "<<<<", "Output"); // <<<< is pointer to error position
         }
 
         [TestMethod]

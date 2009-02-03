@@ -19,18 +19,19 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Management.Automation.Host;
 using System.Threading;
 using System.Globalization;
 using System.Reflection;
 
-namespace TfsDeployer.Runner
+namespace TfsDeployer.DeployAgent
 {
     public class DeploymentHost : PSHost
     {
-        public DeploymentHost(DeploymentHostUI ui)
+        private Guid _instanceId = Guid.Empty;
+        private readonly PSHostUserInterface _ui;
+
+        public DeploymentHost(PSHostUserInterface ui)
         {
             _ui = ui;
         }
@@ -53,18 +54,16 @@ namespace TfsDeployer.Runner
         {
         }
 
-        private Guid m_InstanceId = Guid.Empty;
-
         public override Guid InstanceId
         {
             get
             {
-                if (this.m_InstanceId == Guid.Empty)
+                if (_instanceId == Guid.Empty)
                 {
-                    this.m_InstanceId = Guid.NewGuid();
+                    _instanceId = Guid.NewGuid();
                 }
 
-                return this.m_InstanceId;
+                return _instanceId;
             }
         }
 
@@ -85,7 +84,6 @@ namespace TfsDeployer.Runner
         {
         }
 
-        private PSHostUserInterface _ui = null;
         public override PSHostUserInterface UI
         {
             get { return _ui; }

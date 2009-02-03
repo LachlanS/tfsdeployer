@@ -117,8 +117,9 @@
     <Compile Include="Configuration\TfsConfigReader.cs" />
     <Compile Include="Configuration\TfsHelper.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
+    <Compile Include="DeployAgent\DeployAgentProvider.cs" />
+    <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
-    <Compile Include="DeployAgent\RunnerToDeployAgentAdapter.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="Encrypter.cs">
@@ -127,21 +128,18 @@
     <Compile Include="IBuildData.cs" />
     <Compile Include="BuildDetailToBuildDataAdapter.cs" />
     <Compile Include="IMappingEvaluator.cs" />
-    <Compile Include="IRunnerProvider.cs" />
     <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="MappingEvaluator.cs" />
-    <Compile Include="RunnerProvider.cs" />
     <Compile Include="DeployAgent\DeployAgentData.cs" />
     <Compile Include="DeployAgent\DeployAgentResult.cs" />
-    <Compile Include="DeployAgent\DeployScriptParameters.cs" />
+    <Compile Include="DeployAgent\DeployScriptParameter.cs" />
     <Compile Include="DeployAgent\IDeployAgent.cs" />
     <Compile Include="TfsBuildStatusTrigger.cs" />
     <Compile Include="Program.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runner\DeploymentHost.cs" />
-    <Compile Include="Runner\DeploymentHostUI.cs" />
-    <Compile Include="Runner\IRunner.cs" />
+    <Compile Include="DeployAgent\DeploymentHost.cs" />
+    <Compile Include="DeployAgent\DeploymentHostUI.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

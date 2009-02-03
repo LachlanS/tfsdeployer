@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Management.Automation.Host;
 
-namespace TfsDeployer.Runner
+namespace TfsDeployer.DeployAgent
 {
     public class DeploymentHostUI : PSHostUserInterface
     {
-        private StringBuilder _log = new StringBuilder();
+        private readonly StringBuilder _log = new StringBuilder();
 
         public string ReadLog()
         {

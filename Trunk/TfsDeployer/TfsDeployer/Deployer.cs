@@ -19,32 +19,33 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
+using TfsDeployer.DeployAgent;
 using TfsDeployer.Notifier;
-using TfsDeployer.Runner;
 
 namespace TfsDeployer
 {
     internal class Deployer
     {
-        private readonly IRunnerProvider _runnerProvider;
+        private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IConfigurationReader _configurationReader;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
 
         public Deployer()
-            : this(new RunnerProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
+            : this(new DeployAgentProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
         {
         }
 
-        public Deployer(IRunnerProvider runnerProvider, IConfigurationReader reader, IAlert alert,
+        public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IAlert alert,
                         IMappingEvaluator mappingEvaluator)
         {
-            _runnerProvider = runnerProvider;
+            _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
@@ -79,10 +80,13 @@ namespace TfsDeployer
                                                          "Matching mapping found, running script {0}",
                                                          mapping.Script);
 
-                            IRunner runner = _runnerProvider.GetRunner(mapping);
-                            runner.Execute(workingDirectory.DirectoryInfo.FullName, mapping, info);
-                            ApplyRetainBuild(mapping, runner, info.Detail);
-                            _alerter.Alert(mapping, info.Data, runner);
+                            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+
+                            var deployData = CreateDeployAgentData(workingDirectory.DirectoryInfo.FullName, mapping, info);
+                            var deployResult = deployAgent.Deploy(deployData);
+
+                            ApplyRetainBuild(mapping, deployResult, info.Detail);
+                            _alerter.Alert(mapping, info.Data, deployResult);
                         }
                     }
                 }
@@ -93,10 +97,36 @@ namespace TfsDeployer
             }
         }
 
-        private static void ApplyRetainBuild(Mapping mapping, IRunner runner, IBuildDetail detail)
+        private static DeployAgentData CreateDeployAgentData(string directory, Mapping mapping, BuildInformation buildInfo)
+        {
+            var data = new DeployAgentData
+                           {
+                               NewQuality = mapping.NewQuality,
+                               OriginalQuality = mapping.OriginalQuality,
+                               DeployServer = mapping.Computer,
+                               DeployScriptFile = mapping.Script,
+                               DeployScriptRoot = directory,
+                               DeployScriptParameters = CreateParameters(mapping.ScriptParameters),
+                               Tfs2005BuildData = buildInfo.Data,
+                               Tfs2008BuildDetail = buildInfo.Detail
+                           };
+            return data;
+        }
+
+        private static ICollection<DeployScriptParameter> CreateParameters(IEnumerable<ScriptParameter> parameters)
+        {
+            var collection = new List<DeployScriptParameter>();
+            foreach (var p in parameters)
+            {
+                collection.Add(new DeployScriptParameter { Name = p.name, Value = p.value });
+            }
+            return collection;
+        }
+
+        private static void ApplyRetainBuild(Mapping mapping, DeployAgentResult deployAgentResult, IBuildDetail detail)
         {
             if (!mapping.RetainBuildSpecified) return;
-            if (runner.ErrorOccurred) return;
+            if (deployAgentResult.HasErrors) return;
             if (detail.KeepForever == mapping.RetainBuild) return;
 
             detail.KeepForever = mapping.RetainBuild;

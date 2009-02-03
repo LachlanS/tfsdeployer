@@ -18,16 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.TeamFoundation.Build.Proxy;
-using TfsDeployer.Runner;
+using TfsDeployer.DeployAgent;
 
 namespace TfsDeployer.Notifier
 {
     internal interface IAlert
     {
-        void Alert(Mapping mapping, IBuildData build, IRunner runner);
+        void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult);
     }
 }

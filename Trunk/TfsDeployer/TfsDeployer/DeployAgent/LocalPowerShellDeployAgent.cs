@@ -24,7 +24,6 @@ using System.Text;
 using System.Management.Automation.Runspaces;
 using System.IO;
 using System.Management.Automation;
-using TfsDeployer.Runner;
 
 namespace TfsDeployer.DeployAgent
 {
