@@ -7,11 +7,16 @@ namespace TfsDeployer
     {
         public IRunner GetRunner(Mapping map)
         {
+            IDeployAgent agent;
             if (map.RunnerType == RunnerType.BatchFile)
             {
-                return new BatchFileRunner();
+                agent = new BatchFileDeployAgent();
             }
-            return new RunnerToDeployAgentAdapter(new LocalPowerShellDeployAgent());
+            else
+            {
+                agent = new LocalPowerShellDeployAgent();
+            }
+            return new RunnerToDeployAgentAdapter(agent);
         }
     }
 }

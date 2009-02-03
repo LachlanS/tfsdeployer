@@ -116,6 +116,7 @@
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\TfsConfigReader.cs" />
     <Compile Include="Configuration\TfsHelper.cs" />
+    <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
     <Compile Include="DeployAgent\RunnerToDeployAgentAdapter.cs" />
     <Compile Include="Deployer.cs" />
@@ -138,7 +139,6 @@
     <Compile Include="Program.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runner\BatchFileRunner.cs" />
     <Compile Include="Runner\DeploymentHost.cs" />
     <Compile Include="Runner\DeploymentHostUI.cs" />
     <Compile Include="Runner\IRunner.cs" />
