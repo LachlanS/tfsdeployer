@@ -25,6 +25,7 @@ using TfsDeployer.Notifier;
 using System.Net.Mail;
 using TfsDeployer.Properties;
 using Readify.Useful.TeamFoundation.Common;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Alert
 {

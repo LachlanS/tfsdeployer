@@ -125,8 +125,8 @@
     <Compile Include="Encrypter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IBuildData.cs" />
-    <Compile Include="BuildDetailToBuildDataAdapter.cs" />
+    <Compile Include="TeamFoundation\IBuildData.cs" />
+    <Compile Include="TeamFoundation\BuildDetailToBuildDataAdapter.cs" />
     <Compile Include="IMappingEvaluator.cs" />
     <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="MappingEvaluator.cs" />

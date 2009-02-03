@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.TeamFoundation.Build.Client;
 
-namespace TfsDeployer
+namespace TfsDeployer.TeamFoundation
 {
     public class BuildDetailToBuildDataAdapter : IBuildData
     {
-        private IBuildDetail _detail;
+        private readonly IBuildDetail _detail;
 
         public BuildDetailToBuildDataAdapter(IBuildDetail buildDetail)
         {

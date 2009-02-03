@@ -21,6 +21,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Readify.Useful.TeamFoundation.Common;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Configuration
 {

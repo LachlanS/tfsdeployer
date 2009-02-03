@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 using TfsDeployer.DeployAgent;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Notifier
 {

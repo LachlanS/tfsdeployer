@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.TeamFoundation.Build.Client;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.DeployAgent
 {

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TfsDeployer
+namespace TfsDeployer.TeamFoundation
 {
     /// <summary>
     /// Based on obsolete Microsoft.TeamFoundation.Build.Proxy.BuildData.

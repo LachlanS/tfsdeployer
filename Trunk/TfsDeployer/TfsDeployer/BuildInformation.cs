@@ -1,5 +1,7 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
-using System;
+﻿using System;
+using Microsoft.TeamFoundation.Build.Client;
+using TfsDeployer.TeamFoundation;
+
 namespace TfsDeployer
 {
     public class BuildInformation

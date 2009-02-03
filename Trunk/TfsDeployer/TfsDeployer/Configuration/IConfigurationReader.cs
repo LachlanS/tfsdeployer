@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Configuration
 {
