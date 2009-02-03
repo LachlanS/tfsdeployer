@@ -116,6 +116,8 @@
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\TfsConfigReader.cs" />
     <Compile Include="Configuration\TfsHelper.cs" />
+    <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
+    <Compile Include="DeployAgent\RunnerToDeployAgentAdapter.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="Encrypter.cs">
@@ -128,6 +130,10 @@
     <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="MappingEvaluator.cs" />
     <Compile Include="RunnerProvider.cs" />
+    <Compile Include="DeployAgent\DeployAgentData.cs" />
+    <Compile Include="DeployAgent\DeployAgentResult.cs" />
+    <Compile Include="DeployAgent\DeployScriptParameters.cs" />
+    <Compile Include="DeployAgent\IDeployAgent.cs" />
     <Compile Include="TfsBuildStatusTrigger.cs" />
     <Compile Include="Program.cs">
     </Compile>
@@ -136,7 +142,6 @@
     <Compile Include="Runner\DeploymentHost.cs" />
     <Compile Include="Runner\DeploymentHostUI.cs" />
     <Compile Include="Runner\IRunner.cs" />
-    <Compile Include="Runner\PowerShellRunner.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

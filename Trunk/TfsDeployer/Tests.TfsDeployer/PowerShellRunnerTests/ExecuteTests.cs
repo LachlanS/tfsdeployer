@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TfsDeployer.DeployAgent;
 using TfsDeployer.Runner;
 using System.IO;
 
@@ -25,21 +25,21 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
                 writer.Write(PowerShellScripts.FailingPowerShellScript);
             }
 
-            var TestMapping = new Mapping() 
-            {
-                Computer = Environment.MachineName,
-                NewQuality = "Released",
-                OriginalQuality = null,
-                Script = TestScriptFileName,
-                ScriptParameters = new List<ScriptParameter>()
-            };
+            var TestMapping = new Mapping
+                                  {
+                                      Computer = Environment.MachineName,
+                                      NewQuality = "Released",
+                                      OriginalQuality = null,
+                                      Script = TestScriptFileName,
+                                      ScriptParameters = new List<ScriptParameter>()
+                                  };
 
             var TestBuildDetail = new StubBuildDetail();
 
             var TestBuildInfo = new global::TfsDeployer.BuildInformation(TestBuildDetail);
 
 
-            IRunner pr = new PowerShellRunner();
+            IRunner pr = new RunnerToDeployAgentAdapter(new LocalPowerShellDeployAgent());
             bool result;
             try
             {
@@ -59,7 +59,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         [TestMethod]
         public void ShouldReturnValueOfEnvironmentVariable()
         {
-            var pr = new PowerShellRunner();
+            var pr = new LocalPowerShellDeployAgent();
             pr.ExecuteCommand("$Env:TEMP", null);
 
             Assert.IsFalse(pr.ErrorOccurred, "ErrorOccurred");
@@ -69,7 +69,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         [TestMethod]
         public void ShouldReturnFormattedObjects()
         {
-            var pr = new PowerShellRunner();
+            var pr = new LocalPowerShellDeployAgent();
             pr.ExecuteCommand("Get-ChildItem Env:", null);
 
             Assert.IsFalse(pr.ErrorOccurred, "ErrorOccurred");

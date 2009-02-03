@@ -18,29 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.TeamFoundation.Build.Proxy;
-
 namespace TfsDeployer.Runner
 {
     public interface IRunner
     {
         bool Execute(string directory, Mapping mapToRun, BuildInformation buildInfo);
-        string Output
-        {
-            get;
-        }
-
-        bool ErrorOccurred
-        {
-            get;
-        }
-
-        string ScriptRun
-        {
-            get;
-        }
+        string Output { get; }
+        bool ErrorOccurred { get; }
+        string ScriptRun { get; }
     }
 }

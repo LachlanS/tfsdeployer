@@ -1,3 +1,4 @@
+using TfsDeployer.DeployAgent;
 using TfsDeployer.Runner;
 
 namespace TfsDeployer
@@ -10,7 +11,7 @@ namespace TfsDeployer
             {
                 return new BatchFileRunner();
             }
-            return new PowerShellRunner();
+            return new RunnerToDeployAgentAdapter(new LocalPowerShellDeployAgent());
         }
     }
 }
