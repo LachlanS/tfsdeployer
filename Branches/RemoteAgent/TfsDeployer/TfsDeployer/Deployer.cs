@@ -66,7 +66,7 @@ namespace TfsDeployer
 
                 var tfsDetail = GetTfsBuildDetail(statusChanged);
                 var info = new BuildInformation(GetBuildDetail(tfsDetail));
-                using (var workingDirectory = new WorkingDirectory())
+                using (var workingDirectory = new WorkingDirectory(new TraceSwitchLog(TraceSwitches.TfsDeployer)))
                 {
                     var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory);
 

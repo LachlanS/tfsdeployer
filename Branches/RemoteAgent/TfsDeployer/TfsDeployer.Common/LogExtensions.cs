@@ -1,3 +1,5 @@
+using System;
+
 namespace TfsDeployer
 {
     public static class LogExtensions
@@ -6,9 +8,15 @@ namespace TfsDeployer
         {
             log.Information(string.Format(format, args));
         }
+        
         public static void Warning(this ILog log, string format, params object[] args)
         {
             log.Warning(string.Format(format, args));
+        }
+        
+        public static void Error(this ILog log, Exception ex)
+        {
+            log.Error(ex.ToString());
         }
     }
 }

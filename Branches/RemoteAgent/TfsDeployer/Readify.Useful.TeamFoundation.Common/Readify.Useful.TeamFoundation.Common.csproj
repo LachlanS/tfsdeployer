@@ -103,7 +103,6 @@
     <Compile Include="Listener\ITfsListener.cs" />
     <Compile Include="Listener\TfsEventListener.cs" />
     <Compile Include="Listener\TfsListener.cs" />
-    <Compile Include="Listener\TfsListenerFactory.cs" />
     <Compile Include="Notification\BuildCompletionEvent.cs" />
     <Compile Include="Notification\BuildStatusChangeEvent.cs" />
     <Compile Include="Notification\Change.cs" />

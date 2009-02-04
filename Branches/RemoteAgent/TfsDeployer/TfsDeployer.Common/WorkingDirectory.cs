@@ -1,15 +1,16 @@
 using System;
 using System.IO;
-using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
     public class WorkingDirectory : IWorkingDirectory
     {
         private readonly DirectoryInfo _info;
+        private readonly ILog _log;
 
-        public WorkingDirectory()
+        public WorkingDirectory(ILog log)
         {
+            _log = log;
             var tempRoot = Path.GetTempPath();
             _info = new DirectoryInfo(Path.Combine(tempRoot, Guid.NewGuid().ToString()));
             _info.Create();
@@ -33,7 +34,7 @@ namespace TfsDeployer
             }
             catch (IOException ex)
             {
-                TraceHelper.TraceError(TraceSwitches.TfsDeployer, ex);
+                _log.Error(ex);
             }
         }
 

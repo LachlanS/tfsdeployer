@@ -41,6 +41,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -58,6 +61,7 @@
     <Compile Include="DeployAgent\DeploymentHostUI.cs" />
     <Compile Include="DeployAgent\DeployScriptParameter.cs" />
     <Compile Include="ILog.cs" />
+    <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="LogExtensions.cs" />
     <Compile Include="TeamFoundation\BuildAgent.cs" />
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
@@ -69,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamFoundation\IBuildData.cs" />
     <Compile Include="TraceSwitchLog.cs" />
+    <Compile Include="WorkingDirectory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

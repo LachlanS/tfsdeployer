@@ -10,7 +10,7 @@ namespace Tests.TfsDeployer
         [TestMethod]
         public void Should_return_empty_folder()
         {
-            using (var workingDirectory = new WorkingDirectory())
+            using (var workingDirectory = new WorkingDirectory(new AssertLog()))
             {
                 var childCount = workingDirectory.DirectoryInfo.GetFileSystemInfos().Length;
                 Assert.AreEqual(0, childCount);
@@ -21,7 +21,7 @@ namespace Tests.TfsDeployer
         public void Should_remove_folder_and_nested_readonly_contents_after_dispose()
         {
             DirectoryInfo info;
-            using (var workingDirectory = new WorkingDirectory())
+            using (var workingDirectory = new WorkingDirectory(new AssertLog()))
             {
                 info = workingDirectory.DirectoryInfo;
                 var subDir = new DirectoryInfo(Path.Combine(info.FullName, "subDir"));

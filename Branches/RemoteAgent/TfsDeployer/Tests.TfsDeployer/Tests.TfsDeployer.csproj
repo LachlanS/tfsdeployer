@@ -53,6 +53,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertLog.cs" />
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />
