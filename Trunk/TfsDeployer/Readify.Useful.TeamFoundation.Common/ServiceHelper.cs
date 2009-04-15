@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.TeamFoundation.Server;
 using Microsoft.TeamFoundation.Client;
-using Readify.Useful.TeamFoundation.Common;
 using System.Net;
 using System.IO;
 using System.Xml.Serialization;
-using System.Diagnostics;
 using System.Collections.ObjectModel;
 using Readify.Useful.TeamFoundation.Common.Properties;
 
@@ -24,13 +20,6 @@ namespace Readify.Useful.TeamFoundation.Common
 
         #region Get Service
         
-        /// <summary>
-        /// Get a Service from Team Foundation Server
-        /// </summary>
-        /// <typeparam name="T">The type of service to retrieve</typeparam>
-        /// <param name="userName">The user name to connect the server with</param>
-        /// <param name="password">the password to for the user</param>
-        /// <returns>The service requested or an expection is thrown</returns>
         public static T GetService<T>(string userName, string password, string domain)
         {
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "UserName: {0}", userName);
@@ -53,11 +42,8 @@ namespace Readify.Useful.TeamFoundation.Common
             {
                 return GetService<T>(CredentialCache.DefaultCredentials);
             }
-            else
-            {
-                return GetService<T>(Settings.Default.UserName, Settings.Default.Password, Settings.Default.Domain);
-            }
-
+            
+            return GetService<T>(Settings.Default.UserName, Settings.Default.Password, Settings.Default.Domain);
         }
 
         /// <summary>
@@ -79,7 +65,6 @@ namespace Readify.Useful.TeamFoundation.Common
         /// <returns></returns>
         private static T GetService<T>(ICredentials credentials)
         {
-         
             TempCredentials creds = new TempCredentials(credentials);
             string teamFoundationServerUrl = Settings.Default.TeamFoundationServerUrl;
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Connecting to server {0} To get service {1} ", teamFoundationServerUrl, typeof(T).ToString());
@@ -127,14 +112,10 @@ namespace Readify.Useful.TeamFoundation.Common
             return service.SubscribeEvent(userName, eventToSubscribeTo, filterExpression, preference);
         }
        
-        /// <summary>
-        /// Unsubscribe from this event. 
-        /// </summary>
-        /// <param name="subscriptionID"></param>
         public static void Unsubscribe(int subscriptionId)
         {
             IEventService service = GetService<IEventService>();
-            TraceHelper.TraceVerbose(Constants.CommonSwitch,"Unsubsribing event with id {0}",subscriptionId);
+            TraceHelper.TraceVerbose(Constants.CommonSwitch, "Unsubscribing event with id {0}", subscriptionId);
             service.UnsubscribeEvent(subscriptionId);
         }
 
