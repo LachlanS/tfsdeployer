@@ -158,9 +158,7 @@ namespace Readify.Useful.TeamFoundation.Common
         /// <returns></returns>
         public static T DeserializeEvent<T>(string eventXml)
         {
-
-            TraceHelper.TraceVerbose(Constants.CommonSwitch,"Deserializing Event of type {0} from XML:", typeof(T).ToString());
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, eventXml);
+            TraceHelper.TraceVerbose(Constants.CommonSwitch,"Deserializing Event of type {0} from XML:\n{1}", typeof(T), eventXml);
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             using (TextReader reader = new StringReader(eventXml)) 
             {

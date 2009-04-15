@@ -11,6 +11,9 @@ namespace TfsDeployer
         {
             var statusChange = triggerEvent.StatusChange;
 
+            bool isStatusUnchanged = string.Equals(statusChange.NewValue, statusChange.OldValue, StringComparison.InvariantCultureIgnoreCase);
+            if (isStatusUnchanged) return false;
+
             bool isComputerMatch = IsComputerMatch(mapping.Computer);
 
             string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
