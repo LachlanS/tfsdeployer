@@ -120,6 +120,7 @@
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
+    <Compile Include="DeployAgent\PowerShellExecutionPolicyBehaviour.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="Encrypter.cs">

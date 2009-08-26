@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace TfsDeployer.DeployAgent
@@ -31,6 +32,16 @@ namespace TfsDeployer.DeployAgent
     {
         private bool _errorOccurred = true;
         private string _output;
+
+        public LocalPowerShellDeployAgent()
+        {
+            ExecutionPolicyBehaviour = PowerShellExecutionPolicyBehaviour.SystemExecutionPolicy;
+        }
+
+        public PowerShellExecutionPolicyBehaviour ExecutionPolicyBehaviour
+        {
+            get; set;
+        }
 
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
@@ -89,6 +100,10 @@ namespace TfsDeployer.DeployAgent
                 var host = new DeploymentHost(ui);
                 using (var space = RunspaceFactory.CreateRunspace(host))
                 {
+                    if (ExecutionPolicyBehaviour == PowerShellExecutionPolicyBehaviour.Unrestricted)
+                    {
+                        InjectUnrestrictedAuthorizationPolicy(space.RunspaceConfiguration);
+                    }
                     space.Open();
 
                     if (null != variables)
@@ -129,6 +144,14 @@ namespace TfsDeployer.DeployAgent
             {
                 _output = ex.ToString();
             }
+        }
+
+        private static readonly FieldInfo _authorizationManagerField =
+            typeof (RunspaceConfiguration).GetField("_authorizationManager", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static void InjectUnrestrictedAuthorizationPolicy(RunspaceConfiguration configuration)
+        {
+            //HACK injecting into private fields is truly evil but PowerShell doesn't support alternatives at the moment.
+            _authorizationManagerField.SetValue(configuration, new AuthorizationManager(configuration.ShellId));
         }
 
         void PipelineStateChanged(object sender, PipelineStateEventArgs e)

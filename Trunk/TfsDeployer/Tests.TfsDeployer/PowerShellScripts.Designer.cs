@@ -61,6 +61,17 @@ namespace Tests.TfsDeployer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to echo [ZoneTransfer] &gt;%1:Zone.Identifier
+        ///echo ZoneId=3 &gt;&gt;%1:Zone.Identifier
+        ///.
+        /// </summary>
+        internal static string ApplyInternetZoneIdentifier {
+            get {
+                return ResourceManager.GetString("ApplyInternetZoneIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;Output this before failing&quot; ;
         ///$zero = 0; # if we use the literal directly in the devision PowerShell fails during parsing.
         ///&quot;Then fail: &quot; + (1/$zero) ;

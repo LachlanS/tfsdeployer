@@ -1,4 +1,6 @@
-﻿namespace TfsDeployer.DeployAgent
+﻿using TfsDeployer.Properties;
+
+namespace TfsDeployer.DeployAgent
 {
     public class DeployAgentProvider : IDeployAgentProvider
     {
@@ -11,7 +13,12 @@
             }
             else
             {
-                agent = new LocalPowerShellDeployAgent();
+                var powerShellDeployAgent = new LocalPowerShellDeployAgent();
+                if (Settings.Default.IgnoreSystemPowerShellExecutionPolicy)
+                {
+                    powerShellDeployAgent.ExecutionPolicyBehaviour = PowerShellExecutionPolicyBehaviour.Unrestricted;
+                }
+                agent = powerShellDeployAgent;
             }
             return agent;
         }
