@@ -54,8 +54,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
+    <Compile Include="PowerShellRunnerTests\TemporaryFile.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />
+    <Compile Include="PowerShellRunnerTests\When_deploying_a_failing_PowerShell_script.cs" />
     <Compile Include="PowerShellScripts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -73,8 +75,8 @@
   <ItemGroup>
     <EmbeddedResource Include="PowerShellScripts.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PowerShellScripts.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>PowerShellScripts.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SerializedDeploymentMappings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -100,6 +102,9 @@
   <ItemGroup>
     <Content Include="Resources\AbsentRetainBuild.xml" />
     <Content Include="Resources\FailingPowerShellScript.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\GetExecutionPolicyScript.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

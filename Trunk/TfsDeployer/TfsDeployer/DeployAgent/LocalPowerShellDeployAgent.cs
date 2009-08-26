@@ -20,10 +20,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.IO;
-using System.Management.Automation;
+using System.Text;
 
 namespace TfsDeployer.DeployAgent
 {
@@ -55,10 +55,10 @@ namespace TfsDeployer.DeployAgent
             return command;
         }
 
-        private static IDictionary<string,object> CreateCommonVariables(DeployAgentData deployAgentData)
+        private static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
         {
             var dict = new Dictionary<string, object>();
-            dict.Add("TfsDeployerComputer", deployAgentData.DeployServer );
+            dict.Add("TfsDeployerComputer", deployAgentData.DeployServer);
             dict.Add("TfsDeployerNewQuality", deployAgentData.NewQuality);
             dict.Add("TfsDeployerOriginalQuality", deployAgentData.OriginalQuality);
             dict.Add("TfsDeployerScript", deployAgentData.DeployScriptFile);
@@ -81,33 +81,40 @@ namespace TfsDeployer.DeployAgent
 
         public void ExecuteCommand(string command, IDictionary<string, object> variables)
         {
-            Runspace space = null;
             try
             {
                 _errorOccurred = true;
 
-                var host = new DeploymentHost(null);
-                space = RunspaceFactory.CreateRunspace(host);
-                space.Open();
-
-                if (null != variables)
+                var ui = new DeploymentHostUI();
+                var host = new DeploymentHost(ui);
+                using (var space = RunspaceFactory.CreateRunspace(host))
                 {
-                    foreach (string key in variables.Keys)
+                    space.Open();
+
+                    if (null != variables)
                     {
-                        space.SessionStateProxy.SetVariable(key, variables[key]);
+                        foreach (string key in variables.Keys)
+                        {
+                            space.SessionStateProxy.SetVariable(key, variables[key]);
+                        }
                     }
-                }
 
-                var pipeline = space.CreatePipeline(command + " | Out-String -Stream ;");
-                var outputObjects = pipeline.Invoke();
+                    using (var pipeline = space.CreatePipeline())
+                    {
+                        pipeline.StateChanged += PipelineStateChanged;
 
-                var pipelineState = pipeline.PipelineStateInfo.State;
+                        var DefaultOutputCommand = new Command("Out-Default");
+                        DefaultOutputCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                        DefaultOutputCommand.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Error |
+                                                                          PipelineResultTypes.Output;
 
-                _output = GenerateOutputFromObjects(outputObjects);
+                        pipeline.Commands.AddScript(command);
+                        pipeline.Commands.Add(DefaultOutputCommand);
 
-                if (pipelineState != PipelineState.Failed)
-                {
-                    _errorOccurred = false;
+                        pipeline.Invoke();
+                        _errorOccurred = ui.HasErrors;
+                        _output = ui.Output;
+                    }
                 }
             }
             catch (RuntimeException ex)
@@ -122,30 +129,18 @@ namespace TfsDeployer.DeployAgent
             {
                 _output = ex.ToString();
             }
-            finally
-            {
-                if (null != space) space.Close();
-            }
         }
 
-        private static string GenerateOutputFromObjects(IEnumerable<PSObject> outputObjects)
+        void PipelineStateChanged(object sender, PipelineStateEventArgs e)
         {
-            var builder = new StringBuilder();
-
-            foreach (PSObject outputObject in outputObjects)
-            {
-                builder.Append(outputObject);
-                builder.AppendLine();
-            }
-
-            return builder.ToString();
+            if (e.PipelineStateInfo.State == PipelineState.Failed) _errorOccurred = true;
         }
 
         public bool ErrorOccurred
         {
             get
             {
-                return _errorOccurred;   
+                return _errorOccurred;
             }
         }
 

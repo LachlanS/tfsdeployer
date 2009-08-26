@@ -48,10 +48,12 @@ namespace TfsDeployer.DeployAgent
 
         public override void EnterNestedPrompt()
         {
+            throw new NotImplementedException();
         }
 
         public override void ExitNestedPrompt()
         {
+            throw new NotImplementedException();
         }
 
         public override Guid InstanceId
