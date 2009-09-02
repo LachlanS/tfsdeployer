@@ -8,10 +8,16 @@ namespace TfsDeployer.DeployAgent
     public class DeploymentHostUI : PSHostUserInterface
     {
         private readonly StringBuilder _log = new StringBuilder();
+        private bool _hasErrors = false;
 
-        public string ReadLog()
+        public string Output
         {
-            return _log.ToString();
+            get { return _log.ToString(); }
+        }
+
+        public bool HasErrors
+        {
+            get { return _hasErrors; }
         }
 
         public override Dictionary<string, System.Management.Automation.PSObject> Prompt(string caption, string message, System.Collections.ObjectModel.Collection<FieldDescription> descriptions)
@@ -67,14 +73,13 @@ namespace TfsDeployer.DeployAgent
 
         public override void WriteErrorLine(string value)
         {
+            _hasErrors = true;
             WritePrefixLine(value, "ERROR");
         }
 
         private void WritePrefixLine(string value, string prefix)
         {
-            _log.Append(prefix);
-            _log.Append(": ");
-            WriteLine(value);
+            WriteLine(prefix + ": " + value);
         }
 
         public override void WriteLine(string value)
