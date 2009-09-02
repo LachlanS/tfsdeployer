@@ -99,7 +99,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
         protected virtual void Subscribe()
         {
             string address = this.Description.Endpoints[0].Address.Uri.AbsoluteUri;
-            Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose, string.Format("Subscrbing to Notification event at address {0}", address), Constants.NotificationServiceHost);
+            Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose, string.Format("Subscribing to Notification event at address {0}", address), Constants.NotificationServiceHost);
             DeliveryPreference preference = CreateDeliveryPrefrence(address);
             _subscriptionId = ServiceHelper.Subscribe(UserName,typeof(EventTypeT).Name.ToString(), null, preference);
             

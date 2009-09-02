@@ -39,7 +39,7 @@ namespace TfsDeployer.Configuration
         
         public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild, IWorkingDirectory workingDirectory)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Projet:{0} Team Build:{1}", teamProjectName, teamBuild.BuildType);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", teamProjectName, teamBuild.BuildType);
             TfsHelper.GetSharedResources(workingDirectory);
             _workingDirectory = TfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType, workingDirectory);
             var configuration = ConfigurationReaderHelper.Read(Path.Combine(_workingDirectory, ConfigurationFileName));

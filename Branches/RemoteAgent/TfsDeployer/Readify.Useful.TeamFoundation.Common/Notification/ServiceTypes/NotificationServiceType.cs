@@ -34,11 +34,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
 
         public void Notify(string eventXml, string tfsIdentityXml)
         {
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, "Notification Event Received Details as follows:");
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, "Eventxml");
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, eventXml);
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, "TfsIdentityXml");
-            TraceHelper.TraceVerbose(Constants.CommonSwitch, tfsIdentityXml);
+            TraceHelper.TraceVerbose(Constants.CommonSwitch, "Notification Event Received Details as follows.\nEventXml:\n{0}\nTfsIdentityXml:\n{1}", eventXml, tfsIdentityXml);
 
             _eventReceived= ServiceHelper.DeserializeEvent<EventTypeT>(eventXml);
             _identity = ServiceHelper.DeserializeEvent<TFSIdentity>(tfsIdentityXml);

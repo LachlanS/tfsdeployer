@@ -170,5 +170,33 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
 
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public void ShouldRejectUnchangedQuality()
+        {
+            const string TestWildcard = "*";
+
+            var changeEvent = new BuildStatusChangeEvent();
+
+            var mapping = new Mapping
+            {
+                Computer = Environment.MachineName,
+                NewQuality = "SomeNewQuality",
+                PermittedUsers = null,
+                OriginalQuality = TestWildcard
+            };
+
+            changeEvent.StatusChange = new Change
+            {
+                NewValue = "SomeNewQuality",
+                OldValue = "SomeNewQuality"
+            };
+
+            var mappingEvaluator = new MappingEvaluator();
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+
+            Assert.IsFalse(result);
+        }
+    
     }
 }

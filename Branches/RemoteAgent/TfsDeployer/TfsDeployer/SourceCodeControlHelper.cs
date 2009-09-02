@@ -49,7 +49,7 @@ namespace TfsDeployer
 
         private static void RemoveWorkspace(string workspaceName, VersionControlServer server)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Removing Workspace{0}", workspaceName);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Removing Workspace: {0}", workspaceName);
             if (server.QueryWorkspaces(workspaceName, server.AuthenticatedUser, Environment.MachineName).Length > 0)
             {
                 server.DeleteWorkspace(workspaceName, server.AuthenticatedUser);
@@ -58,7 +58,7 @@ namespace TfsDeployer
 
         private static Workspace GetWorkspace(string serverPath, VersionControlServer versionControlServer, string workspaceName, string localPath)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace:{0} RootFolder:{1}", workspaceName, serverPath);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace: {0} RootFolder: {1}", workspaceName, serverPath);
             Workspace workspace = versionControlServer.CreateWorkspace(workspaceName, versionControlServer.AuthenticatedUser);
             
             workspace.Map(serverPath, localPath);
