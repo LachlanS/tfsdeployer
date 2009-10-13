@@ -53,7 +53,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MappingEvaluatorTests\When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated.cs" />
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
+    <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
     <Compile Include="PowerShellRunnerTests\TemporaryFile.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />

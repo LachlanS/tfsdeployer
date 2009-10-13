@@ -74,7 +74,7 @@ namespace TfsDeployer
                                                      mapping.Computer,
                                                      mapping.Script);
 
-                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged))
+                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
                         {
                             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                                                          "Matching mapping found, running script {0}",

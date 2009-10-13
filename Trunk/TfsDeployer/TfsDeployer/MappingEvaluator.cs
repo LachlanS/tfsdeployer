@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -7,13 +8,14 @@ namespace TfsDeployer
 {
     public class MappingEvaluator : IMappingEvaluator
     {
-        public bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent)
+        public bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent, string buildStatus)
         {
             var statusChange = triggerEvent.StatusChange;
 
             bool isStatusUnchanged = string.Equals(statusChange.NewValue, statusChange.OldValue, StringComparison.InvariantCultureIgnoreCase);
             if (isStatusUnchanged) return false;
 
+            bool isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
             bool isComputerMatch = IsComputerMatch(mapping.Computer);
 
             string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
@@ -26,16 +28,37 @@ namespace TfsDeployer
                               "    MachineName={0}, MappingComputer={1}\n" +
                               "    BuildOldStatus={2}, BuildNewStatus={3}\n" +
                               "    MappingOrigQuality={4}, MappingNewQuality={5}\n" +
-                              "    UserIsPermitted={6}, EventCausedBy={7}",
-                Environment.MachineName, mapping.Computer, statusChange.OldValue, statusChange.NewValue, mapping.OriginalQuality, mapping.NewQuality, isUserPermitted, triggerEvent.ChangedBy);
+                              "    UserIsPermitted={6}, EventCausedBy={7}\n" +
+                              "    BuildStatus={8}, MappingStatus={9}",
+                Environment.MachineName, mapping.Computer, 
+                statusChange.OldValue, statusChange.NewValue, 
+                mapping.OriginalQuality, mapping.NewQuality, 
+                isUserPermitted, triggerEvent.ChangedBy,
+                buildStatus, mapping.Status);
 
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                               "Eval results:\n" +
-                              "    isComputerMatch={0}, isOldValueMatch={1}, isNewValueMatch={2}, isUserPermitted={3}",
-                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted);
+                              "    isComputerMatch={0}, isOldValueMatch={1}, isNewValueMatch={2}, isUserPermitted={3}, isBuildStatusMatch={4}",
+                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted, isBuildStatusMatch);
 
-            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted;
+            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted && isBuildStatusMatch;
             
+        }
+
+        private bool IsBuildStatusMatch(Mapping mapping, string buildStatus)
+        {
+            const string DefaultMappingStatus = "Succeeded,PartiallySucceeded,Failed";
+            string mappingStatus = string.IsNullOrEmpty(mapping.Status) ? DefaultMappingStatus : mapping.Status;
+
+            foreach (string status in mappingStatus.Split(','))
+            {
+                if (string.Equals(buildStatus, status.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool IsComputerMatch(string mappingComputerName)

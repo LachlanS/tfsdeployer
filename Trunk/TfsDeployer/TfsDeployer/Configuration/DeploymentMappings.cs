@@ -186,6 +186,20 @@ public partial class Mapping {
     {
         get; set;
     }
+
+    [XmlAttribute]
+    public string Status
+    {
+        get;
+        set;
+    }
+
+    [XmlIgnore]
+    public bool StatusSpecified
+    {
+        get;
+        set;
+    }
 }
 
 /// <remarks/>

@@ -4,6 +4,6 @@ namespace TfsDeployer
 {
     public interface IMappingEvaluator
     {
-        bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent);
+        bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent, string buildStatus);
     }
 }

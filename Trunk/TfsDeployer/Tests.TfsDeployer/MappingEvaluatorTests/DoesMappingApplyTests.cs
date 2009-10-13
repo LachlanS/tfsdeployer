@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -30,7 +31,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsTrue(result);
         }
@@ -57,7 +58,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsTrue(result);
         }
@@ -84,7 +85,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsTrue(result);
         }
@@ -111,7 +112,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsTrue(result);
         }
@@ -138,7 +139,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
 
             Assert.IsTrue(result);
@@ -166,7 +167,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                                            };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsTrue(result);
         }
@@ -193,7 +194,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
             };
 
             var mappingEvaluator = new MappingEvaluator();
-            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent);
+            var result = mappingEvaluator.DoesMappingApply(mapping, changeEvent, BuildStatus.Succeeded.ToString());
 
             Assert.IsFalse(result);
         }
