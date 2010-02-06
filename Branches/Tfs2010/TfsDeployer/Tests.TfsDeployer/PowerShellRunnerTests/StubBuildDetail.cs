@@ -15,6 +15,16 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
+        IBuildController IBuildDetail.BuildController
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        Uri IBuildDetail.BuildControllerUri
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         IBuildDefinition IBuildDetail.BuildDefinition
         {
             get { throw new NotImplementedException(); }
@@ -28,6 +38,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         bool IBuildDetail.BuildFinished
         {
             get { throw new NotImplementedException(); }
+        }
+
+        IBuildOutput[] IBuildDetail.GetBuildOutputs()
+        {
+            throw new NotImplementedException();
         }
 
         string IBuildDetail.BuildNumber
@@ -89,7 +104,22 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             throw new NotImplementedException();
         }
 
+        IBuildDeletionResult IBuildDetail.Delete(DeleteOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         void IBuildDetail.Disconnect()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBuildDetail.FinalizeStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBuildDetail.FinalizeStatus(BuildStatus status)
         {
             throw new NotImplementedException();
         }
@@ -128,6 +158,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             }
         }
 
+        string IBuildDetail.DropLocationRoot
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         string IBuildDetail.LabelName
         {
             get
@@ -146,6 +181,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         }
 
         DateTime IBuildDetail.LastChangedOn
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        string IBuildDetail.ProcessParameters
         {
             get { throw new NotImplementedException(); }
         }
@@ -210,6 +250,16 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
+        string IBuildDetail.ShelvesetName
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBuildDetail.IsDeleted
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         void IBuildDetail.Save()
         {
             throw new NotImplementedException();
@@ -250,6 +300,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             remove { throw new NotImplementedException(); }
         }
 
+        string IBuildDetail.TeamProject
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         event StatusChangedEventHandler IBuildDetail.StatusChanging
         {
             add { throw new NotImplementedException(); }
@@ -279,6 +334,26 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         }
 
         void IBuildDetail.Wait()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBuildDetail.AddWorkspaceInstance(IWorkspaceInstance instance)
+        {
+            throw new NotImplementedException();
+        }
+
+        IWorkspaceInstance[] IBuildDetail.GetWorkspaceInstances()
+        {
+            throw new NotImplementedException();
+        }
+
+        string IBuildDetail.GetServerItemForLocalItem(Guid outputGuid, int outputAge, string localPath, bool refresh)
+        {
+            throw new NotImplementedException();
+        }
+
+        string IBuildDetail.GetServerItemForLocalItem(Guid outputGuid, int outputAge, string localPath)
         {
             throw new NotImplementedException();
         }

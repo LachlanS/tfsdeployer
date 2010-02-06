@@ -1,4 +1,5 @@
 using System;
+using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.Server;
 using Microsoft.TeamFoundation.Client;
 using System.Net;
@@ -85,6 +86,11 @@ namespace Readify.Useful.TeamFoundation.Common
             #region ICredentialsProvider Members
 
             public ICredentials GetCredentials(Uri uri, ICredentials failedCredentials)
+            {
+                return _credentials;
+            }
+
+            public ICredentials GetCredentials(Uri uri, ICredentials failedCredentials, string caption, string messageText)
             {
                 return _credentials;
             }

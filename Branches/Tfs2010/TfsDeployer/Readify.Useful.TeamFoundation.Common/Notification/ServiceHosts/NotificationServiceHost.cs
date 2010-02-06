@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
+using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.Server;
 using Readify.Useful.TeamFoundation.Common.Properties;
 using System.ServiceModel.Activation;

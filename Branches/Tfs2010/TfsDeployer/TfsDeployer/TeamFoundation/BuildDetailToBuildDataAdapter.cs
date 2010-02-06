@@ -15,7 +15,7 @@ namespace TfsDeployer.TeamFoundation
         
         public string BuildMachine
         {
-            get { return _detail.BuildAgent.MachineName; }
+            get { return _detail.BuildController.Name; }
         }
 
         public string BuildNumber
