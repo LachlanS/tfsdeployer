@@ -124,6 +124,7 @@
   <ItemGroup>
     <Compile Include="Alert\EmailAlerter.cs" />
     <Compile Include="Alert\EmailSettings.cs" />
+    <Compile Include="AppConfigTeamFoundationServerProvider.cs" />
     <Compile Include="BuildInformation.cs" />
     <Compile Include="CommandLine\CommandLine.cs">
       <SubType>Code</SubType>
@@ -145,9 +146,13 @@
     <Compile Include="DeployAgent\PowerShellExecutionPolicyBehaviour.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
+    <Compile Include="DeployerFactory.cs" />
     <Compile Include="Encrypter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IDeployerFactory.cs" />
+    <Compile Include="ITeamFoundationServerProvider.cs" />
+    <Compile Include="SimpleCredentialsProvider.cs" />
     <Compile Include="TeamFoundation\IBuildData.cs" />
     <Compile Include="TeamFoundation\BuildDetailToBuildDataAdapter.cs" />
     <Compile Include="IMappingEvaluator.cs" />
@@ -168,7 +173,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="SourceCodeControlHelper.cs" />
     <Compile Include="TfsDeployerInstaller.cs">
       <SubType>Component</SubType>

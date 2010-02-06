@@ -25,64 +25,10 @@ namespace Readify.Useful.TeamFoundation.Common.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the TeamFoundationServerUrl property.")]
-        public string TeamFoundationServerUrl {
-            get {
-                return ((string)(this["TeamFoundationServerUrl"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseDefaultCredentials {
-            get {
-                return ((bool)(this["UseDefaultCredentials"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the UserName property.")]
-        public string UserName {
-            get {
-                return ((string)(this["UserName"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the Password property.")]
-        public string Password {
-            get {
-                return ((string)(this["Password"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the RegistrationUserName property.")]
-        public string RegistrationUserName {
-            get {
-                return ((string)(this["RegistrationUserName"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the BaseAddress property.")]
         public string BaseAddress {
             get {
                 return ((string)(this["BaseAddress"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TODO: Please specify the Domain property.")]
-        public string Domain {
-            get {
-                return ((string)(this["Domain"]));
             }
         }
     }

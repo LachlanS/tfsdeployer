@@ -26,29 +26,30 @@ using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
-using TfsDeployer.Notifier;
 
 namespace TfsDeployer
 {
-    internal class Deployer
+    public class Deployer
     {
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IConfigurationReader _configurationReader;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
+        private readonly IBuildServer _buildServer;
 
-        public Deployer()
-            : this(new DeployAgentProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
+        public Deployer(TfsHelper tfsHelper, IBuildServer buildServer)
+            : this(new DeployAgentProvider(), new TfsConfigReader(tfsHelper), new EmailAlerter(), new MappingEvaluator(), buildServer)
         {
         }
 
         public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IAlert alert,
-                        IMappingEvaluator mappingEvaluator)
+                        IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
         {
             _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
+            _buildServer = buildServer;
         }
 
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
@@ -133,11 +134,10 @@ namespace TfsDeployer
             detail.Save();
         }
 
-        private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
+        private IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
-            var buildServer = ServiceHelper.GetService<IBuildServer>();
-            var buildSpec = buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
-            var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            var buildSpec = _buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
+            var detail = _buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
             return detail;
         }
     }

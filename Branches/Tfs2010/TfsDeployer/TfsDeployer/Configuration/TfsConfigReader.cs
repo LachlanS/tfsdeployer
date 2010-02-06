@@ -31,18 +31,21 @@ namespace TfsDeployer.Configuration
     /// </summary>
     public class TfsConfigReader : IConfigurationReader
     {
+        private readonly TfsHelper _tfsHelper;
 
-        string _workingDirectory;
+        public TfsConfigReader(TfsHelper tfsHelper)
+        {
+            _tfsHelper = tfsHelper;
+        }
 
-        #region IConfigurationReader Members
         const string ConfigurationFileName = "DeploymentMappings.xml";
         
         public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild, IWorkingDirectory workingDirectory)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", teamProjectName, teamBuild.BuildType);
-            TfsHelper.GetSharedResources(workingDirectory);
-            _workingDirectory = TfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType, workingDirectory);
-            var configuration = ConfigurationReaderHelper.Read(Path.Combine(_workingDirectory, ConfigurationFileName));
+            _tfsHelper.GetSharedResources(workingDirectory);
+            _tfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType, workingDirectory);
+            var configuration = ConfigurationReaderHelper.Read(Path.Combine(workingDirectory.DirectoryInfo.FullName, ConfigurationFileName));
             if (configuration == null)
             {
                 return new Mapping[0];
@@ -50,14 +53,5 @@ namespace TfsDeployer.Configuration
             return configuration.Mappings;
         }
       
-        public string WorkingDirectory
-        {
-            get 
-            {
-                return _workingDirectory;
-            }
-        }
-
-        #endregion
     }
 }

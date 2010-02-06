@@ -22,12 +22,22 @@ using System;
 using System.Collections;
 using System.Configuration.Install;
 using System.Diagnostics;
+using System.Reflection;
 using System.ServiceProcess;
+using Microsoft.TeamFoundation.Build.Client;
+using Microsoft.TeamFoundation.Framework.Client;
+using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace TfsDeployer
 {
     public static class Program 
     {
+        enum RunMode
+        {
+            WindowsService,
+            InteractiveConsole
+        }
+
 
         public static void Main(string[] args)
         {
@@ -43,11 +53,11 @@ namespace TfsDeployer
                 }
                 else if (args[0] == "-d")
                 {
-                    RunAsConsole();
+                    Run(RunMode.InteractiveConsole);
                 }
                 else
                 {
-                    CommandLine command = new CommandLine();
+                    var command = new CommandLine();
                     if (command.ParseAndContinue(args))
                     {
                         try
@@ -68,17 +78,40 @@ namespace TfsDeployer
             }
             else
             {
-                ServiceBase.Run(new TfsDeployerService());
+                Run(RunMode.WindowsService);
             }
         }
 
-        private static void RunAsConsole()
+        private static void Run(RunMode mode)
+        {
+            var serverProvider = new AppConfigTeamFoundationServerProvider();
+            
+            switch (mode)
+            {
+                case RunMode.InteractiveConsole:
+                {
+                    RunAsConsole(serverProvider);
+                    break;
+                }
+                case RunMode.WindowsService:
+                {
+                    ServiceBase.Run(new TfsDeployerService(serverProvider));
+                    break;
+                }
+            }
+        }
+
+        private static void RunAsConsole(ITeamFoundationServerProvider serverProvider)
         {
             try
             {
                 Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-                var trigger = new TfsBuildStatusTrigger();
+                var server = serverProvider.GetServer();
+                var eventService = server.GetService<IEventService>();
+                var buildServer = server.GetService<IBuildServer>();
+                var versionControlServer = server.GetService<VersionControlServer>();
+                var trigger = new TfsBuildStatusTrigger(eventService, new DeployerFactory(buildServer, versionControlServer));
                 trigger.Start();
                 Console.WriteLine("Hit Enter to stop the service");
                 Console.ReadKey();
@@ -92,30 +125,26 @@ namespace TfsDeployer
 
         private static void Install()
         {
-            TransactedInstaller ti = new TransactedInstaller();
-            TfsDeployerInstaller mi = new TfsDeployerInstaller();
-            ti.Installers.Add(mi);
-            String path = String.Format("/assemblypath={0}",
-              System.Reflection.Assembly.GetExecutingAssembly().Location);
-            String[] cmdline = { path };
-            InstallContext ctx = new InstallContext("", cmdline);
-            ti.Context = ctx;
-            ti.Install(new Hashtable());
-
+            RunInstaller(i => i.Install(new Hashtable()));
         }
 
         private static void Uninstall()
         {
-            TransactedInstaller ti = new TransactedInstaller();
-            TfsDeployerInstaller mi = new TfsDeployerInstaller();
-            ti.Installers.Add(mi);
-            String path = String.Format("/assemblypath={0}",
-            System.Reflection.Assembly.GetExecutingAssembly().Location);
-            String[] cmdline = { path };
-            InstallContext ctx = new InstallContext("", cmdline);
-            ti.Context = ctx;
-            ti.Uninstall(null);
-
+            RunInstaller(i => i.Uninstall(null));
         }
+
+        private static void RunInstaller(Action<Installer> installerAction)
+        {
+            using (var ti = new TransactedInstaller())
+            using (var mi = new TfsDeployerInstaller())
+            {
+                ti.Installers.Add(mi);
+                var path = String.Format("/assemblypath={0}", Assembly.GetExecutingAssembly().Location);
+                var ctx = new InstallContext("", new[] { path });
+                ti.Context = ctx;
+                installerAction(ti);
+            }
+        }
+
     }
 }

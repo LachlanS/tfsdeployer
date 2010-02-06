@@ -24,26 +24,29 @@ using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
-    /// <summary>
-    /// Helper class to get files out of source code control
-    /// </summary>
-    public static class SourceCodeControlHelper
-    {
 
-        public static void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
+    public class SourceCodeControlHelper
+    {
+        private readonly VersionControlServer _versionControlServer;
+
+        public SourceCodeControlHelper(VersionControlServer versionControlServer)
         {
-            var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
-            string workspaceName = GetWorkspaceName();
+            _versionControlServer = versionControlServer;
+        }
+
+        public void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
+        {
+            var workspaceName = GetWorkspaceName();
 
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from Source code control. RootFolder:{0}, Workspace Directory:{1}", serverPath, localPath);
             try
             {
-                Workspace workspace = GetWorkspace(serverPath, versionControlServer, workspaceName, localPath);
+                var workspace = GetWorkspace(serverPath, _versionControlServer, workspaceName, localPath);
                 workspace.Get(filesToRetrieve, GetOptions.Overwrite);
             }
             finally
             {
-                RemoveWorkspace(workspaceName, versionControlServer);
+                RemoveWorkspace(workspaceName, _versionControlServer);
             }
         }
 
@@ -59,7 +62,7 @@ namespace TfsDeployer
         private static Workspace GetWorkspace(string serverPath, VersionControlServer versionControlServer, string workspaceName, string localPath)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace: {0} RootFolder: {1}", workspaceName, serverPath);
-            Workspace workspace = versionControlServer.CreateWorkspace(workspaceName, versionControlServer.AuthenticatedUser);
+            var workspace = versionControlServer.CreateWorkspace(workspaceName, versionControlServer.AuthenticatedUser);
             
             workspace.Map(serverPath, localPath);
             return workspace;

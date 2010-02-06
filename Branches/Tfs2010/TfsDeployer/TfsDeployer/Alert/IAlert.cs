@@ -21,9 +21,9 @@
 using TfsDeployer.DeployAgent;
 using TfsDeployer.TeamFoundation;
 
-namespace TfsDeployer.Notifier
+namespace TfsDeployer.Alert
 {
-    internal interface IAlert
+    public interface IAlert
     {
         void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult);
     }

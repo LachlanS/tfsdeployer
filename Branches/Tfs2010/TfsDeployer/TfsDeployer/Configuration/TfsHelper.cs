@@ -25,10 +25,18 @@ using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer.Configuration
 {
-    static class TfsHelper
+    public class TfsHelper
     {
+        private readonly IBuildServer _buildServer;
+        private readonly SourceCodeControlHelper _sourceCodeControlHelper;
 
-        public static string GetDeploymentItems(string teamProjectName, string buildType, IWorkingDirectory workingDirectory)
+        public TfsHelper(IBuildServer buildServer, SourceCodeControlHelper sourceCodeControlHelper)
+        {
+            _buildServer = buildServer;
+            _sourceCodeControlHelper = sourceCodeControlHelper;
+        }
+
+        public void GetDeploymentItems(string teamProjectName, string buildType, IWorkingDirectory workingDirectory)
         {
             var localPath = workingDirectory.DirectoryInfo.FullName;
             var serverPath = GetConfigurationFileLocation(teamProjectName, buildType);
@@ -36,19 +44,16 @@ namespace TfsDeployer.Configuration
 
             var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
             var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
-            SourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
-
-            return localPath;
+            _sourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
         }
 
-        private static string GetConfigurationFileLocation(string teamProjectName, string buildType)
+        private string GetConfigurationFileLocation(string teamProjectName, string buildType)
         {
-            var buildServer = ServiceHelper.GetService<IBuildServer>();
-            var buildDefinition = buildServer.GetBuildDefinition(teamProjectName, buildType);
+            var buildDefinition = _buildServer.GetBuildDefinition(teamProjectName, buildType);
             return VersionControlPath.Combine(buildDefinition.ConfigurationFolderPath, "Deployment/");
         }
 
-        public static void GetSharedResources(IWorkingDirectory workingDirectory)
+        public void GetSharedResources(IWorkingDirectory workingDirectory)
         {
             var localPath = workingDirectory.DirectoryInfo.FullName;
             var serverPath = Properties.Settings.Default.SharedResourceServerPath;
@@ -56,7 +61,7 @@ namespace TfsDeployer.Configuration
 
             var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
             var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
-            SourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
+            _sourceCodeControlHelper.GetLatestFromSourceCodeControl(serverPath, localPath, request);
         }
 
     }

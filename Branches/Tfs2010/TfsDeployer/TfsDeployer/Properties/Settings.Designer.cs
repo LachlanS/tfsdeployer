@@ -94,5 +94,41 @@ namespace TfsDeployer.Properties {
                 return ((bool)(this["IgnoreSystemPowerShellExecutionPolicy"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://tfs.readifycloud.com/tfs/Readify/")]
+        public string TeamProjectCollectionUri {
+            get {
+                return ((string)(this["TeamProjectCollectionUri"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TfsUserName {
+            get {
+                return ((string)(this["TfsUserName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TfsDomain {
+            get {
+                return ((string)(this["TfsDomain"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TfsPassword {
+            get {
+                return ((string)(this["TfsPassword"]));
+            }
+        }
     }
 }

@@ -21,7 +21,6 @@
 using System;
 using System.Text;
 using TfsDeployer.DeployAgent;
-using TfsDeployer.Notifier;
 using System.Net.Mail;
 using TfsDeployer.Properties;
 using Readify.Useful.TeamFoundation.Common;

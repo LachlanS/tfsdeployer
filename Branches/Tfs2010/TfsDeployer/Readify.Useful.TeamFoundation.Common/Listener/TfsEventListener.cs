@@ -1,4 +1,6 @@
 using System;
+using System.ServiceModel.Channels;
+using Microsoft.TeamFoundation.Framework.Client;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Readify.Useful.TeamFoundation.Common.Properties;
 using System.ServiceModel;
@@ -7,7 +9,7 @@ using System.Diagnostics;
 
 namespace Readify.Useful.TeamFoundation.Common.Listener
 {
-
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     internal class TfsEventListener<T> : NotificationService<T>, ITfsEventListener where T : new()
     {
         public delegate void OnNotificationEventReceived(T eventRaised, TfsIdentity identity);
@@ -16,7 +18,13 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
         public static OnNotificationEventReceived NotificationDelegate { get; set; }
 
         private readonly TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
+        private readonly IEventService _eventService;
         private NotificationServiceHost<T> _host;
+
+        public TfsEventListener(IEventService eventService)
+        {
+            _eventService = eventService;
+        }
 
         public void Start()
         {
@@ -42,7 +50,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
             }
         }
 
-        private static void AddHostEndpoint(NotificationServiceHost<T> host)
+        private static void AddHostEndpoint(ServiceHost host)
         {
             var binding = CreateHostBinding();
             host.AddServiceEndpoint(
@@ -52,7 +60,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
                 );
         }
 
-        private static BasicHttpBinding CreateHostBinding()
+        private static Binding CreateHostBinding()
         {
             // Setup a basic binding to use NTLM authentication.
             var quotas = new XmlDictionaryReaderQuotas
@@ -64,8 +72,8 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
                 MaxStringContentLength = int.MaxValue
             };
 
-            var binding = new BasicHttpBinding {ReaderQuotas = quotas};
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Ntlm;
+            var binding = new WSHttpBinding {ReaderQuotas = quotas};
+            binding.Security.Mode = SecurityMode.None;
 
             return binding;
         }
@@ -73,15 +81,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
         private NotificationServiceHost<T> CreateHostInstance()
         {
             var baseAddress = GetBaseAddress();
-            NotificationServiceHost<T> host;
-            if (!String.IsNullOrEmpty(Settings.Default.RegistrationUserName))
-            {
-                host = new NotificationServiceHost<T>(GetType(), baseAddress, Settings.Default.RegistrationUserName);
-            }
-            else
-            {
-                host = new NotificationServiceHost<T>(GetType(), baseAddress);
-            }
+            var host = new NotificationServiceHost<T>(this, baseAddress, _eventService);
             AddHostEndpoint(host);
             return host;
         }
