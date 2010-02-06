@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
 
 namespace Readify.Useful.TeamFoundation.Common
@@ -86,16 +84,15 @@ namespace Readify.Useful.TeamFoundation.Common
         {
             ValidateArgumentIsNull(traceSwitch);
             ValidateArgumentIsNull(args);
-            if (traceSwitch.TraceWarning)
+            if (!traceSwitch.TraceWarning) return;
+            
+            if (args != null && args.Length > 0)
             {
-                if (args != null && args.Length > 0)
-                {
-                    Trace.TraceWarning(format, args);
-                }
-                else
-                {
-                    Trace.TraceWarning(format);
-                }
+                Trace.TraceWarning(format, args);
+            }
+            else
+            {
+                Trace.TraceWarning(format);
             }
         }
 
@@ -114,20 +111,18 @@ namespace Readify.Useful.TeamFoundation.Common
         {
             ValidateArgumentIsNull(traceSwitch);
             ValidateArgumentIsNull(args);
-            if (traceSwitch.TraceVerbose)
+            if (!traceSwitch.TraceVerbose) return;
+            
+            if (args != null && args.Length > 0)
             {
-                if (args != null && args.Length > 0)
-                {
-                    Trace.TraceInformation(format, args);
-                }
-                else
-                {
-                    Trace.TraceInformation(format);
-                }
+                Trace.TraceInformation(format, args);
+            }
+            else
+            {
+                Trace.TraceInformation(format);
             }
         }
 
-        #region Validate IsNull
         private static void ValidateArgumentIsNull(TraceSwitch traceSwitch)
         {
             if (traceSwitch == null)
@@ -144,14 +139,12 @@ namespace Readify.Useful.TeamFoundation.Common
             }
         }
         
-        private static void ValidateArgumentIsNull(object[] args)
-        {
+        private static void ValidateArgumentIsNull(object[] args)        {
             if (args == null)
             {
                 throw new ArgumentNullException("args");
             }
         }
         
-        #endregion
     }
 }

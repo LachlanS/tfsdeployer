@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.TeamFoundation.VersionControl.Common;
 
 namespace Readify.Useful.TeamFoundation.Common.Listener
 {

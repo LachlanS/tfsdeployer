@@ -48,7 +48,7 @@
     <CodeAnalysisRules>
     </CodeAnalysisRules>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>Migrated rules for Readify.Useful.TeamFoundation.Common (2).ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -59,7 +59,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -123,14 +123,13 @@
     <Compile Include="Listener\ITfsListener.cs" />
     <Compile Include="Listener\TfsEventListener.cs" />
     <Compile Include="Listener\TfsListener.cs" />
-    <Compile Include="Listener\TfsListenerFactory.cs" />
     <Compile Include="Notification\BuildCompletionEvent.cs" />
     <Compile Include="Notification\BuildStatusChangeEvent.cs" />
     <Compile Include="Notification\Change.cs" />
-    <Compile Include="Notification\ServiceTypes\NotificationServiceType.cs" />
+    <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Notification\TfsIdentify.cs" />
     <Compile Include="Notification\INotificationService.cs" />
-    <Compile Include="Notification\ServiceHosts\NotificationServiceHost.cs" />
+    <Compile Include="Notification\NotificationServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceHelper.cs" />
     <Compile Include="Properties\Settings1.Designer.cs">
@@ -144,6 +143,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Migrated rules for Readify.Useful.TeamFoundation.Common %282%29.ruleset" />
+    <None Include="Notification\BuildCompletionEvent.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Notification\BuildCompletionEvent2.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Notification\BuildStatusChangeEvent.xsd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -171,6 +176,10 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Notification\ServiceHosts\" />
+    <Folder Include="Notification\ServiceTypes\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

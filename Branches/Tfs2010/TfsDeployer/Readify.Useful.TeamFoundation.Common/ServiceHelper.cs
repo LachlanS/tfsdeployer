@@ -1,13 +1,11 @@
 using System;
 using Microsoft.TeamFoundation.Framework.Client;
-using Microsoft.TeamFoundation.Server;
 using Microsoft.TeamFoundation.Client;
 using System.Net;
 using System.IO;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using Readify.Useful.TeamFoundation.Common.Properties;
-
 
 namespace Readify.Useful.TeamFoundation.Common
 {
@@ -27,7 +25,7 @@ namespace Readify.Useful.TeamFoundation.Common
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Password: {0}", password);
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Domain: {0}", domain);
 
-            NetworkCredential credential = new NetworkCredential(userName, password, domain);
+            var credential = new NetworkCredential(userName, password, domain);
             return GetService<T>(credential);
         }
 
@@ -66,17 +64,17 @@ namespace Readify.Useful.TeamFoundation.Common
         /// <returns></returns>
         private static T GetService<T>(ICredentials credentials)
         {
-            TempCredentials creds = new TempCredentials(credentials);
-            string teamFoundationServerUrl = Settings.Default.TeamFoundationServerUrl;
+            var creds = new TempCredentials(credentials);
+            var teamFoundationServerUrl = Settings.Default.TeamFoundationServerUrl;
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Connecting to server {0} To get service {1} ", teamFoundationServerUrl, typeof(T).ToString());
-            TeamFoundationServer server = TeamFoundationServerFactory.GetServer(teamFoundationServerUrl, creds);
-            T service = (T)server.GetService(typeof(T));
+            var server = TeamFoundationServerFactory.GetServer(teamFoundationServerUrl, creds);
+            var service = (T)server.GetService(typeof(T));
             return service;
         }
 
         private class TempCredentials : ICredentialsProvider
         {
-            private ICredentials _credentials;
+            private readonly ICredentials _credentials;
 
             public TempCredentials(ICredentials credentials)
             {
@@ -114,13 +112,13 @@ namespace Readify.Useful.TeamFoundation.Common
         public static int Subscribe(string userName, string eventToSubscribeTo, string filterExpression, DeliveryPreference preference)
         {
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Subscribing to {0} using UserName:{1} FilterExpression:{2}", eventToSubscribeTo, userName, filterExpression);
-            IEventService service = GetService<IEventService>();
+            var service = GetService<IEventService>();
             return service.SubscribeEvent(userName, eventToSubscribeTo, filterExpression, preference);
         }
        
         public static void Unsubscribe(int subscriptionId)
         {
-            IEventService service = GetService<IEventService>();
+            var service = GetService<IEventService>();
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Unsubscribing event with id {0}", subscriptionId);
             service.UnsubscribeEvent(subscriptionId);
         }
@@ -131,7 +129,7 @@ namespace Readify.Useful.TeamFoundation.Common
         /// <param name="subscriptionIds"></param>
         public static void Unsubscribe(Collection<int> subscriptionIds)
         {
-            foreach (int subscriptionId in subscriptionIds)
+            foreach (var subscriptionId in subscriptionIds)
             {
                 Unsubscribe(subscriptionId);
             }
@@ -146,14 +144,12 @@ namespace Readify.Useful.TeamFoundation.Common
         public static T DeserializeEvent<T>(string eventXml)
         {
             TraceHelper.TraceVerbose(Constants.CommonSwitch,"Deserializing Event of type {0} from XML:\n{1}", typeof(T), eventXml);
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof(T));
             using (TextReader reader = new StringReader(eventXml)) 
             {
                 return (T)serializer.Deserialize(reader);
             }
             
         }
-
-     
     }
 }
