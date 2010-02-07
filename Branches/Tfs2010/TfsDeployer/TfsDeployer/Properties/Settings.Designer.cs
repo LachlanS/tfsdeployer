@@ -97,15 +97,6 @@ namespace TfsDeployer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://tfs.readifycloud.com/tfs/Readify/")]
-        public string TeamProjectCollectionUri {
-            get {
-                return ((string)(this["TeamProjectCollectionUri"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string TfsUserName {
             get {
@@ -128,6 +119,24 @@ namespace TfsDeployer.Properties {
         public string TfsPassword {
             get {
                 return ((string)(this["TfsPassword"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://MyTfs.MyDomain/tfs/MyProjectCollection/")]
+        public string TeamProjectCollectionUri {
+            get {
+                return ((string)(this["TeamProjectCollectionUri"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://MyHostname/Temporary_Listen_Addresses/TfsDeployer")]
+        public string BaseAddress {
+            get {
+                return ((string)(this["BaseAddress"]));
             }
         }
     }

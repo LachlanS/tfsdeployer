@@ -24,9 +24,6 @@ using System.Configuration.Install;
 using System.Diagnostics;
 using System.Reflection;
 using System.ServiceProcess;
-using Microsoft.TeamFoundation.Build.Client;
-using Microsoft.TeamFoundation.Framework.Client;
-using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace TfsDeployer
 {
@@ -84,38 +81,33 @@ namespace TfsDeployer
 
         private static void Run(RunMode mode)
         {
-            var serverProvider = new AppConfigTeamFoundationServerProvider();
+            var application = new TfsDeployerApplication();
             
             switch (mode)
             {
                 case RunMode.InteractiveConsole:
                 {
-                    RunAsConsole(serverProvider);
+                    RunAsConsole(application);
                     break;
                 }
                 case RunMode.WindowsService:
                 {
-                    ServiceBase.Run(new TfsDeployerService(serverProvider));
+                    ServiceBase.Run(new TfsDeployerService(application));
                     break;
                 }
             }
         }
 
-        private static void RunAsConsole(ITeamFoundationServerProvider serverProvider)
+        private static void RunAsConsole(TfsDeployerApplication application)
         {
             try
             {
                 Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
-
-                var server = serverProvider.GetServer();
-                var eventService = server.GetService<IEventService>();
-                var buildServer = server.GetService<IBuildServer>();
-                var versionControlServer = server.GetService<VersionControlServer>();
-                var trigger = new TfsBuildStatusTrigger(eventService, new DeployerFactory(buildServer, versionControlServer));
-                trigger.Start();
+                application.Start();
                 Console.WriteLine("Hit Enter to stop the service");
                 Console.ReadKey();
-                trigger.Stop();
+
+                application.Stop();
             }
             catch (Exception ex)
             {

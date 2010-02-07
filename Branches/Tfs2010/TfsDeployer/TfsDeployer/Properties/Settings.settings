@@ -26,9 +26,6 @@
     <Setting Name="IgnoreSystemPowerShellExecutionPolicy" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TeamProjectCollectionUri" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://tfs.readifycloud.com/tfs/Readify/</Value>
-    </Setting>
     <Setting Name="TfsUserName" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
@@ -37,6 +34,12 @@
     </Setting>
     <Setting Name="TfsPassword" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TeamProjectCollectionUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://MyTfs.MyDomain/tfs/MyProjectCollection/</Value>
+    </Setting>
+    <Setting Name="BaseAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://MyHostname/Temporary_Listen_Addresses/TfsDeployer</Value>
     </Setting>
   </Settings>
 </SettingsFile>

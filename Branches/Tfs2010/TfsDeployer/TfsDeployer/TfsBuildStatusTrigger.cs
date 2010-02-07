@@ -1,3 +1,4 @@
+using System;
 using Microsoft.TeamFoundation.Framework.Client;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -11,9 +12,9 @@ namespace TfsDeployer
         private readonly TfsListener _listener;
         private readonly IDeployerFactory _deployerFactory;
 
-        public TfsBuildStatusTrigger(IEventService eventService, IDeployerFactory deployerFactory)
+        public TfsBuildStatusTrigger(IEventService eventService, IDeployerFactory deployerFactory, Uri baseAddress)
         {
-            _listener = new TfsListener(eventService);
+            _listener = new TfsListener(eventService, baseAddress);
             _deployerFactory = deployerFactory;
         }
 

@@ -2,7 +2,6 @@ using System;
 using System.ServiceModel.Channels;
 using Microsoft.TeamFoundation.Framework.Client;
 using Readify.Useful.TeamFoundation.Common.Notification;
-using Readify.Useful.TeamFoundation.Common.Properties;
 using System.ServiceModel;
 using System.Xml;
 using System.Diagnostics;
@@ -19,11 +18,13 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
         private readonly TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
         private readonly IEventService _eventService;
+        private readonly Uri _baseAddress;
         private NotificationServiceHost<T> _host;
 
-        public TfsEventListener(IEventService eventService)
+        public TfsEventListener(IEventService eventService, Uri baseAddress)
         {
             _eventService = eventService;
+            _baseAddress = baseAddress;
         }
 
         public void Start()
@@ -80,20 +81,9 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
         private NotificationServiceHost<T> CreateHostInstance()
         {
-            var baseAddress = GetBaseAddress();
-            var host = new NotificationServiceHost<T>(this, baseAddress, _eventService);
+            var host = new NotificationServiceHost<T>(this, _baseAddress, _eventService);
             AddHostEndpoint(host);
             return host;
-        }
-
-        private static Uri GetBaseAddress()
-        {
-            var baseAddress = Settings.Default.BaseAddress;
-            if (!baseAddress.EndsWith("/") && !baseAddress.EndsWith(@"\"))
-            {
-                baseAddress += "/";
-            }
-            return new Uri(baseAddress + typeof(T).Name);
         }
 
         protected override void OnNotificationEvent(T eventRaised, TfsIdentity identity)

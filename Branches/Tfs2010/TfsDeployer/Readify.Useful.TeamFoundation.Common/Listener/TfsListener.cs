@@ -14,10 +14,12 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
         private readonly IList<ITfsEventListener> _eventListeners = new List<ITfsEventListener>();
         private readonly IEventService _eventService;
+        private readonly Uri _baseAddress;
 
-        public TfsListener(IEventService eventService)
+        public TfsListener(IEventService eventService, Uri baseAddress)
         {
             _eventService = eventService;
+            _baseAddress = baseAddress;
         }
 
         public void Start()
@@ -35,7 +37,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
         {
             if (CheckinEventReceived != null)
             {
-                var checkinListener = new TfsEventListener<CheckinEvent>(_eventService);
+                var checkinListener = new TfsEventListener<CheckinEvent>(_eventService, _baseAddress);
                 TfsEventListener<CheckinEvent>.NotificationDelegate = 
                     (eventRaised, identity) => CheckinEventReceived(this, new CheckinEventArgs(eventRaised, identity));
                 _eventListeners.Add(checkinListener);
@@ -43,7 +45,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
             if (BuildCompletionEventReceived != null)
             {
-                var buildCompletionEvent = new TfsEventListener<BuildCompletionEvent>(_eventService);
+                var buildCompletionEvent = new TfsEventListener<BuildCompletionEvent>(_eventService, _baseAddress);
                 TfsEventListener<BuildCompletionEvent>.NotificationDelegate = 
                     (eventRaised, identity) => BuildCompletionEventReceived(this, new BuildCompletionEventArgs(eventRaised, identity));
                 _eventListeners.Add(buildCompletionEvent);
@@ -51,7 +53,7 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
             if (BuildStatusChangeEventReceived != null)
             {
-                var buildStatusChangeEvent = new TfsEventListener<BuildStatusChangeEvent>(_eventService);
+                var buildStatusChangeEvent = new TfsEventListener<BuildStatusChangeEvent>(_eventService, _baseAddress);
                 TfsEventListener<BuildStatusChangeEvent>.NotificationDelegate = 
                     (eventRaised, identity) => BuildStatusChangeEventReceived(this, new BuildStatusChangeEventArgs(eventRaised, identity));
                 _eventListeners.Add(buildStatusChangeEvent);
