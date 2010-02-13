@@ -25,32 +25,27 @@ using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Configuration
 {
-    /// <summary>
-    /// This class reads configuration information
-    /// fromt the TeamBuild section of TFS and returns.
-    /// </summary>
-    public class TfsConfigReader : IConfigurationReader
+    public class ConfigurationReader : IConfigurationReader
     {
-        private readonly TfsHelper _tfsHelper;
+        private readonly IConfigurationSource _configurationSource;
 
-        public TfsConfigReader(TfsHelper tfsHelper)
+        public ConfigurationReader(IConfigurationSource configurationSource)
         {
-            _tfsHelper = tfsHelper;
+            _configurationSource = configurationSource;
         }
 
-        const string ConfigurationFileName = "DeploymentMappings.xml";
+        const string ConfigurationFileName = "DeployerConfiguration.xml";
         
-        public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild, IWorkingDirectory workingDirectory)
+        public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild, string workingDirectory)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", teamProjectName, teamBuild.BuildType);
-            _tfsHelper.GetSharedResources(workingDirectory);
-            _tfsHelper.GetDeploymentItems(teamProjectName, teamBuild.BuildType, workingDirectory);
-            var configuration = ConfigurationReaderHelper.Read(Path.Combine(workingDirectory.DirectoryInfo.FullName, ConfigurationFileName));
+            _configurationSource.CopyTo(workingDirectory);
+            var configuration = ConfigurationReaderHelper.Read(Path.Combine(workingDirectory, ConfigurationFileName));
             if (configuration == null)
             {
                 return new Mapping[0];
             }
-            return configuration.Mappings;
+            return configuration.Mappings; //TODO filter by teamBuild.BuildType
         }
       
     }

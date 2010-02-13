@@ -37,8 +37,8 @@ namespace TfsDeployer
         private readonly IMappingEvaluator _mappingEvaluator;
         private readonly IBuildServer _buildServer;
 
-        public Deployer(TfsHelper tfsHelper, IBuildServer buildServer)
-            : this(new DeployAgentProvider(), new TfsConfigReader(tfsHelper), new EmailAlerter(), new MappingEvaluator(), buildServer)
+        public Deployer(IConfigurationSource configurationSource, IBuildServer buildServer)
+            : this(new DeployAgentProvider(), new ConfigurationReader(configurationSource), new EmailAlerter(), new MappingEvaluator(), buildServer)
         {
         }
 
@@ -66,7 +66,7 @@ namespace TfsDeployer
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
                 using (var workingDirectory = new WorkingDirectory())
                 {
-                    var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory);
+                    var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory.DirectoryInfo.FullName);
 
                     foreach (var mapping in mappings)
                     {

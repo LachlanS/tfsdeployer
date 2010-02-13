@@ -75,6 +75,7 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -86,6 +87,7 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.TeamFoundation.Build.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86">
@@ -124,7 +126,7 @@
   <ItemGroup>
     <Compile Include="Alert\EmailAlerter.cs" />
     <Compile Include="Alert\EmailSettings.cs" />
-    <Compile Include="AppConfigTeamFoundationServerProvider.cs" />
+    <Compile Include="AppConfigTfsConnectionProvider.cs" />
     <Compile Include="BuildInformation.cs" />
     <Compile Include="CommandLine\CommandLine.cs">
       <SubType>Code</SubType>
@@ -137,8 +139,7 @@
       <DependentUpon>DeploymentMappings.xsd</DependentUpon>
     </Compile>
     <Compile Include="Configuration\IConfigurationReader.cs" />
-    <Compile Include="Configuration\TfsConfigReader.cs" />
-    <Compile Include="Configuration\TfsHelper.cs" />
+    <Compile Include="Configuration\ConfigurationReader.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
@@ -150,8 +151,9 @@
     <Compile Include="Encrypter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IConfigurationSource.cs" />
     <Compile Include="IDeployerFactory.cs" />
-    <Compile Include="ITeamFoundationServerProvider.cs" />
+    <Compile Include="ITfsConnectionProvider.cs" />
     <Compile Include="SimpleCredentialsProvider.cs" />
     <Compile Include="TeamFoundation\IBuildData.cs" />
     <Compile Include="TeamFoundation\BuildDetailToBuildDataAdapter.cs" />
@@ -173,7 +175,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SourceCodeControlHelper.cs" />
+    <Compile Include="VersionControlConfigurationSource.cs" />
     <Compile Include="TfsDeployerApplication.cs" />
     <Compile Include="TfsDeployerInstaller.cs">
       <SubType>Component</SubType>

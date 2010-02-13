@@ -12,8 +12,8 @@ namespace TfsDeployer
         public void Start()
         {
             if (_trigger != null) throw new InvalidOperationException("Already started.");
-            var serverProvider = new AppConfigTeamFoundationServerProvider();
-            var server = serverProvider.GetServer();
+            var serverProvider = new AppConfigTfsConnectionProvider();
+            var server = serverProvider.GetConnection();
             var eventService = server.GetService<IEventService>();
             var buildServer = server.GetService<IBuildServer>();
             var versionControlServer = server.GetService<VersionControlServer>();

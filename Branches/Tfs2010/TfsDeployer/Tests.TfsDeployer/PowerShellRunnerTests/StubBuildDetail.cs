@@ -40,11 +40,6 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        IBuildOutput[] IBuildDetail.GetBuildOutputs()
-        {
-            throw new NotImplementedException();
-        }
-
         string IBuildDetail.BuildNumber
         {
             get
@@ -338,24 +333,5 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.AddWorkspaceInstance(IWorkspaceInstance instance)
-        {
-            throw new NotImplementedException();
-        }
-
-        IWorkspaceInstance[] IBuildDetail.GetWorkspaceInstances()
-        {
-            throw new NotImplementedException();
-        }
-
-        string IBuildDetail.GetServerItemForLocalItem(Guid outputGuid, int outputAge, string localPath, bool refresh)
-        {
-            throw new NotImplementedException();
-        }
-
-        string IBuildDetail.GetServerItemForLocalItem(Guid outputGuid, int outputAge, string localPath)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

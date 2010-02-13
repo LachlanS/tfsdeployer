@@ -41,5 +41,8 @@
     <Setting Name="BaseAddress" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://MyHostname/Temporary_Listen_Addresses/TfsDeployer</Value>
     </Setting>
+    <Setting Name="ConfigurationPath" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">$/MyProject/MyConfigPath/</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

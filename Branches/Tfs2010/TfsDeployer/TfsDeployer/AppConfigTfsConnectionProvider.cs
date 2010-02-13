@@ -1,13 +1,14 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Microsoft.TeamFoundation.Client;
 
 namespace TfsDeployer
 {
-    internal class AppConfigTeamFoundationServerProvider : ITeamFoundationServerProvider
+    internal class AppConfigTfsConnectionProvider : ITfsConnectionProvider
     {
         private readonly ICredentialsProvider _credentialsProvider;
 
-        public AppConfigTeamFoundationServerProvider()
+        public AppConfigTfsConnectionProvider()
         {
             var settings = Properties.Settings.Default;
             if (string.IsNullOrEmpty(settings.TfsUserName)) return;
@@ -16,9 +17,10 @@ namespace TfsDeployer
             _credentialsProvider = new SimpleCredentialsProvider(credentials);
         }
         
-        public TeamFoundationServer GetServer()
+        public TfsConnection GetConnection()
         {
-            return TeamFoundationServerFactory.GetServer(Properties.Settings.Default.TeamProjectCollectionUri, _credentialsProvider);
+            var uri = new Uri(Properties.Settings.Default.TeamProjectCollectionUri);
+            return TfsTeamProjectCollectionFactory.GetTeamProjectCollection(uri, _credentialsProvider);
         }
     }
 }
