@@ -20,6 +20,7 @@
 
 using System;
 using System.Text;
+using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using System.Net.Mail;
 using TfsDeployer.Properties;

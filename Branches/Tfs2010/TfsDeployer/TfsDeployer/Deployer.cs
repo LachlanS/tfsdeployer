@@ -119,7 +119,7 @@ namespace TfsDeployer
             var collection = new List<DeployScriptParameter>();
             foreach (var p in parameters)
             {
-                collection.Add(new DeployScriptParameter { Name = p.name, Value = p.value });
+                collection.Add(new DeployScriptParameter { Name = p.Name, Value = p.Value });
             }
             return collection;
         }

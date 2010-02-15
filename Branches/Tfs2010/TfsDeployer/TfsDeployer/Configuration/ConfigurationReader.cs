@@ -20,6 +20,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.TeamFoundation;
 
@@ -45,7 +47,7 @@ namespace TfsDeployer.Configuration
             {
                 return new Mapping[0];
             }
-            return configuration.Mappings; //TODO filter by teamBuild.BuildType
+            return configuration.Mappings.Where(m => Regex.IsMatch(teamBuild.BuildType, m.BuildDefinitionPattern)).ToArray(); 
         }
       
     }

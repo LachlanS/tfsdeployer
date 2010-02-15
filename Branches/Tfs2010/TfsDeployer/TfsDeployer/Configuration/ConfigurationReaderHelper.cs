@@ -24,26 +24,17 @@ using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer.Configuration
 {
-    /// <summary>
-    /// Responsible for reading the configuration items from whatever form it will take
-    /// </summary>
     public static class ConfigurationReaderHelper
     {
-        /// <summary>
-        /// Read the config file from a stream
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        private  static DeploymentMappings Read(TextReader reader)
+        private static DeployerConfiguration Read(TextReader reader)
         {
-            
-            XmlSerializer serializer = new XmlSerializer(typeof(DeploymentMappings));
-            DeploymentMappings config = (DeploymentMappings)serializer.Deserialize(reader);
+            var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+            var config = (DeployerConfiguration)serializer.Deserialize(reader);
             reader.Close();
             return config;
         }
 
-        public static DeploymentMappings Read(string configFileName)
+        public static DeployerConfiguration Read(string configFileName)
         {
             //Verify that the deployment mappings file is a valid file
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFileName);
@@ -66,7 +57,7 @@ namespace TfsDeployer.Configuration
             {
                 using (TextReader reader = new StreamReader(configFileName))
                 {
-                    DeploymentMappings config = Read(reader);
+                    var config = Read(reader);
                     return config;
                 }
             }

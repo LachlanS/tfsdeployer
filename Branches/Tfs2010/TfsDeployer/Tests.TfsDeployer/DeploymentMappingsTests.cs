@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TfsDeployer.Configuration;
 
 namespace Tests.TfsDeployer
 {
@@ -15,8 +15,8 @@ namespace Tests.TfsDeployer
         {
             using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentOriginalQuality))
             {
-                var serializer = new XmlSerializer(typeof(DeploymentMappings));
-                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+                var mappings = (DeployerConfiguration)serializer.Deserialize(textReader);
                 Assert.IsNull(mappings.Mappings[0].OriginalQuality, "OriginalQuality");
             }
         }
@@ -26,8 +26,8 @@ namespace Tests.TfsDeployer
         {
             using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentNewQuality))
             {
-                var serializer = new XmlSerializer(typeof(DeploymentMappings));
-                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+                var mappings = (DeployerConfiguration)serializer.Deserialize(textReader);
                 Assert.IsNull(mappings.Mappings[0].NewQuality, "NewQuality");
             }
         }
@@ -37,8 +37,8 @@ namespace Tests.TfsDeployer
         {
             using (var textReader = new StringReader(SerializedDeploymentMappings.AbsentRetainBuild))
             {
-                var serializer = new XmlSerializer(typeof(DeploymentMappings));
-                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+                var mappings = (DeployerConfiguration)serializer.Deserialize(textReader);
                 Assert.IsFalse(mappings.Mappings[0].RetainBuildSpecified, "RetainBuild");
             }
         }

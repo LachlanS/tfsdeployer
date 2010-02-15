@@ -1,4 +1,5 @@
-﻿using TfsDeployer.Properties;
+﻿using TfsDeployer.Configuration;
+using TfsDeployer.Properties;
 
 namespace TfsDeployer.DeployAgent
 {

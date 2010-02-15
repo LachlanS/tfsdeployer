@@ -3,6 +3,7 @@ using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer;
 using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Configuration;
 
 namespace Tests.TfsDeployer.MappingEvaluatorTests
 {

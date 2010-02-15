@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer
 {

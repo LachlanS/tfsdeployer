@@ -135,8 +135,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Configuration\ConfigurationReaderHelper.cs" />
-    <Compile Include="Configuration\DeploymentMappings.cs">
-      <DependentUpon>DeploymentMappings.xsd</DependentUpon>
+    <Compile Include="Configuration\DeployerConfiguration.cs">
+      <DependentUpon>DeployerConfiguration.xsd</DependentUpon>
     </Compile>
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\ConfigurationReader.cs" />
@@ -188,12 +188,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Configuration\DeploymentMappings.xsd">
-      <SubType>
-      </SubType>
-    </None>
-    <None Include="Configuration\DeploymentMappings.xsx">
-      <DependentUpon>DeploymentMappings.xsd</DependentUpon>
+    <None Include="Configuration\DeployerConfiguration.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -204,7 +200,7 @@
     <None Include="Samples\Publish.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Samples\DeploymentMappings.xml" />
+    <None Include="Samples\DeployerConfiguration.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj">
