@@ -134,7 +134,6 @@
     <Compile Include="CommandLine\CommandLineParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration\ConfigurationReaderHelper.cs" />
     <Compile Include="Configuration\DeployerConfiguration.cs">
       <DependentUpon>DeployerConfiguration.xsd</DependentUpon>
     </Compile>
