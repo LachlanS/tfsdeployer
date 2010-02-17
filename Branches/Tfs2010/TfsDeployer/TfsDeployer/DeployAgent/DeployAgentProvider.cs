@@ -14,12 +14,7 @@ namespace TfsDeployer.DeployAgent
             }
             else
             {
-                var powerShellDeployAgent = new LocalPowerShellDeployAgent();
-                if (Settings.Default.IgnoreSystemPowerShellExecutionPolicy)
-                {
-                    powerShellDeployAgent.ExecutionPolicyBehaviour = PowerShellExecutionPolicyBehaviour.Unrestricted;
-                }
-                agent = powerShellDeployAgent;
+                agent = new LocalPowerShellDeployAgent();
             }
             return agent;
         }

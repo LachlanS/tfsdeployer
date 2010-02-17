@@ -51,6 +51,17 @@ namespace TfsDeployer.Configuration
             return configuration.Mappings.Where(m => Regex.IsMatch(teamBuild.BuildType, m.BuildDefinitionPattern)).ToArray(); 
         }
 
+        public Alerts ReadAlerts()
+        {
+            using (var workingDirectoryScope = new WorkingDirectory())
+            {
+                var workingDirectory = workingDirectoryScope.DirectoryInfo.FullName;
+                _configurationSource.CopyTo(workingDirectory);
+                var configuration = Read(Path.Combine(workingDirectory, ConfigurationFileName));
+                return configuration != null ? configuration.Alerts : new Alerts();
+            }
+        }
+
         private static DeployerConfiguration Read(string configFileName)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFileName);

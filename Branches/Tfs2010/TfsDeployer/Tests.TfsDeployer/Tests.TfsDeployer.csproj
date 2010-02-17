@@ -82,7 +82,6 @@
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\StubBuildDetail.cs" />
     <Compile Include="PowerShellRunnerTests\When_deploying_a_failing_PowerShell_script.cs" />
-    <Compile Include="PowerShellRunnerTests\When_overriding_system_ExecutionPolicy.cs" />
     <Compile Include="PowerShellScripts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

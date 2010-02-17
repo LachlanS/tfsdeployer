@@ -18,7 +18,7 @@ namespace TfsDeployer
             bool isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
             bool isComputerMatch = IsComputerMatch(mapping.Computer);
 
-            string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
+            const string wildcardQuality = "*";
             bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
             bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
             bool isUserPermitted = IsUserPermitted(triggerEvent, mapping);

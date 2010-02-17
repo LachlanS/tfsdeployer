@@ -26,5 +26,6 @@ namespace TfsDeployer.Configuration
     public interface IConfigurationReader
     {
         IEnumerable<Mapping> ReadMappings(string teamProject, IBuildData teamBuild, string workingDirectory);
+        Alerts ReadAlerts();
     }
 }

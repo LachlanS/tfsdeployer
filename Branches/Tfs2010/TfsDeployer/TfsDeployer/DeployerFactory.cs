@@ -1,5 +1,7 @@
 ﻿using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using TfsDeployer.Alert;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer
 {
@@ -16,7 +18,13 @@ namespace TfsDeployer
 
         public Deployer Create()
         {
-            return new Deployer(new VersionControlConfigurationSource(_versionControlServer, Properties.Settings.Default.ConfigurationPath), _buildServer);
+            var configurationSource = new VersionControlConfigurationSource(_versionControlServer, Properties.Settings.Default.ConfigurationPath);
+            var configurationReader = new ConfigurationReader(configurationSource);
+            var emailAlertSettings = configurationReader.ReadAlerts().Email;
+            var emailAlerter = new EmailAlerter(emailAlertSettings.SmtpServer,
+                                                emailAlertSettings.SenderAddress,
+                                                emailAlertSettings.RecipientAddress);
+            return new Deployer(configurationSource, _buildServer, emailAlerter);
         }
     }
 }

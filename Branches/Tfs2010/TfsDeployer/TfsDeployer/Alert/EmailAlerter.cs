@@ -23,7 +23,6 @@ using System.Text;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using System.Net.Mail;
-using TfsDeployer.Properties;
 using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.TeamFoundation;
 
@@ -31,18 +30,29 @@ namespace TfsDeployer.Alert
 {
     public class EmailAlerter : IAlert
     {
+        private string _smtpServer;
+        private string _senderAddress;
+        private string _defaultRecipientAddress;
+
+        public EmailAlerter(string smtpServer, string senderAddress, string defaultRecipientAddress)
+        {
+            _smtpServer = smtpServer;
+            _senderAddress = senderAddress;
+            _defaultRecipientAddress = defaultRecipientAddress;
+        }
+        
         public void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult)
         {
             try
             {
-                var client = new SmtpClient(Settings.Default.SmtpServer);
+                var client = new SmtpClient(_smtpServer);
                 var subject = GetSubject(mapping, build, deployAgentResult);
                 var body = GetBody(mapping, build, deployAgentResult);
-                var toAddress = mapping.NotificationAddress ?? Settings.Default.ToAddress;
+                var toAddress = mapping.NotificationAddress ?? _defaultRecipientAddress;
                 
                 var message = new MailMessage
                                   {
-                                      From = new MailAddress(Settings.Default.FromAddress),
+                                      From = new MailAddress(_senderAddress),
                                       Subject = subject,
                                       Body = body
                                   };

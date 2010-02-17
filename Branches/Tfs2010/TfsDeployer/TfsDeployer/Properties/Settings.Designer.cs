@@ -25,15 +25,6 @@ namespace TfsDeployer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("release.manager@yourcompany.com")]
-        public string ToAddress {
-            get {
-                return ((string)(this["ToAddress"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string KeyFile {
             get {
@@ -47,51 +38,6 @@ namespace TfsDeployer.Properties {
         public bool SignDeploymentMappingFile {
             get {
                 return ((bool)(this["SignDeploymentMappingFile"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("release.manager@yourcompany.com")]
-        public string FromAddress {
-            get {
-                return ((string)(this["FromAddress"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("mailserver")]
-        public string SmtpServer {
-            get {
-                return ((string)(this["SmtpServer"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*")]
-        public string BuildQualityWildcard {
-            get {
-                return ((string)(this["BuildQualityWildcard"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SharedResourceServerPath {
-            get {
-                return ((string)(this["SharedResourceServerPath"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IgnoreSystemPowerShellExecutionPolicy {
-            get {
-                return ((bool)(this["IgnoreSystemPowerShellExecutionPolicy"]));
             }
         }
         
