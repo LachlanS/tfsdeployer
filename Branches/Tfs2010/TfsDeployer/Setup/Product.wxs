@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://matthewrowan.spaces.live.com/ -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="47D54321-5B28-4AF6-B0DF-140E811B2895" Name="Tfs Deployer" Language="1033" Version="1.1.0.0" Manufacturer="TfsDeployer" UpgradeCode="D6B21FA7-8AE4-4714-8936-CFFA40CF9F8E">
+		<Package InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" Comments="http://tfsdeployer.codeplex.com/" />
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <!-- Start up conditions -->
+    <Condition Message="!(loc.LaunchCondition_WindowsVista)">NOT INSTALLED AND VersionNT &gt;= 6</Condition>
+    <Condition Message="!(loc.LaunchCondition_Administrator)">Privileged</Condition>
+    <Property Id="FRAMEWORK35">
+      <RegistrySearch Id="Framework35Registry" Type="raw" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v3.5" Name="SP" />
+    </Property>
+    <Condition Message="!(loc.LaunchCondition_DotNetFramework35)">FRAMEWORK35 &gt;= "#1"</Condition>
+    <Property Id="TEAMEXPLORER2010">
+      <RegistrySearch Id="TeamExplorerRegistry2010" Type="raw" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\10.0\InstalledProducts\Team Explorer" Name="Package" />
+    </Property>
+    <Property Id="TEAMEXPLORER2010_64">
+      <RegistrySearch Id="TeamExplorerRegistry2010_64" Type="raw" Root="HKLM" Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\10.0\InstalledProducts\Team Explorer" Name="Package" />
+    </Property>
+    <Condition Message="!(loc.LaunchCondition_TeamExplorerMustBeInstalled)">TEAMEXPLORER2010 OR TEAMEXPLORER2010_64</Condition>
+
+    <PropertyRef Id="WIX_ACCOUNT_LOCALSERVICE" />
+    <Property Id="SERVICE_ACCOUNT" Value="Unspecified" />
+    <Property Id="SERVICE_ACCOUNT_PASSWORD" Hidden="yes" />
+
+    <CustomAction Id="CA_SetServiceAccount" Property="SERVICE_ACCOUNT" Value="[WIX_ACCOUNT_LOCALSERVICE]" />
+    
+    <CustomAction Id="CA_SetQtExecDeferredUrlReservation" Property="CA_QtExecUrlReservation" Value="&quot;[SystemFolder]netsh&quot; http add urlacl url=http://+:8881/BuildStatusChangeEvent user=[SERVICE_ACCOUNT]" />
+    <CustomAction Id="CA_QtExecUrlReservation" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="ignore" />
+
+    <Property Id="POWERSHELLEXE">
+      <RegistrySearch Id="POWERSHELLEXE" Root="HKLM" Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" Name="Path" Type="raw" />
+    </Property>    
+    <CustomAction Id="CA_SetPowerShellExecutionPolicy" Execute="deferred" Return="check" Property="POWERSHELLEXE" ExeCommand="-NoLogo -NoProfile -NonInteractive -Command Set-ExecutionPolicy RemoteSigned" />
+
+    <InstallExecuteSequence>
+      <Custom Action="CA_SetServiceAccount" After="InstallInitialize">NOT SERVICE_ACCOUNT</Custom>      
+      <Custom Action="CA_SetQtExecDeferredUrlReservation" After="CA_SetServiceAccount">NOT Installed</Custom>
+      <Custom Action="CA_QtExecUrlReservation" After="CA_SetQtExecDeferredUrlReservation">NOT Installed</Custom>      
+      <Custom Action="CA_SetPowerShellExecutionPolicy" After="CA_QtExecUrlReservation">NOT Installed</Custom>
+    </InstallExecuteSequence>
+    
+    <Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLLOCATION" Name="Tfs Deployer" FileSource="$(var.TfsDeployer.TargetDir)">
+					<Component Id="TfsDeployerFiles" Guid="F29197CA-37C5-4015-AEC1-FECFE67F3DAE">
+            
+            <File Name="Readify.Useful.TeamFoundation.Common.dll" />
+            <File Name="Readify.Useful.TeamFoundation.Common.pdb" />
+            <File Name="TFSDeployer.exe" KeyPath="yes" />
+            <File Name="TFSDeployer.pdb" />
+            <File Name="TFSDeployer.exe.config" />
+            
+            <util:XmlFile Id="XmlBaseAddress" Action="setValue" Value="http://[ComputerName]:8881"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="BaseAddress"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>
+            <util:XmlFile Id="XmlRegistrationUserName" Action="setValue" Value="[SERVICE_ACCOUNT]"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="RegistrationUserName"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>
+            <util:XmlFile Id="XmlTfsUrl" Action="setValue" Value="[TFS_URL]"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="TeamFoundationServerUrl"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>            
+            
+            <ServiceInstall Name="TfsDeployer" DisplayName="!(loc.ServiceInstall_DisplayName)" Description="!(loc.ServiceInstall_Description)"
+                            ErrorControl="normal" Start="auto" Type="ownProcess" Account="[SERVICE_ACCOUNT]" Password="[SERVICE_ACCOUNT_PASSWORD]" Vital="no" />
+            <ServiceControl Id="StartTfsDeployerService" Name="TfsDeployer" Start="install" Stop="uninstall" Remove="uninstall" Wait="no" />
+            
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature Id="ProgramFiles" Title="Tfs Deployer" Level="1">
+			<ComponentRef Id="TfsDeployerFiles" />
+		</Feature>
+	</Product>
+</Wix>

@@ -20,9 +20,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readify.Useful.TeamFoundati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.TfsDeployer", "Tests.TfsDeployer\Tests.TfsDeployer.csproj", "{2E5C759A-7EBE-4928-B673-7B124F1E607E}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{97E76AAC-E95B-4447-AC00-5070817369F4}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -35,6 +37,9 @@ Global
 		SccProjectUniqueName3 = Tests.TfsDeployer\\Tests.TfsDeployer.csproj
 		SccProjectName3 = Tests.TfsDeployer
 		SccLocalPath3 = Tests.TfsDeployer
+		SccProjectUniqueName4 = Setup\\Setup.wixproj
+		SccProjectName4 = Setup
+		SccLocalPath4 = Setup
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = TfsDeployer.vsmdi
@@ -56,6 +61,10 @@ Global
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Debug|x86.Build.0 = Debug|x86
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Release|x86.ActiveCfg = Release|x86
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Release|x86.Build.0 = Release|x86
+		{97E76AAC-E95B-4447-AC00-5070817369F4}.Debug|x86.ActiveCfg = Debug|x86
+		{97E76AAC-E95B-4447-AC00-5070817369F4}.Debug|x86.Build.0 = Debug|x86
+		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.ActiveCfg = Release|x86
+		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
