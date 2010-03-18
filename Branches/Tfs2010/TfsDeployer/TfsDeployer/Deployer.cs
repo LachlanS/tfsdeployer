@@ -117,6 +117,9 @@ namespace TfsDeployer
         private static ICollection<DeployScriptParameter> CreateParameters(IEnumerable<ScriptParameter> parameters)
         {
             var collection = new List<DeployScriptParameter>();
+            if (parameters == null)
+                return collection;
+
             foreach (var p in parameters)
             {
                 collection.Add(new DeployScriptParameter { Name = p.Name, Value = p.Value });
