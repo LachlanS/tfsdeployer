@@ -43,5 +43,16 @@ namespace Tests.TfsDeployer
             }
         }
 
+        [TestMethod]
+        public void ShouldDeserializeSmtpServer()
+        {
+            using (var textReader = new StringReader(SerializedDeploymentMappings.CompleteDeployerConfiguration))
+            {
+                var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+                var configuration = (DeployerConfiguration)serializer.Deserialize(textReader);
+                Assert.IsFalse(string.IsNullOrEmpty(configuration.Alerts.Email.SmtpServer));
+            }
+        }
+
     }
 }

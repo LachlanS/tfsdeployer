@@ -1,0 +1,36 @@
+<DeployerConfiguration xmlns="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214">
+
+  <Alerts>
+    <Email RecipientAddress="defaultperson@nowhere.test.com"
+           SenderAddress="tfsdeployer@nowhere.test.com"
+           SmtpServer="MySmtpServer.com" />
+  </Alerts>
+  
+  <Mapping BuildDefinitionPattern="MyBuildDefA"
+           Computer="BuildServerA"
+           OriginalQuality="*"
+           NewQuality="Under Investigation"
+           Script="PrepareForInvestigation.ps1" />
+
+  <Mapping BuildDefinitionPattern="MyBuildDefB"
+           Computer="AnotherBuildServer"
+           OriginalQuality="Under Investigation"
+           NewQuality="Ready for Deployment"
+           Script="PrepareForDeployment.cmd"
+           RunnerType="BatchFile"
+           Status="Succeeded,PartiallySucceeded" />
+
+  <Mapping BuildDefinitionPattern="MyBuildDef[AB]"
+           Computer="FinalBuildServer"
+           OriginalQuality="Ready for Deployment"
+           NewQuality="Released"
+           Script="Publish.ps1"
+           RunnerType="PowerShell"
+           NotificationAddress="adifferentperson@nowhere.test.com"
+           PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
+           Status="Succeeded"
+           RetainBuild="true">
+    <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
+  </Mapping>
+
+</DeployerConfiguration>

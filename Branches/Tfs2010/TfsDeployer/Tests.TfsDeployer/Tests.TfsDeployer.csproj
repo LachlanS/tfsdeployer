@@ -111,6 +111,7 @@
   <ItemGroup>
     <Content Include="Resources\AbsentNewQuality.xml" />
     <Content Include="Resources\AbsentOriginalQuality.xml" />
+    <Content Include="Resources\CompleteDeployerConfiguration.xml" />
     <Content Include="SampleBuildStatusChangeEventNotification.xml" />
   </ItemGroup>
   <ItemGroup>

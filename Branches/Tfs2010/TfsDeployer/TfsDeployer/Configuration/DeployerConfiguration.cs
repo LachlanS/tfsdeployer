@@ -19,8 +19,13 @@ namespace TfsDeployer.Configuration
 
     public class EmailAlert
     {
+        [XmlAttribute]
         public string RecipientAddress { get; set; }
+
+        [XmlAttribute]
         public string SenderAddress { get; set; }
+
+        [XmlAttribute]
         public string SmtpServer { get; set; }
     }
 
