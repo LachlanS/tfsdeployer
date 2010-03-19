@@ -139,6 +139,7 @@
     </Compile>
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\ConfigurationReader.cs" />
+    <Compile Include="DeployAgent\DeployAgentDataFactory.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />

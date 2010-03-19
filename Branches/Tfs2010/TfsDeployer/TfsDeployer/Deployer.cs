@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -83,7 +82,8 @@ namespace TfsDeployer
 
                             var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
 
-                            var deployData = CreateDeployAgentData(workingDirectory.DirectoryInfo.FullName, mapping, info);
+                            var deployAgentDataFactory = new DeployAgentDataFactory();
+                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName, mapping, info);
                             var deployResult = deployAgent.Deploy(deployData);
 
                             ApplyRetainBuild(mapping, deployResult, info.Detail);
@@ -96,35 +96,6 @@ namespace TfsDeployer
             {
                 TraceHelper.TraceError(TraceSwitches.TfsDeployer, ex);
             }
-        }
-
-        private static DeployAgentData CreateDeployAgentData(string directory, Mapping mapping, BuildInformation buildInfo)
-        {
-            var data = new DeployAgentData
-                           {
-                               NewQuality = mapping.NewQuality,
-                               OriginalQuality = mapping.OriginalQuality,
-                               DeployServer = mapping.Computer,
-                               DeployScriptFile = mapping.Script,
-                               DeployScriptRoot = directory,
-                               DeployScriptParameters = CreateParameters(mapping.ScriptParameters),
-                               Tfs2005BuildData = buildInfo.Data,
-                               Tfs2008BuildDetail = buildInfo.Detail
-                           };
-            return data;
-        }
-
-        private static ICollection<DeployScriptParameter> CreateParameters(IEnumerable<ScriptParameter> parameters)
-        {
-            var collection = new List<DeployScriptParameter>();
-            if (parameters == null)
-                return collection;
-
-            foreach (var p in parameters)
-            {
-                collection.Add(new DeployScriptParameter { Name = p.Name, Value = p.Value });
-            }
-            return collection;
         }
 
         private static void ApplyRetainBuild(Mapping mapping, DeployAgentResult deployAgentResult, IBuildDetail detail)

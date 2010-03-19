@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.TeamFoundation.Build.Client;
 
-namespace Tests.TfsDeployer.PowerShellRunnerTests
+namespace Tests.TfsDeployer
 {
     class StubBuildDetail : IBuildDetail
     {
@@ -40,17 +40,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        string IBuildDetail.BuildNumber
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        string IBuildDetail.BuildNumber { get; set; }
 
         IBuildServer IBuildDetail.BuildServer
         {
@@ -185,7 +175,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        public BuildReason Reason
+        BuildReason IBuildDetail.Reason
         {
             get { throw new NotImplementedException(); }
         }
