@@ -13,7 +13,7 @@
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
-		<Exec Command="&quot;$(VS90COMNTOOLS)..\IDE\mstest.exe&quot; /testContainer:&quot;Tests.TfsDeployer\bin\$(BuildType)\Tests.TfsDeployer.dll&quot;" />
+		<Exec Command="&quot;$(VS100COMNTOOLS)..\IDE\mstest.exe&quot; /testContainer:&quot;Tests.TfsDeployer\bin\$(BuildType)\Tests.TfsDeployer.dll&quot;" />
 	</Target>
 
 </Project>
