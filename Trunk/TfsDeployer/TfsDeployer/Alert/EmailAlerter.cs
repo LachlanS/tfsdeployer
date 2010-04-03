@@ -31,10 +31,18 @@ namespace TfsDeployer.Alert
 {
     public class EmailAlerter : IAlert
     {
+        private const string TraceFormat = @"Sending email alert via server '{0}'
+ From: '{1}'
+ To: '{2}'
+ Subject: {3}
+ 
+{4}";
+
         public void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult)
         {
             try
             {
+
                 var client = new SmtpClient(Settings.Default.SmtpServer);
                 var subject = GetSubject(mapping, build, deployAgentResult);
                 var body = GetBody(mapping, build, deployAgentResult);
@@ -47,6 +55,13 @@ namespace TfsDeployer.Alert
                                       Body = body
                                   };
 
+                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, string.Format(TraceFormat,
+                    client.Host,
+                    message.From.Address,
+                    toAddress,
+                    message.Subject,
+                    message.Body));
+                
                 // Allow multiple recipients separated by semi-colon
                 foreach (var address in toAddress.Split(';'))
                 {
