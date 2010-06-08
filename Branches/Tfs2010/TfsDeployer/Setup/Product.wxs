@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- http://matthewrowan.spaces.live.com/ -->
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-	<Product Id="47D54321-5B28-4AF6-B0DF-140E811B2895" Name="Tfs Deployer" Language="1033" Version="1.1.0.0" Manufacturer="TfsDeployer" UpgradeCode="D6B21FA7-8AE4-4714-8936-CFFA40CF9F8E">
-		<Package InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" Comments="http://tfsdeployer.codeplex.com/" />
-		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="47D54321-5B28-4AF6-B0DF-140E811B2895" 
+           Name="Tfs Deployer" 
+           Language="1033" 
+           Version="1.1.0.0" 
+           Manufacturer="TfsDeployer" 
+           UpgradeCode="D6B21FA7-8AE4-4714-8936-CFFA40CF9F8E">
+    
+		<Package InstallerVersion="200" 
+             Compressed="yes" 
+             InstallPrivileges="elevated" 
+             InstallScope="perMachine" 
+             Comments="http://tfsdeployer.codeplex.com/" />
+
+    <Media Id="1" 
+           Cabinet="media1.cab" 
+           EmbedCab="yes" />
 
     <!-- Start up conditions -->
     <Condition Message="!(loc.LaunchCondition_WindowsVista)">NOT INSTALLED AND VersionNT &gt;= 6</Condition>
     <Condition Message="!(loc.LaunchCondition_Administrator)">Privileged</Condition>
+
     <Property Id="FRAMEWORK35">
       <RegistrySearch Id="Framework35Registry" Type="raw" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v3.5" Name="SP" />
     </Property>
@@ -43,25 +58,45 @@
     
     <Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLLOCATION" Name="Tfs Deployer" FileSource="$(var.TfsDeployer.TargetDir)">
+				<Directory Id="INSTALLLOCATION" Name="TfsDeployer" FileSource="$(var.TfsDeployer.TargetDir)">
 					<Component Id="TfsDeployerFiles" Guid="F29197CA-37C5-4015-AEC1-FECFE67F3DAE">
             
             <File Name="Readify.Useful.TeamFoundation.Common.dll" />
-            <File Name="Readify.Useful.TeamFoundation.Common.pdb" />
-            <File Name="TFSDeployer.exe" KeyPath="yes" />
-            <File Name="TFSDeployer.pdb" />
-            <File Name="TFSDeployer.exe.config" />
+            <File Name="TfsDeployer.exe" KeyPath="yes" />
+            <File Name="TfsDeployer.exe.config" />
             
-            <util:XmlFile Id="XmlBaseAddress" Action="setValue" Value="http://[ComputerName]:8881"
-                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="BaseAddress"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>
-            <util:XmlFile Id="XmlRegistrationUserName" Action="setValue" Value="[SERVICE_ACCOUNT]"
-                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="RegistrationUserName"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>
-            <util:XmlFile Id="XmlTfsUrl" Action="setValue" Value="[TFS_URL]"
-                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="TeamFoundationServerUrl"[\]]/value' File="[INSTALLLOCATION]TFSDeployer.exe.config"/>            
+            <util:XmlFile Id="XmlBaseAddress" 
+                          Action="setValue" 
+                          Value="http://[ComputerName]:8881"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="BaseAddress"[\]]/value' 
+                          File="[INSTALLLOCATION]TfsDeployer.exe.config" />
+            <util:XmlFile Id="XmlRegistrationUserName" 
+                          Action="setValue" 
+                          Value="[SERVICE_ACCOUNT]"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="RegistrationUserName"[\]]/value' 
+                          File="[INSTALLLOCATION]TfsDeployer.exe.config"/>
+            <util:XmlFile Id="XmlTfsUrl" 
+                          Action="setValue" 
+                          Value="[TFS_URL]"
+                          ElementPath='/configuration/applicationSettings/Readify.Useful.TeamFoundation.Common.Properties.Settings/setting[\[]@name="TeamFoundationServerUrl"[\]]/value' 
+                          File="[INSTALLLOCATION]TfsDeployer.exe.config"/>            
+           
+            <ServiceInstall Name="TfsDeployer" 
+                            DisplayName="!(loc.ServiceInstall_DisplayName)" 
+                            Description="!(loc.ServiceInstall_Description)"
+                            ErrorControl="normal" 
+                            Start="auto" 
+                            Type="ownProcess" 
+                            Account="[SERVICE_ACCOUNT]" 
+                            Password="[SERVICE_ACCOUNT_PASSWORD]" 
+                            Vital="no" />
             
-            <ServiceInstall Name="TfsDeployer" DisplayName="!(loc.ServiceInstall_DisplayName)" Description="!(loc.ServiceInstall_Description)"
-                            ErrorControl="normal" Start="auto" Type="ownProcess" Account="[SERVICE_ACCOUNT]" Password="[SERVICE_ACCOUNT_PASSWORD]" Vital="no" />
-            <ServiceControl Id="StartTfsDeployerService" Name="TfsDeployer" Start="install" Stop="uninstall" Remove="uninstall" Wait="no" />
+            <ServiceControl Id="StartTfsDeployerService" 
+                            Name="TfsDeployer" 
+                            Start="install" 
+                            Stop="uninstall" 
+                            Remove="uninstall" 
+                            Wait="no" />
             
 					</Component>
 				</Directory>
