@@ -1,10 +1,18 @@
 ﻿using System;
 using Microsoft.TeamFoundation.Build.Client;
+using Rhino.Mocks;
 
 namespace Tests.TfsDeployer
 {
-    class StubBuildDetail : IBuildDetail
+    internal class StubBuildDetail : IBuildDetail
     {
+        private IBuildDefinition _buildDefinition;
+        
+        public StubBuildDetail()
+        {
+            _buildDefinition = MockRepository.GenerateStub<IBuildDefinition>();
+        }
+
         IBuildAgent IBuildDetail.BuildAgent
         {
             get { throw new NotImplementedException(); }
@@ -27,7 +35,7 @@ namespace Tests.TfsDeployer
 
         IBuildDefinition IBuildDetail.BuildDefinition
         {
-            get { throw new NotImplementedException(); }
+            get { return _buildDefinition; }
         }
 
         Uri IBuildDetail.BuildDefinitionUri
@@ -287,7 +295,7 @@ namespace Tests.TfsDeployer
 
         string IBuildDetail.TeamProject
         {
-            get { throw new NotImplementedException(); }
+            get { return "StubTeamProject"; }
         }
 
         event StatusChangedEventHandler IBuildDetail.StatusChanging

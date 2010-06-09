@@ -125,7 +125,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Alert\EmailAlerter.cs" />
-    <Compile Include="Alert\EmailSettings.cs" />
     <Compile Include="AppConfigTfsConnectionProvider.cs" />
     <Compile Include="BuildInformation.cs" />
     <Compile Include="CommandLine\CommandLine.cs">
@@ -147,11 +146,14 @@
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
+    <Compile Include="TemporaryFile.cs" />
+    <Compile Include="VersionControlDeploymentFileSource.cs" />
     <Compile Include="Encrypter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IConfigurationSource.cs" />
+    <Compile Include="IDeploymentFolderSource.cs" />
     <Compile Include="IDeployerFactory.cs" />
+    <Compile Include="IDeploymentFileSource.cs" />
     <Compile Include="ITfsConnectionProvider.cs" />
     <Compile Include="SimpleCredentialsProvider.cs" />
     <Compile Include="TeamFoundation\IBuildData.cs" />
@@ -174,7 +176,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="VersionControlConfigurationSource.cs" />
+    <Compile Include="VersionControlDeploymentFolderSource.cs" />
     <Compile Include="TfsDeployerApplication.cs" />
     <Compile Include="TfsDeployerInstaller.cs">
       <SubType>Component</SubType>
@@ -183,6 +185,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TraceSwitches.cs" />
+    <Compile Include="VersionControlPath.cs" />
     <Compile Include="WorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -199,7 +202,7 @@
     <None Include="Samples\Publish.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Samples\DeployerConfiguration.xml" />
+    <None Include="Samples\DeploymentMappings.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj">

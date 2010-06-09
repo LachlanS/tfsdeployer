@@ -18,13 +18,9 @@ namespace TfsDeployer
 
         public Deployer Create()
         {
-            var configurationSource = new VersionControlConfigurationSource(_versionControlServer, Properties.Settings.Default.ConfigurationPath);
-            var configurationReader = new ConfigurationReader(configurationSource);
-            var emailAlertSettings = configurationReader.ReadAlerts().Email;
-            var emailAlerter = new EmailAlerter(emailAlertSettings.SmtpServer,
-                                                emailAlertSettings.SenderAddress,
-                                                emailAlertSettings.RecipientAddress);
-            return new Deployer(configurationSource, _buildServer, emailAlerter);
+            var deploymentFolderSource = new VersionControlDeploymentFolderSource(_versionControlServer);
+            var deploymentFileSource = new VersionControlDeploymentFileSource(_versionControlServer);
+            return new Deployer(deploymentFileSource, deploymentFolderSource, _buildServer);
         }
     }
 }

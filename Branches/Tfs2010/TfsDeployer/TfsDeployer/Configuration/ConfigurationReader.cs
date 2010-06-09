@@ -23,43 +23,55 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
-using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Configuration
 {
     public class ConfigurationReader : IConfigurationReader
     {
-        private readonly IConfigurationSource _configurationSource;
+        private readonly IDeploymentFileSource _deploymentFileSource;
 
-        public ConfigurationReader(IConfigurationSource configurationSource)
+        public ConfigurationReader(IDeploymentFileSource deploymentFileSource)
         {
-            _configurationSource = configurationSource;
+            _deploymentFileSource = deploymentFileSource;
         }
 
-        const string ConfigurationFileName = "DeployerConfiguration.xml";
-        
-        public IEnumerable<Mapping> ReadMappings(string teamProjectName, IBuildData teamBuild, string workingDirectory)
+        public IEnumerable<Mapping> ReadMappings(IBuildDetail buildDetail)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", teamProjectName, teamBuild.BuildType);
-            _configurationSource.CopyTo(workingDirectory);
-            var configuration = Read(Path.Combine(workingDirectory, ConfigurationFileName));
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", buildDetail.TeamProject, buildDetail.BuildDefinition.Name);
+
+            DeployerConfiguration configuration;
+            using (var localFile = new TemporaryFile())
+            {
+                _deploymentFileSource.DownloadDeploymentFile(buildDetail, localFile.FileInfo.FullName);
+                configuration = Read(localFile.FileInfo.FullName);
+            }
             if (configuration == null)
             {
                 return new Mapping[0];
             }
-            return configuration.Mappings.Where(m => Regex.IsMatch(teamBuild.BuildType, m.BuildDefinitionPattern)).ToArray(); 
+            return configuration.Mappings
+                .Where(m => string.IsNullOrEmpty(m.BuildDefinitionPattern) 
+                    || Regex.IsMatch(buildDetail.BuildDefinition.Name, m.BuildDefinitionPattern))
+                .ToArray(); 
         }
 
-        public Alerts ReadAlerts()
+        private static DeployerConfiguration Read(Stream deployerConfiguration)
         {
-            using (var workingDirectoryScope = new WorkingDirectory())
+            var tempFileName = Path.GetTempFileName();
+            using (var tempFile = File.OpenWrite(tempFileName))
             {
-                var workingDirectory = workingDirectoryScope.DirectoryInfo.FullName;
-                _configurationSource.CopyTo(workingDirectory);
-                var configuration = Read(Path.Combine(workingDirectory, ConfigurationFileName));
-                return configuration != null ? configuration.Alerts : new Alerts();
+                int bytesRead;
+                var buffer = new byte[0x1000];
+                while ((bytesRead = deployerConfiguration.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    tempFile.Write(buffer, 0, bytesRead);
+                }
             }
+            var config = Read(tempFileName);
+            File.Delete(tempFileName);
+            return config;
         }
 
         private static DeployerConfiguration Read(string configFileName)

@@ -1,16 +1,11 @@
 <DeployerConfiguration xmlns="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214">
 
-  <Alerts>
-    <Email RecipientAddress="defaultperson@nowhere.test.com"
-           SenderAddress="tfsdeployer@nowhere.test.com"
-           SmtpServer="MySmtpServer.com" />
-  </Alerts>
-  
   <Mapping BuildDefinitionPattern="MyBuildDefA"
            Computer="BuildServerA"
            OriginalQuality="*"
            NewQuality="Under Investigation"
-           Script="PrepareForInvestigation.ps1" />
+           Script="PrepareForInvestigation.ps1" 
+           NotificationAddress="someperson@nowhere.test.com" />
 
   <Mapping BuildDefinitionPattern="MyBuildDefB"
            Computer="AnotherBuildServer"
@@ -18,6 +13,7 @@
            NewQuality="Ready for Deployment"
            Script="PrepareForDeployment.cmd"
            RunnerType="BatchFile"
+           NotificationAddress="someperson@nowhere.test.com"
            Status="Succeeded,PartiallySucceeded" />
 
   <Mapping BuildDefinitionPattern="MyBuildDef[AB]"

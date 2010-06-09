@@ -32,20 +32,22 @@ namespace TfsDeployer
     {
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IConfigurationReader _configurationReader;
+        private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
         private readonly IBuildServer _buildServer;
 
-        public Deployer(IConfigurationSource configurationSource, IBuildServer buildServer, IAlert alert)
-            : this(new DeployAgentProvider(), new ConfigurationReader(configurationSource), alert, new MappingEvaluator(), buildServer)
+        public Deployer(IDeploymentFileSource deploymentFileSource, IDeploymentFolderSource deploymentFolderSource, IBuildServer buildServer)
+            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), buildServer)
         {
         }
 
-        public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IAlert alert,
+        public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IDeploymentFolderSource deploymentFolderSource, IAlert alert,
                         IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
         {
             _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
+            _deploymentFolderSource = deploymentFolderSource;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
             _buildServer = buildServer;
@@ -63,32 +65,36 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.NewValue);
 
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
-                using (var workingDirectory = new WorkingDirectory())
+                var mappings = _configurationReader.ReadMappings(info.Detail);
+                foreach (var mapping in mappings)
                 {
-                    var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory.DirectoryInfo.FullName);
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                 "Processing Mapping: Computer:{0}, Script:{1}",
+                                                 mapping.Computer,
+                                                 mapping.Script);
 
-                    foreach (var mapping in mappings)
+                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                     "Processing Mapping: Computer:{0}, Script:{1}",
-                                                     mapping.Computer,
+                                                     "Matching mapping found, running script {0}",
                                                      mapping.Script);
 
-                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
+                        var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+
+                        var deployAgentDataFactory = new DeployAgentDataFactory();
+
+                        DeployAgentResult deployResult;
+                        using (var workingDirectory = new WorkingDirectory())
                         {
-                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                         "Matching mapping found, running script {0}",
-                                                         mapping.Script);
+                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                           mapping, info);
 
-                            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-                            var deployAgentDataFactory = new DeployAgentDataFactory();
-                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName, mapping, info);
-                            var deployResult = deployAgent.Deploy(deployData);
-
-                            ApplyRetainBuild(mapping, deployResult, info.Detail);
-                            _alerter.Alert(mapping, info.Data, deployResult);
+                            _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                            deployResult = deployAgent.Deploy(deployData);
                         }
+
+                        ApplyRetainBuild(mapping, deployResult, info.Detail);
+                        _alerter.Alert(mapping, info.Data, deployResult);
                     }
                 }
             }

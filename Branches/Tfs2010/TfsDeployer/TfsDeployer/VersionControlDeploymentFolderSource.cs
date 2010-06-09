@@ -19,29 +19,29 @@
 // THE SOFTWARE.
 
 using System;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
-    public class VersionControlConfigurationSource : IConfigurationSource
+    public class VersionControlDeploymentFolderSource : IDeploymentFolderSource
     {
         private readonly VersionControlServer _versionControlServer;
-        private readonly string _tfsConfigurationPath;
 
-        public VersionControlConfigurationSource(VersionControlServer versionControlServer, string tfsConfigurationPath)
+        public VersionControlDeploymentFolderSource(VersionControlServer versionControlServer)
         {
             _versionControlServer = versionControlServer;
-            _tfsConfigurationPath = tfsConfigurationPath;
         }
 
-        public void CopyTo(string localPath)
+        public void DownloadDeploymentFolder(IBuildDetail buildDetail, string destination)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", _tfsConfigurationPath, localPath);
+            var serverPath = VersionControlPath.GetDeploymentFolderServerPath(buildDetail);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", serverPath, destination);
 
-            var serverItemSpec = new ItemSpec(_tfsConfigurationPath, RecursionType.Full);
+            var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
             var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
-            GetLatestFromSourceCodeControl(_tfsConfigurationPath, localPath, request);
+            GetLatestFromSourceCodeControl(serverPath, destination, request);
         }
 
         private void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)

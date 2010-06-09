@@ -7,26 +7,8 @@ namespace TfsDeployer.Configuration
     [XmlRoot(Namespace = "http://www.readify.net/TfsDeployer/DeployerConfiguration20100214")]
     public class DeployerConfiguration
     {
-        public Alerts Alerts { get; set; }
         [XmlElement("Mapping")]
         public Mapping[] Mappings { get; set; }
-    }
-
-    public class Alerts
-    {
-        public EmailAlert Email { get; set; }
-    }
-
-    public class EmailAlert
-    {
-        [XmlAttribute]
-        public string RecipientAddress { get; set; }
-
-        [XmlAttribute]
-        public string SenderAddress { get; set; }
-
-        [XmlAttribute]
-        public string SmtpServer { get; set; }
     }
 
     public class Mapping

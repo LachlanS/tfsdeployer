@@ -19,13 +19,12 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using TfsDeployer.TeamFoundation;
+using Microsoft.TeamFoundation.Build.Client;
 
 namespace TfsDeployer.Configuration
 {
     public interface IConfigurationReader
     {
-        IEnumerable<Mapping> ReadMappings(string teamProject, IBuildData teamBuild, string workingDirectory);
-        Alerts ReadAlerts();
+        IEnumerable<Mapping> ReadMappings(IBuildDetail buildDetail);
     }
 }

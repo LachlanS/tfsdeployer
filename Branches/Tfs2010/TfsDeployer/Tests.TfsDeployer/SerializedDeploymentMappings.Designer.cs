@@ -125,5 +125,19 @@ namespace Tests.TfsDeployer {
                 return ResourceManager.GetString("CompleteDeployerConfiguration", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;DeployerConfiguration xmlns=&quot;http://www.readify.net/TfsDeployer/DeployerConfiguration20100214&quot;&gt;
+        ///  &lt;Mapping Computer=&quot;BuildServerA&quot;
+        ///           OriginalQuality=&quot;*&quot;
+        ///           NewQuality=&quot;Under Investigation&quot;
+        ///           Script=&quot;PrepareForInvestigation.ps1&quot; /&gt;
+        ///&lt;/DeployerConfiguration&gt;.
+        /// </summary>
+        internal static string DeployerConfigurationWithoutBuildDefinitionPattern {
+            get {
+                return ResourceManager.GetString("DeployerConfigurationWithoutBuildDefinitionPattern", resourceCulture);
+            }
+        }
     }
 }

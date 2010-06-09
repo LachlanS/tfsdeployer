@@ -48,6 +48,8 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -67,6 +69,9 @@
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\ReferenceAssemblies\v2.0\Microsoft.TeamFoundation.Build.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\Dependencies\Rhino.Mocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -75,6 +80,11 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />
+    <Compile Include="ConfigurationReaderTests\StubDeploymentFolderSource.cs" />
+    <Compile Include="ConfigurationReaderTests\StubDeploymentFileSource.cs" />
+    <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_CompleteDeployerConfiguration.cs" />
+    <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_DeployerConfigurationWithoutBuildDefinitionPattern.cs" />
     <Compile Include="DeployAgentDataFactoryTests\DeployAgentDataFactoryContext.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_all_source_data.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
@@ -101,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PowerShellScripts.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>PowerShellScripts.Designer.cs</LastGenOutput>
     </EmbeddedResource>
@@ -115,6 +125,7 @@
     <Content Include="Resources\AbsentNewQuality.xml" />
     <Content Include="Resources\AbsentOriginalQuality.xml" />
     <Content Include="Resources\CompleteDeployerConfiguration.xml" />
+    <Content Include="Resources\DeployerConfigurationWithoutBuildDefinitionPattern.xml" />
     <Content Include="SampleBuildStatusChangeEventNotification.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +175,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

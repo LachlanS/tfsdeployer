@@ -6,19 +6,6 @@
   <xs:element name="DeployerConfiguration">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Alerts">
-          <xs:complexType>
-            <xs:choice>
-              <xs:element name="Email">
-                <xs:complexType>
-                  <xs:attribute name="RecipientAddress" type="xs:string" />
-                  <xs:attribute name="SenderAddress" type="xs:string" />
-                  <xs:attribute name="SmtpServer" type="xs:string" />
-                </xs:complexType>
-              </xs:element>
-            </xs:choice>
-          </xs:complexType>
-        </xs:element>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="Mapping">
             <xs:complexType>
