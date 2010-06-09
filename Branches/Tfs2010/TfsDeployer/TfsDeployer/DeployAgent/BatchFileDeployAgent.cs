@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Readify.Useful.TeamFoundation.Common;
 
@@ -61,16 +62,30 @@ namespace TfsDeployer.DeployAgent
             return result;
         }
 
+        private static string EscapeArgument(string argument)
+        {
+            if (argument.Contains("\""))
+            {
+                argument = argument.Replace("\"", "\\\"");
+            }
+            if (argument.Contains(" "))
+            {
+                argument = "\"" + argument + "\"";
+            }
+            return argument;
+        }
+
         private static string CreateArguments(DeployAgentData deployAgentData)
         {
             var buildData = deployAgentData.Tfs2008BuildDetail;
-            var arguments = new StringBuilder();
-            arguments.AppendFormat("{0}, {1} ", buildData.DropLocation, buildData.BuildNumber);
-            foreach (var param in deployAgentData.DeployScriptParameters)
-            {
-                arguments.AppendFormat(", {0}", param.Value);
-            }
-            return arguments.ToString();
+
+            var defaultArguments = new[] {buildData.DropLocation, buildData.BuildNumber};
+
+            var extraArguments = deployAgentData.DeployScriptParameters.Select(p => p.Value);
+
+            var escapedArguments = defaultArguments.Concat(extraArguments).Select(EscapeArgument);
+
+            return string.Join(" ", escapedArguments.ToArray());
         }
 
     }

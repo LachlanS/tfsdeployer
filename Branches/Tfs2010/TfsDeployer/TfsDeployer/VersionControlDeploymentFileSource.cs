@@ -1,4 +1,5 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
+﻿using System;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace TfsDeployer
@@ -12,10 +13,20 @@ namespace TfsDeployer
             _versionControlServer = versionControlServer;
         }
 
-        public void DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
+        public bool DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
         {
             var deploymentFile = GetDeploymentMappingsFileServerPath(buildDetail);
-            _versionControlServer.DownloadFile(deploymentFile, destination);
+
+            try
+            {
+                _versionControlServer.DownloadFile(deploymentFile, destination);
+                return true;
+            }
+            catch (VersionControlException)
+            {
+                // file not found
+                return false;
+            }
         }
         
         private static string GetDeploymentMappingsFileServerPath(IBuildDetail buildDetail)

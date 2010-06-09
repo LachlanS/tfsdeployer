@@ -4,8 +4,8 @@ using System.Xml.Serialization;
 namespace TfsDeployer.Configuration
 {
     [Serializable]
-    [XmlRoot(Namespace = "http://www.readify.net/TfsDeployer/DeployerConfiguration20100214")]
-    public class DeployerConfiguration
+    [XmlRoot(Namespace = "http://www.readify.net/TfsDeployer/DeploymentMappings20100214")]
+    public class DeploymentMappings
     {
         [XmlElement("Mapping")]
         public Mapping[] Mappings { get; set; }

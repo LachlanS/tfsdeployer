@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="DeployerConfiguration"
-    targetNamespace="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214"
-    xmlns="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214"
+<xs:schema id="DeploymentMappings"
+    targetNamespace="http://www.readify.net/TfsDeployer/DeploymentMappings20100214"
+    xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="DeployerConfiguration">
+  <xs:element name="DeploymentMappings">
     <xs:complexType>
       <xs:sequence>
         <xs:choice minOccurs="0" maxOccurs="unbounded">

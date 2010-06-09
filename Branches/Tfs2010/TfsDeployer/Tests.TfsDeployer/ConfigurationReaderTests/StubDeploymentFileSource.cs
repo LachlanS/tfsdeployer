@@ -13,9 +13,10 @@ namespace Tests.TfsDeployer.ConfigurationReaderTests
             _configurationXml = configurationXml;
         }
 
-        public void DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
+        public bool DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
         {
             File.WriteAllText(destination, _configurationXml);
+            return true;
         }
     }
 }

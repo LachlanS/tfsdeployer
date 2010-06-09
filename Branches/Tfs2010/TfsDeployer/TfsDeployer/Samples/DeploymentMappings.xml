@@ -1,4 +1,4 @@
-<DeployerConfiguration xmlns="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214">
+<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
 
   <Mapping BuildDefinitionPattern="MyBuildDefA"
            Computer="BuildServerA"
@@ -29,4 +29,4 @@
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 
-</DeployerConfiguration>
+</DeploymentMappings>

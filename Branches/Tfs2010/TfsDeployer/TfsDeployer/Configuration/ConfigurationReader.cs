@@ -41,11 +41,13 @@ namespace TfsDeployer.Configuration
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", buildDetail.TeamProject, buildDetail.BuildDefinition.Name);
 
-            DeployerConfiguration configuration;
+            DeploymentMappings configuration = null;
             using (var localFile = new TemporaryFile())
             {
-                _deploymentFileSource.DownloadDeploymentFile(buildDetail, localFile.FileInfo.FullName);
-                configuration = Read(localFile.FileInfo.FullName);
+                if (_deploymentFileSource.DownloadDeploymentFile(buildDetail, localFile.FileInfo.FullName))
+                {
+                    configuration = Read(localFile.FileInfo.FullName);
+                }
             }
             if (configuration == null)
             {
@@ -57,7 +59,7 @@ namespace TfsDeployer.Configuration
                 .ToArray(); 
         }
 
-        private static DeployerConfiguration Read(Stream deployerConfiguration)
+        private static DeploymentMappings Read(Stream deployerConfiguration)
         {
             var tempFileName = Path.GetTempFileName();
             using (var tempFile = File.OpenWrite(tempFileName))
@@ -74,7 +76,7 @@ namespace TfsDeployer.Configuration
             return config;
         }
 
-        private static DeployerConfiguration Read(string configFileName)
+        private static DeploymentMappings Read(string configFileName)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFileName);
             if (Properties.Settings.Default.SignDeploymentMappingFile)
@@ -89,10 +91,10 @@ namespace TfsDeployer.Configuration
 
             if (File.Exists(configFileName))
             {
-                var serializer = new XmlSerializer(typeof(DeployerConfiguration));
+                var serializer = new XmlSerializer(typeof(DeploymentMappings));
                 using (TextReader reader = new StreamReader(configFileName))
                 {
-                    var config = (DeployerConfiguration)serializer.Deserialize(reader);
+                    var config = (DeploymentMappings)serializer.Deserialize(reader);
                     return config;
                 }
             }

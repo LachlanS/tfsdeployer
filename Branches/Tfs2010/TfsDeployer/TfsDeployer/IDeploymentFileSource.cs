@@ -4,6 +4,6 @@ namespace TfsDeployer
 {
     public interface IDeploymentFileSource
     {
-        void DownloadDeploymentFile(IBuildDetail buildDetail, string destination);
+        bool DownloadDeploymentFile(IBuildDetail buildDetail, string destination);
     }
 }

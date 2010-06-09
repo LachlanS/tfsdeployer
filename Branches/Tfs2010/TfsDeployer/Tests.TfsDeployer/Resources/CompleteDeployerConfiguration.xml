@@ -1,11 +1,5 @@
-<DeployerConfiguration xmlns="http://www.readify.net/TfsDeployer/DeployerConfiguration20100214">
+<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
 
-  <Alerts>
-    <Email RecipientAddress="defaultperson@nowhere.test.com"
-           SenderAddress="tfsdeployer@nowhere.test.com"
-           SmtpServer="MySmtpServer.com" />
-  </Alerts>
-  
   <Mapping BuildDefinitionPattern="MyBuildDefA"
            Computer="BuildServerA"
            OriginalQuality="*"
@@ -33,4 +27,4 @@
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 
-</DeployerConfiguration>
+</DeploymentMappings>
