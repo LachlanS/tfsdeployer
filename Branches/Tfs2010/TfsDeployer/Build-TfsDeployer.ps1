@@ -29,4 +29,4 @@ $MSBuildExe = Join-Path -Path $MSBuildToolsPath -ChildPath MSBuild.exe
 
 $TfsDeployerMSBuild = Join-Path -Path $PSScriptRoot -ChildPath TfsDeployer.msbuild
 
-& $MSBuildExe $TfsDeployerMSBuild /p:Configuration=$Configuration /p:Platform=x86 /t:$Target
+& $MSBuildExe $TfsDeployerMSBuild /p:Configuration=$Configuration /p:Platform="Any CPU" /t:$Target
