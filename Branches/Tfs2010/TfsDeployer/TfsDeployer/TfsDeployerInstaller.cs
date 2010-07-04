@@ -18,46 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.ServiceProcess;
 namespace TfsDeployer
 {
-      [RunInstaller(true)]
+    [RunInstaller(true)]
     public class TfsDeployerInstaller : Installer
     {
         private EventLogInstaller _eventLogInstaller;
-        private ServiceInstaller _tfsIntegratorInstaller;
+        private ServiceInstaller _tfsDeployerInstaller;
         private ServiceProcessInstaller _processInstaller;
+
         public TfsDeployerInstaller()
         {
-
             _processInstaller = new ServiceProcessInstaller();
-            this._eventLogInstaller = new System.Diagnostics.EventLogInstaller();
-            this._tfsIntegratorInstaller = new System.ServiceProcess.ServiceInstaller();
-            // 
-            // _eventLogInstaller
-            // 
-            this._eventLogInstaller.CategoryCount = 0;
-            this._eventLogInstaller.CategoryResourceFile = null;
-            this._eventLogInstaller.Log = "Application";
-            this._eventLogInstaller.MessageResourceFile = null;
-            this._eventLogInstaller.ParameterResourceFile = null;
-            this._eventLogInstaller.Source = "Readify.TfsDeployer";
-            // 
-            // _tfsIntegratorInstaller
-            // 
-            this._tfsIntegratorInstaller.DisplayName = "TFS Deployer";
-            this._tfsIntegratorInstaller.ServiceName = "TfsDeployer";
-            this._tfsIntegratorInstaller.Description = "Performs Deployment for Team Foundation Server";
-            this._tfsIntegratorInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            _eventLogInstaller = new EventLogInstaller();
+            _tfsDeployerInstaller = new ServiceInstaller();
+
+            _eventLogInstaller.CategoryCount = 0;
+            _eventLogInstaller.CategoryResourceFile = null;
+            _eventLogInstaller.Log = "Application";
+            _eventLogInstaller.MessageResourceFile = null;
+            _eventLogInstaller.ParameterResourceFile = null;
+            _eventLogInstaller.Source = "TfsDeployer";
+
+            _tfsDeployerInstaller.DisplayName = "TFS Deployer";
+            _tfsDeployerInstaller.ServiceName = "TfsDeployer";
+            _tfsDeployerInstaller.Description = "Performs deployment for Team Foundation Server builds.";
+            _tfsDeployerInstaller.StartType = ServiceStartMode.Automatic;
+            _tfsDeployerInstaller.ServicesDependedOn = new[] {"HTTP"};
             _processInstaller.Account = ServiceAccount.LocalSystem; 
-            this.Installers.Add(_eventLogInstaller);
-            this.Installers.Add(_tfsIntegratorInstaller);
-            this.Installers.Add(_processInstaller);
+
+            Installers.Add(_eventLogInstaller);
+            Installers.Add(_tfsDeployerInstaller);
+            Installers.Add(_processInstaller);
         }
     }
 }

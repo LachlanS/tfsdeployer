@@ -92,6 +92,7 @@ namespace TfsDeployer
                 }
                 case RunMode.WindowsService:
                 {
+                    Trace.Listeners.Add(new EventLogTraceListener("TfsDeployer"));
                     ServiceBase.Run(new TfsDeployerService(application));
                     break;
                 }
@@ -102,7 +103,7 @@ namespace TfsDeployer
         {
             try
             {
-                Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                Trace.Listeners.Add(new ConsoleTraceListener());
                 application.Start();
                 Console.WriteLine("Hit Enter to stop the service");
                 Console.ReadKey();
@@ -122,7 +123,7 @@ namespace TfsDeployer
 
         private static void Uninstall()
         {
-            RunInstaller(i => i.Uninstall(null));
+            RunInstaller(i => i.Uninstall(new Hashtable()));
         }
 
         private static void RunInstaller(Action<Installer> installerAction)
