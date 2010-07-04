@@ -201,6 +201,9 @@
     <None Include="Samples\PrepareForDeployment.cmd" />
     <None Include="Samples\PrepareForInvestigation.ps1" />
     <None Include="Samples\Publish.ps1" />
+    <None Include="Test-TfsDeployerInstall.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Samples\DeploymentMappings.xml" />
