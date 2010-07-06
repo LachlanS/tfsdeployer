@@ -123,7 +123,7 @@ namespace TfsDeployer
 
         private static void Uninstall()
         {
-            RunInstaller(i => i.Uninstall(new Hashtable()));
+            RunInstaller(i => i.Uninstall(null)); // requires null.
         }
 
         private static void RunInstaller(Action<Installer> installerAction)
