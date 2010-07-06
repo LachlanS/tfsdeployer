@@ -1,26 +1,44 @@
 #requires -version 2.0
+[CmdletBinding(DefaultParameterSetName='Debug')]
 param (
+    [parameter(ParameterSetName='Debug')]
 	[switch]
 	$Test,
 	
+    [parameter(ParameterSetName='Debug')]
 	[switch]
-	$Release,
+	$Clean,
 
-	[switch]
-	$Clean
+    [parameter(ParameterSetName='Release', Mandatory=$true)]
+    [ValidatePattern('\d+\.\d+\.\d+\.\d+')]
+	[string]
+	$ReleaseVersion
+
 )
 
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict
 
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Resolve-Path | Split-Path
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path -Resolve
+
+$Release = $PSCmdlet.ParameterSetName -eq 'Release'
 
 $Target = 'Build'
-if ($Test) { $Target = 'Test' }
-if ($Clean) { $Target = 'Clean,' + $Target }
+if ($Release -or $Test) { $Target = 'Test' }
+if ($Release -or $Clean) { $Target = 'Clean,' + $Target }
 
 $Configuration = 'Debug'
-if ($Release) { $Configuration = 'Release' }
+if ($Release) { 
+    $Configuration = 'Release' 
+    $SolutionInfoPath = $PSScriptRoot | Join-Path -ChildPath SolutionInfo.cs
+    $SolutionInfoItem = Get-Item -Path $SolutionInfoPath
+    if ($SolutionInfoItem.IsReadOnly) {
+        $SolutionInfoItem.IsReadOnly = $false 
+    }
+    (Get-Content -Path $SolutionInfoPath) `
+        -replace 'Version\("[^"]+"\)', "Version(`"$ReleaseVersion`")" |
+        Set-Content -Path $SolutionInfoPath -Encoding UTF8
+}
 
 $Node = ''
 if ([IntPtr]::Size -ne 4) { $Node = 'Wow6432Node' }
