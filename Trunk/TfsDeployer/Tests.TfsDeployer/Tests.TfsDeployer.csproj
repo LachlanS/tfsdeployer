@@ -115,6 +115,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFolderSource.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFileSource.cs" />

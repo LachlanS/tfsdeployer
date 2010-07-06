@@ -7,12 +7,7 @@ using System;
 // associated with an assembly.
 [assembly: AssemblyTitle("Readify.Useful.TeamFoundation.Common")]
 [assembly: AssemblyDescription("Readify Team Foundation Common Components")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Readify")]
-[assembly: AssemblyProduct("Readify.Useful.TeamFoundation.Common")]
-[assembly: AssemblyCopyright("Copyright ©  2010")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+
 [assembly: CLSCompliant(true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -22,15 +17,3 @@ using System;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("aacad1aa-7c32-4ae7-855e-6baabe5700f0")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("10.0.0.0")]
-[assembly: AssemblyFileVersion("10.0.0.0")]
