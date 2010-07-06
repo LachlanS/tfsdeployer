@@ -19,36 +19,38 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
-using TfsDeployer.Notifier;
 
 namespace TfsDeployer
 {
-    internal class Deployer
+    public class Deployer
     {
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IConfigurationReader _configurationReader;
+        private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
+        private readonly IBuildServer _buildServer;
 
-        public Deployer()
-            : this(new DeployAgentProvider(), new TfsConfigReader(), new EmailAlerter(), new MappingEvaluator())
+        public Deployer(IDeploymentFileSource deploymentFileSource, IDeploymentFolderSource deploymentFolderSource, IBuildServer buildServer)
+            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), buildServer)
         {
         }
 
-        public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IAlert alert,
-                        IMappingEvaluator mappingEvaluator)
+        public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IDeploymentFolderSource deploymentFolderSource, IAlert alert,
+                        IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
         {
             _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
+            _deploymentFolderSource = deploymentFolderSource;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
+            _buildServer = buildServer;
         }
 
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
@@ -63,31 +65,36 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.NewValue);
 
                 var info = new BuildInformation(GetBuildDetail(statusChanged));
-                using (var workingDirectory = new WorkingDirectory())
+                var mappings = _configurationReader.ReadMappings(info.Detail);
+                foreach (var mapping in mappings)
                 {
-                    var mappings = _configurationReader.ReadMappings(statusChanged.TeamProject, info.Data, workingDirectory);
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                 "Processing Mapping: Computer:{0}, Script:{1}",
+                                                 mapping.Computer,
+                                                 mapping.Script);
 
-                    foreach (var mapping in mappings)
+                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                     "Processing Mapping: Computer:{0}, Script:{1}",
-                                                     mapping.Computer,
+                                                     "Matching mapping found, running script {0}",
                                                      mapping.Script);
 
-                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
+                        var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+
+                        var deployAgentDataFactory = new DeployAgentDataFactory();
+
+                        DeployAgentResult deployResult;
+                        using (var workingDirectory = new WorkingDirectory())
                         {
-                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                         "Matching mapping found, running script {0}",
-                                                         mapping.Script);
+                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                           mapping, info);
 
-                            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-                            var deployData = CreateDeployAgentData(workingDirectory.DirectoryInfo.FullName, mapping, info);
-                            var deployResult = deployAgent.Deploy(deployData);
-
-                            ApplyRetainBuild(mapping, deployResult, info.Detail);
-                            _alerter.Alert(mapping, info.Data, deployResult);
+                            _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                            deployResult = deployAgent.Deploy(deployData);
                         }
+
+                        ApplyRetainBuild(mapping, deployResult, info.Detail);
+                        _alerter.Alert(mapping, info.Data, deployResult);
                     }
                 }
             }
@@ -95,32 +102,6 @@ namespace TfsDeployer
             {
                 TraceHelper.TraceError(TraceSwitches.TfsDeployer, ex);
             }
-        }
-
-        private static DeployAgentData CreateDeployAgentData(string directory, Mapping mapping, BuildInformation buildInfo)
-        {
-            var data = new DeployAgentData
-                           {
-                               NewQuality = mapping.NewQuality,
-                               OriginalQuality = mapping.OriginalQuality,
-                               DeployServer = mapping.Computer,
-                               DeployScriptFile = mapping.Script,
-                               DeployScriptRoot = directory,
-                               DeployScriptParameters = CreateParameters(mapping.ScriptParameters),
-                               Tfs2005BuildData = buildInfo.Data,
-                               Tfs2008BuildDetail = buildInfo.Detail
-                           };
-            return data;
-        }
-
-        private static ICollection<DeployScriptParameter> CreateParameters(IEnumerable<ScriptParameter> parameters)
-        {
-            var collection = new List<DeployScriptParameter>();
-            foreach (var p in parameters)
-            {
-                collection.Add(new DeployScriptParameter { Name = p.name, Value = p.value });
-            }
-            return collection;
         }
 
         private static void ApplyRetainBuild(Mapping mapping, DeployAgentResult deployAgentResult, IBuildDetail detail)
@@ -133,11 +114,10 @@ namespace TfsDeployer
             detail.Save();
         }
 
-        private static IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
+        private IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
-            var buildServer = ServiceHelper.GetService<IBuildServer>();
-            var buildSpec = buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
-            var detail = buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
+            var buildSpec = _buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
+            var detail = _buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
             return detail;
         }
     }

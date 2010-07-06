@@ -19,48 +19,60 @@
 // THE SOFTWARE.
 
 using System;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
-    /// <summary>
-    /// Helper class to get files out of source code control
-    /// </summary>
-    public static class SourceCodeControlHelper
+    public class VersionControlDeploymentFolderSource : IDeploymentFolderSource
     {
+        private readonly VersionControlServer _versionControlServer;
 
-        public static void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
+        public VersionControlDeploymentFolderSource(VersionControlServer versionControlServer)
         {
-            var versionControlServer = ServiceHelper.GetService<VersionControlServer>();
-            string workspaceName = GetWorkspaceName();
+            _versionControlServer = versionControlServer;
+        }
+
+        public void DownloadDeploymentFolder(IBuildDetail buildDetail, string destination)
+        {
+            var serverPath = VersionControlPath.GetDeploymentFolderServerPath(buildDetail);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", serverPath, destination);
+
+            var serverItemSpec = new ItemSpec(serverPath, RecursionType.Full);
+            var request = new[] { new GetRequest(serverItemSpec, VersionSpec.Latest) };
+            GetLatestFromSourceCodeControl(serverPath, destination, request);
+        }
+
+        private void GetLatestFromSourceCodeControl(string serverPath, string localPath, GetRequest[] filesToRetrieve)
+        {
+            var workspaceName = GetWorkspaceName();
 
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from Source code control. RootFolder:{0}, Workspace Directory:{1}", serverPath, localPath);
             try
             {
-                Workspace workspace = GetWorkspace(serverPath, versionControlServer, workspaceName, localPath);
+                var workspace = GetWorkspace(serverPath, workspaceName, localPath);
                 workspace.Get(filesToRetrieve, GetOptions.Overwrite);
             }
             finally
             {
-                RemoveWorkspace(workspaceName, versionControlServer);
+                RemoveWorkspace(workspaceName);
             }
         }
 
-        private static void RemoveWorkspace(string workspaceName, VersionControlServer server)
+        private void RemoveWorkspace(string workspaceName)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Removing Workspace: {0}", workspaceName);
-            if (server.QueryWorkspaces(workspaceName, server.AuthenticatedUser, Environment.MachineName).Length > 0)
+            if (_versionControlServer.QueryWorkspaces(workspaceName, _versionControlServer.AuthorizedUser, Environment.MachineName).Length > 0)
             {
-                server.DeleteWorkspace(workspaceName, server.AuthenticatedUser);
+                _versionControlServer.DeleteWorkspace(workspaceName, _versionControlServer.AuthorizedUser);
             }
         }
 
-        private static Workspace GetWorkspace(string serverPath, VersionControlServer versionControlServer, string workspaceName, string localPath)
+        private Workspace GetWorkspace(string serverPath, string workspaceName, string localPath)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting Workspace: {0} RootFolder: {1}", workspaceName, serverPath);
-            Workspace workspace = versionControlServer.CreateWorkspace(workspaceName, versionControlServer.AuthenticatedUser);
-            
+            var workspace = _versionControlServer.CreateWorkspace(workspaceName, _versionControlServer.AuthorizedUser);
             workspace.Map(serverPath, localPath);
             return workspace;
         }

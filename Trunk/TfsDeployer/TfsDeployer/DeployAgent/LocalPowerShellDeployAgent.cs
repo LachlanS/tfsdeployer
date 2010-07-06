@@ -33,16 +33,6 @@ namespace TfsDeployer.DeployAgent
         private bool _errorOccurred = true;
         private string _output;
 
-        public LocalPowerShellDeployAgent()
-        {
-            ExecutionPolicyBehaviour = PowerShellExecutionPolicyBehaviour.SystemExecutionPolicy;
-        }
-
-        public PowerShellExecutionPolicyBehaviour ExecutionPolicyBehaviour
-        {
-            get; set;
-        }
-
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var variables = CreateVariables(deployAgentData);
@@ -100,10 +90,6 @@ namespace TfsDeployer.DeployAgent
                 var host = new DeploymentHost(ui);
                 using (var space = RunspaceFactory.CreateRunspace(host))
                 {
-                    if (ExecutionPolicyBehaviour == PowerShellExecutionPolicyBehaviour.Unrestricted)
-                    {
-                        InjectUnrestrictedAuthorizationPolicy(space.RunspaceConfiguration);
-                    }
                     space.Open();
 
                     if (null != variables)

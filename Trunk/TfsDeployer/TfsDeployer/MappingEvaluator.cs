@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer
 {
@@ -18,7 +18,7 @@ namespace TfsDeployer
             bool isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
             bool isComputerMatch = IsComputerMatch(mapping.Computer);
 
-            string wildcardQuality = Properties.Settings.Default.BuildQualityWildcard;
+            const string wildcardQuality = "*";
             bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
             bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
             bool isUserPermitted = IsUserPermitted(triggerEvent, mapping);

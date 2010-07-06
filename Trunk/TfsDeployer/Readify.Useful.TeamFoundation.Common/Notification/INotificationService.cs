@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ServiceModel;
 
 namespace Readify.Useful.TeamFoundation.Common.Notification

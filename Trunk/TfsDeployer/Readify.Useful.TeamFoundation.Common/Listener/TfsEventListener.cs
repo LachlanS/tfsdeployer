@@ -1,45 +1,31 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ServiceModel.Channels;
+using Microsoft.TeamFoundation.Framework.Client;
 using Readify.Useful.TeamFoundation.Common.Notification;
-using Readify.Useful.TeamFoundation.Common.Properties;
 using System.ServiceModel;
-using Microsoft.TeamFoundation.VersionControl.Common;
-using System.ServiceModel.Description;
 using System.Xml;
-using Readify.Useful.TeamFoundation.Common;
 using System.Diagnostics;
 
 namespace Readify.Useful.TeamFoundation.Common.Listener
 {
-    
-    
-
-    internal class TfsEventListener<T>:NotificationServiceType<T>,ITfsEventListener where T : new()
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    internal class TfsEventListener<T> : NotificationService<T>, ITfsEventListener where T : new()
     {
-        TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
-        public static event EventHandler<NotificationEventArgs<T>> NotificationReceived;
-        internal delegate void OnNotificationEventReceived(T eventRaised, TFSIdentity identity);
-        private static OnNotificationEventReceived _onNotificationDelegate;
-	    public static OnNotificationEventReceived NotificationDelegate
-	    {
-	      get { return _onNotificationDelegate;}
-          set { _onNotificationDelegate = value;}
-	    }
-    	
-        internal TfsEventListener()
-        { 
-        }
-        
-        NotificationServiceHost<T> _host;
-        public NotificationServiceHost<T> Host
-        {
-            get
-            {
-                return _host;
-            }
-        }
+        public delegate void OnNotificationEventReceived(T eventRaised, TfsIdentity identity);
 
+        //public static event EventHandler<NotificationEventArgs<T>> NotificationReceived;
+        public static OnNotificationEventReceived NotificationDelegate { get; set; }
+
+        private readonly TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
+        private readonly IEventService _eventService;
+        private readonly Uri _baseAddress;
+        private NotificationServiceHost<T> _host;
+
+        public TfsEventListener(IEventService eventService, Uri baseAddress)
+        {
+            _eventService = eventService;
+            _baseAddress = baseAddress;
+        }
 
         public void Start()
         {
@@ -51,12 +37,6 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
             _host.Close();
         }
 
-
-
-        /// <summary>
-        /// Open the WCF Host.  And a listener to 
-        /// it's events.
-        /// </summary>
         private void OpenHost()
         {
             _host = CreateHostInstance();
@@ -71,89 +51,48 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
             }
         }
 
-
-        /// <summary>
-        /// Add the endpoint for the checkin event to the host.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <param name="binding"></param>
-        private void AddHostEndpoint(NotificationServiceHost<T> host)
+        private static void AddHostEndpoint(ServiceHost host)
         {
-
-            BasicHttpBinding binding = CreateHostBinding();
-
-            ServiceEndpoint endPoint = host.AddServiceEndpoint(
-                typeof(INotificationService),
+            var binding = CreateHostBinding();
+            host.AddServiceEndpoint(
+                typeof (INotificationService),
                 binding,
-                typeof(T).Name
+                typeof (T).Name
                 );
-
         }
 
-        /// <summary>
-        /// Create the host binding type
-        /// </summary>
-        /// <returns></returns>
-        private static BasicHttpBinding CreateHostBinding()
+        private static Binding CreateHostBinding()
         {
             // Setup a basic binding to use NTLM authentication.
-            BasicHttpBinding binding = new BasicHttpBinding();
-            XmlDictionaryReaderQuotas quotas = new XmlDictionaryReaderQuotas();
+            var quotas = new XmlDictionaryReaderQuotas
+            {
+                MaxArrayLength = int.MaxValue,
+                MaxBytesPerRead = int.MaxValue,
+                MaxDepth = int.MaxValue,
+                MaxNameTableCharCount = int.MaxValue,
+                MaxStringContentLength = int.MaxValue
+            };
 
-            quotas.MaxArrayLength = int.MaxValue;
-            quotas.MaxBytesPerRead = int.MaxValue;
-            quotas.MaxDepth = int.MaxValue;
-            quotas.MaxNameTableCharCount = int.MaxValue;
-            quotas.MaxStringContentLength = int.MaxValue;
-            binding.ReaderQuotas = quotas;
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Ntlm;
+            var binding = new WSHttpBinding {ReaderQuotas = quotas};
+            binding.Security.Mode = SecurityMode.None;
+
             return binding;
         }
 
-        /// <summary>
-        /// Create the instance of the Notification Service.  
-        /// </summary>
-        /// <returns></returns>
         private NotificationServiceHost<T> CreateHostInstance()
         {
-
-            Uri baseAddress = GetBaseAddress();
-            NotificationServiceHost<T> host;
-            if (!String.IsNullOrEmpty(Settings.Default.RegistrationUserName))
-            {
-                host = new NotificationServiceHost<T>(this.GetType(), baseAddress, Settings.Default.RegistrationUserName);
-            }
-            else
-            {
-                host = new NotificationServiceHost<T>(this.GetType(), baseAddress);
-            }
+            var host = new NotificationServiceHost<T>(this, _baseAddress, _eventService);
             AddHostEndpoint(host);
             return host;
         }
 
-        private Uri GetBaseAddress()
-        {
-            string baseAddress;
-            if (Settings.Default.BaseAddress.EndsWith("/") || Settings.Default.BaseAddress.EndsWith(@"\"))
-            {
-                baseAddress = Settings.Default.BaseAddress + typeof(T).Name;
-
-            }
-            else
-            {
-
-                baseAddress = Settings.Default.BaseAddress + "/" + typeof(T).Name;
-            }
-            return new Uri(baseAddress);
-        }
-
-
-        protected override void OnNotificationEvent(T eventRaised, TFSIdentity identity)
+        protected override void OnNotificationEvent(T eventRaised, TfsIdentity identity)
         {
             if (NotificationDelegate != null)
             {
                 NotificationDelegate(eventRaised, identity);
             }
         }
+
     }
 }

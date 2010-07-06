@@ -18,15 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
 
 namespace TfsDeployer
 {
     internal static class TraceSwitches
     {
-        public static TraceSwitch TfsDeployer = new TraceSwitch("TfsDeployer", "TfsDeployer", "4");
+        public static TraceSwitch TfsDeployer = new TraceSwitch("TfsDeployer", null, TraceLevel.Warning.ToString());
     }
 }

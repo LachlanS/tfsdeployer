@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="BuildCompletionEvent" nillable="true" type="BuildCompletionEvent" />
+  <xs:complexType name="BuildCompletionEvent">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="TeamFoundationServerUrl" type="xs:anyURI" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TeamProject" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Id" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Url" type="xs:anyURI" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Type" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Title" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CompletionStatus" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Subscriber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Configuration" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RequestedBy" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TimeZone" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TimeZoneOffset" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BuildStartTime" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BuildCompleteTime" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="BuildMachine" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

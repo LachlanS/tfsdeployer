@@ -1,6 +1,5 @@
-<DeploymentMappings xmlns="http://www.readify.net/TFSDeployer/DeploymentMappings20061026">
-  <Mapping xmlns=""
-           Computer="localhost"
+<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
+  <Mapping Computer="localhost"
            OriginalQuality="Passed"
            NewQuality="Other"
            Script="Deploy.ps1"

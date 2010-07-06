@@ -1,10 +1,18 @@
 ﻿using System;
 using Microsoft.TeamFoundation.Build.Client;
+using Rhino.Mocks;
 
-namespace Tests.TfsDeployer.PowerShellRunnerTests
+namespace Tests.TfsDeployer
 {
-    class StubBuildDetail : IBuildDetail
+    internal class StubBuildDetail : IBuildDetail
     {
+        private IBuildDefinition _buildDefinition;
+        
+        public StubBuildDetail()
+        {
+            _buildDefinition = MockRepository.GenerateStub<IBuildDefinition>();
+        }
+
         IBuildAgent IBuildDetail.BuildAgent
         {
             get { throw new NotImplementedException(); }
@@ -15,9 +23,19 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        IBuildDefinition IBuildDetail.BuildDefinition
+        IBuildController IBuildDetail.BuildController
         {
             get { throw new NotImplementedException(); }
+        }
+
+        Uri IBuildDetail.BuildControllerUri
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        IBuildDefinition IBuildDetail.BuildDefinition
+        {
+            get { return _buildDefinition; }
         }
 
         Uri IBuildDetail.BuildDefinitionUri
@@ -30,17 +48,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        string IBuildDetail.BuildNumber
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        string IBuildDetail.BuildNumber { get; set; }
 
         IBuildServer IBuildDetail.BuildServer
         {
@@ -89,7 +97,22 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             throw new NotImplementedException();
         }
 
+        IBuildDeletionResult IBuildDetail.Delete(DeleteOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         void IBuildDetail.Disconnect()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBuildDetail.FinalizeStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBuildDetail.FinalizeStatus(BuildStatus status)
         {
             throw new NotImplementedException();
         }
@@ -128,6 +151,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             }
         }
 
+        string IBuildDetail.DropLocationRoot
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         string IBuildDetail.LabelName
         {
             get
@@ -150,7 +178,12 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
-        public BuildReason Reason
+        string IBuildDetail.ProcessParameters
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        BuildReason IBuildDetail.Reason
         {
             get { throw new NotImplementedException(); }
         }
@@ -210,6 +243,16 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             get { throw new NotImplementedException(); }
         }
 
+        string IBuildDetail.ShelvesetName
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBuildDetail.IsDeleted
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         void IBuildDetail.Save()
         {
             throw new NotImplementedException();
@@ -250,6 +293,11 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
             remove { throw new NotImplementedException(); }
         }
 
+        string IBuildDetail.TeamProject
+        {
+            get { return "StubTeamProject"; }
+        }
+
         event StatusChangedEventHandler IBuildDetail.StatusChanging
         {
             add { throw new NotImplementedException(); }
@@ -282,5 +330,6 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         {
             throw new NotImplementedException();
         }
+
     }
 }

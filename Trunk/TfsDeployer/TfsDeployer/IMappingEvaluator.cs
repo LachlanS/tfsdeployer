@@ -1,4 +1,5 @@
 using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer
 {

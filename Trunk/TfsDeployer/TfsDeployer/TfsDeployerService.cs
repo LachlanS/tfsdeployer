@@ -4,16 +4,21 @@ namespace TfsDeployer
 {
     public class TfsDeployerService : ServiceBase
     {
-        private readonly TfsBuildStatusTrigger trigger = new TfsBuildStatusTrigger();
+        private readonly TfsDeployerApplication _application;
+
+        public TfsDeployerService(TfsDeployerApplication application)
+        {
+            _application = application;
+        }
 
         protected override void OnStart(string[] args)
         {
-            trigger.Start();
+            _application.Start();
         }
 
         protected override void OnStop()
         {
-            trigger.Stop();
+            _application.Stop();
         }
     }
 }
