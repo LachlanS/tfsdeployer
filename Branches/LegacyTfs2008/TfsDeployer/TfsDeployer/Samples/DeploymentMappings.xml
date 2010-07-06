@@ -1,0 +1,32 @@
+<DeploymentMappings xmlns="http://www.readify.net/TFSDeployer/DeploymentMappings20061026">
+
+  <Mapping xmlns=""
+           Computer="BuildServerA"
+           OriginalQuality="*"
+           NewQuality="Under Investigation"
+           Script="PrepareForInvestigation.ps1"
+           NotificationAddress="nobody@nowhere.test.com" />
+
+  <Mapping xmlns=""
+           Computer="AnotherBuildServer"
+           OriginalQuality="Under Investigation"
+           NewQuality="Ready for Deployment"
+           Script="PrepareForDeployment.cmd"
+           RunnerType="BatchFile"
+           NotificationAddress="nobody@nowhere.test.com"
+           Status="Succeeded,PartiallySucceeded" />
+
+  <Mapping xmlns=""
+           Computer="FinalBuildServer"
+           OriginalQuality="Ready for Deployment"
+           NewQuality="Released"
+           Script="Publish.ps1"
+           RunnerType="PowerShell"
+           NotificationAddress="nobody@nowhere.test.com"
+           PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
+           Status="Succeeded"
+           RetainBuild="true">
+    <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
+  </Mapping>
+
+</DeploymentMappings>
