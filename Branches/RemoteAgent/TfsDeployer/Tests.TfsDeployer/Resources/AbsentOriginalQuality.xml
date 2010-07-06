@@ -1,7 +1,0 @@
-<DeploymentMappings xmlns="http://www.readify.net/TFSDeployer/DeploymentMappings20061026">
-  <Mapping xmlns=""
-           Computer="localhost"
-           NewQuality="Passed"
-           Script="Deploy.ps1"
-           NotificationAddress="nobody@nowhere.test" />
-</DeploymentMappings>
