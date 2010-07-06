@@ -1,6 +1,0 @@
-<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
-  <Mapping Computer="BuildServerA"
-           OriginalQuality="*"
-           NewQuality="Under Investigation"
-           Script="PrepareForInvestigation.ps1" />
-</DeploymentMappings>
