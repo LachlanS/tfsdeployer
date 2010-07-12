@@ -18,12 +18,12 @@
                 </xs:element>
               </xs:sequence>
               <xs:attribute name="BuildDefinitionPattern" type="xs:string" />
-              <xs:attribute name="Computer" type="xs:string" />
+              <xs:attribute name="Computer" type="xs:string" use="required" />
               <xs:attribute name="OriginalQuality" type="xs:string" />
               <xs:attribute name="NewQuality" type="xs:string" />
               <xs:attribute name="Script" type="xs:string" />
               <xs:attribute name="RunnerType" type="RunnerType" />
-              <xs:attribute name="NotificationAddress" type="xs:string" />
+              <xs:attribute name="NotificationAddress" type="xs:string" use="required" />
               <xs:attribute name="PermittedUsers" type="xs:string" />
               <xs:attribute name="RetainBuild" type="xs:boolean" />
               <xs:attribute name="Status" type="xs:string" />
