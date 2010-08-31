@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.IO;
-using System.Reflection;
 using System.Text;
 
 namespace TfsDeployer.DeployAgent
@@ -31,40 +30,34 @@ namespace TfsDeployer.DeployAgent
     public class LocalPowerShellDeployAgent : IDeployAgent
     {
         private bool _errorOccurred = true;
-        private string _output;
 
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var variables = CreateVariables(deployAgentData);
-            string command = GeneratePipelineCommand(deployAgentData);
+            var scriptPath = Path.Combine(deployAgentData.DeployScriptRoot, deployAgentData.DeployScriptFile);
 
-            ExecuteCommand(command, variables);
+            ExecuteCommand(scriptPath, variables);
 
             var result = new DeployAgentResult
                              {
                                  HasErrors = _errorOccurred,
-                                 Output = _output
+                                 Output = Output
                              };
 
             return result;
         }
 
-        private static string GeneratePipelineCommand(DeployAgentData deployAgentData)
-        {
-            string command = Path.Combine(deployAgentData.DeployScriptRoot, deployAgentData.DeployScriptFile);
-            command = string.Format(".\"{0}\"", command);
-            return command;
-        }
-
         private static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
         {
-            var dict = new Dictionary<string, object>();
-            dict.Add("TfsDeployerComputer", deployAgentData.DeployServer);
-            dict.Add("TfsDeployerNewQuality", deployAgentData.NewQuality);
-            dict.Add("TfsDeployerOriginalQuality", deployAgentData.OriginalQuality);
-            dict.Add("TfsDeployerScript", deployAgentData.DeployScriptFile);
-            dict.Add("TfsDeployerBuildData", deployAgentData.Tfs2005BuildData);
-            dict.Add("TfsDeployerBuildDetail", deployAgentData.Tfs2008BuildDetail);
+            var dict = new Dictionary<string, object>
+                           {
+                               {"TfsDeployerComputer", deployAgentData.DeployServer},
+                               {"TfsDeployerNewQuality", deployAgentData.NewQuality},
+                               {"TfsDeployerOriginalQuality", deployAgentData.OriginalQuality},
+                               {"TfsDeployerScript", deployAgentData.DeployScriptFile},
+                               {"TfsDeployerBuildData", deployAgentData.Tfs2005BuildData},
+                               {"TfsDeployerBuildDetail", deployAgentData.Tfs2008BuildDetail}
+                           };
             return dict;
         }
 
@@ -80,7 +73,7 @@ namespace TfsDeployer.DeployAgent
             return dict;
         }
 
-        public void ExecuteCommand(string command, IDictionary<string, object> variables)
+        public void ExecuteCommand(string scriptPath, IDictionary<string, object> variables)
         {
             try
             {
@@ -94,7 +87,7 @@ namespace TfsDeployer.DeployAgent
 
                     if (null != variables)
                     {
-                        foreach (string key in variables.Keys)
+                        foreach (var key in variables.Keys)
                         {
                             space.SessionStateProxy.SetVariable(key, variables[key]);
                         }
@@ -104,40 +97,30 @@ namespace TfsDeployer.DeployAgent
                     {
                         pipeline.StateChanged += PipelineStateChanged;
 
-                        var DefaultOutputCommand = new Command("Out-Default");
-                        DefaultOutputCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
-                        DefaultOutputCommand.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Error |
-                                                                          PipelineResultTypes.Output;
+                        var scriptCommand = new Command(scriptPath, true);
+                        scriptCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                        pipeline.Commands.Add(scriptCommand);
 
-                        pipeline.Commands.AddScript(command);
-                        pipeline.Commands.Add(DefaultOutputCommand);
+                        pipeline.Commands.Add("Out-Default");
 
                         pipeline.Invoke();
                         _errorOccurred = ui.HasErrors;
-                        _output = ui.Output;
+                        Output = ui.Output;
                     }
                 }
             }
             catch (RuntimeException ex)
             {
-                ErrorRecord record = ex.ErrorRecord;
+                var record = ex.ErrorRecord;
                 var sb = new StringBuilder();
                 sb.AppendLine(record.Exception.ToString());
                 sb.AppendLine(record.InvocationInfo.PositionMessage);
-                _output = sb.ToString();
+                Output = sb.ToString();
             }
             catch (Exception ex)
             {
-                _output = ex.ToString();
+                Output = ex.ToString();
             }
-        }
-
-        private static readonly FieldInfo _authorizationManagerField =
-            typeof (RunspaceConfiguration).GetField("_authorizationManager", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static void InjectUnrestrictedAuthorizationPolicy(RunspaceConfiguration configuration)
-        {
-            //HACK injecting into private fields is truly evil but PowerShell doesn't support alternatives at the moment.
-            _authorizationManagerField.SetValue(configuration, new AuthorizationManager(configuration.ShellId));
         }
 
         void PipelineStateChanged(object sender, PipelineStateEventArgs e)
@@ -153,12 +136,6 @@ namespace TfsDeployer.DeployAgent
             }
         }
 
-        public string Output
-        {
-            get
-            {
-                return _output;
-            }
-        }
+        public string Output { get; private set; }
     }
 }
