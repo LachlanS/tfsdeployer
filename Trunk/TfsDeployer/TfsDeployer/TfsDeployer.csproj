@@ -130,6 +130,7 @@
     <Compile Include="DeployAgent\DeployAgentDataFactory.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
+    <Compile Include="DeployAgent\DeploymentHostRawUI.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
     <Compile Include="Deployer.cs" />

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,43 +8,25 @@ using TfsDeployer.DeployAgent;
 namespace Tests.TfsDeployer.PowerShellRunnerTests
 {
     [TestClass]
-    public class When_deploying_a_failing_PowerShell_script
+    public class When_deploying_a_failing_powershell_script
     {
-
         private static DeployAgentResult DeployFailingPowerShellScript()
         {
-            string testScriptFileName = Path.GetRandomFileName() + ".ps1";
-            string testDirectory = Path.GetTempPath();
-
-            var scriptFile = new FileInfo(Path.Combine(testDirectory, testScriptFileName));
-            using (var stream = scriptFile.OpenWrite())
-            using (var writer = new StreamWriter(stream, Encoding.ASCII))
+            using (var scriptFile = new TemporaryFile(".ps1", PowerShellScripts.FailingPowerShellScript))
             {
-                writer.Write(PowerShellScripts.FailingPowerShellScript);
-            }
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    Tfs2008BuildDetail = new StubBuildDetail()
+                };
 
-            var testDeployData = new DeployAgentData
-                                     {
-                                         NewQuality = "Released",
-                                         OriginalQuality = null,
-                                         DeployScriptFile = testScriptFileName,
-                                         DeployScriptRoot = testDirectory,
-                                         DeployScriptParameters = new List<DeployScriptParameter>(),
-                                         Tfs2008BuildDetail = new StubBuildDetail()
-                                     };
-
-            var psAgent = new LocalPowerShellDeployAgent();
-            DeployAgentResult result;
-            try
-            {
-                result = psAgent.Deploy(testDeployData);
+                var psAgent = new LocalPowerShellDeployAgent();
+                return psAgent.Deploy(testDeployData);
             }
-            finally
-            {
-                scriptFile.Delete();
-            }
-
-            return result;
         }
 
         [TestMethod]
