@@ -53,6 +53,12 @@ namespace TfsDeployer.Configuration
             {
                 return new Mapping[0];
             }
+            if (configuration.Mappings == null || configuration.Mappings.Length == 0)
+            {
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Configuration did not contain any Mappings.");
+                return new Mapping[0];
+            }
+
             return configuration.Mappings
                 .Where(m => string.IsNullOrEmpty(m.BuildDefinitionPattern) 
                     || Regex.IsMatch(buildDetail.BuildDefinition.Name, m.BuildDefinitionPattern))

@@ -119,6 +119,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />
+    <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_DeployerConfigurationWithBlankMappingNamespace.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFolderSource.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFileSource.cs" />
     <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_CompleteDeployerConfiguration.cs" />
@@ -165,6 +166,7 @@
     <Content Include="Resources\AbsentNewQuality.xml" />
     <Content Include="Resources\AbsentOriginalQuality.xml" />
     <Content Include="Resources\CompleteDeployerConfiguration.xml" />
+    <Content Include="Resources\DeployerConfigurationWithBlankMappingNamespace.xml" />
     <Content Include="Resources\DeployerConfigurationWithoutBuildDefinitionPattern.xml" />
     <Content Include="SampleBuildStatusChangeEventNotification.xml" />
   </ItemGroup>
