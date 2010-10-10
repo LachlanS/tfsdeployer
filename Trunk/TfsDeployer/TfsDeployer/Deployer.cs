@@ -80,17 +80,22 @@ namespace TfsDeployer
                                                      mapping.Script);
 
                         var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-                        var deployAgentDataFactory = new DeployAgentDataFactory();
-
                         DeployAgentResult deployResult;
-                        using (var workingDirectory = new WorkingDirectory())
+                        if (deployAgent == null)
                         {
-                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                           mapping, info);
+                            deployResult = new DeployAgentResult {HasErrors = false, Output = string.Empty};
+                        }
+                        else 
+                        {
+                            using (var workingDirectory = new WorkingDirectory())
+                            {
+                                var deployAgentDataFactory = new DeployAgentDataFactory();
+                                var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                               mapping, info);
 
-                            _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
-                            deployResult = deployAgent.Deploy(deployData);
+                                _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                                deployResult = deployAgent.Deploy(deployData);
+                            }
                         }
 
                         ApplyRetainBuild(mapping, deployResult, info.Detail);

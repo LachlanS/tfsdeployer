@@ -1,5 +1,4 @@
 ﻿using TfsDeployer.Configuration;
-using TfsDeployer.Properties;
 
 namespace TfsDeployer.DeployAgent
 {
@@ -7,6 +6,11 @@ namespace TfsDeployer.DeployAgent
     {
         public IDeployAgent GetDeployAgent(Mapping mapping)
         {
+            if (string.IsNullOrEmpty(mapping.Script))
+            {
+                return null;
+            }
+
             IDeployAgent agent;
             if (mapping.RunnerType == RunnerType.BatchFile)
             {

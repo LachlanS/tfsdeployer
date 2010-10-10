@@ -6,12 +6,15 @@ namespace Tests.TfsDeployer
 {
     internal class StubBuildDetail : IBuildDetail
     {
-        private IBuildDefinition _buildDefinition;
+        private readonly IBuildDefinition _buildDefinition;
+        private int _saveCount;
         
         public StubBuildDetail()
         {
             _buildDefinition = MockRepository.GenerateStub<IBuildDefinition>();
         }
+
+        public int SaveCount { get { return _saveCount; } }
 
         IBuildAgent IBuildDetail.BuildAgent
         {
@@ -139,17 +142,7 @@ namespace Tests.TfsDeployer
             get { throw new NotImplementedException(); }
         }
 
-        bool IBuildDetail.KeepForever
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        bool IBuildDetail.KeepForever { get; set; }
 
         string IBuildDetail.DropLocationRoot
         {
@@ -255,7 +248,7 @@ namespace Tests.TfsDeployer
 
         void IBuildDetail.Save()
         {
-            throw new NotImplementedException();
+            _saveCount++;
         }
 
         string IBuildDetail.SourceGetVersion
@@ -275,17 +268,7 @@ namespace Tests.TfsDeployer
             get { throw new NotImplementedException(); }
         }
 
-        BuildStatus IBuildDetail.Status
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        BuildStatus IBuildDetail.Status { get; set; }
 
         event StatusChangedEventHandler IBuildDetail.StatusChanged
         {

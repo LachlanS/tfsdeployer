@@ -127,6 +127,7 @@
     <Compile Include="DeployAgentDataFactoryTests\DeployAgentDataFactoryContext.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_all_source_data.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
+    <Compile Include="DeployerTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated.cs" />
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
