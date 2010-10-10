@@ -188,15 +188,23 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Samples\PrepareForDeployment.cmd" />
-    <None Include="Samples\PrepareForInvestigation.ps1" />
-    <None Include="Samples\Publish.ps1" />
+    <None Include="Samples\PrepareForDeployment.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\PrepareForInvestigation.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\Publish.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test-TfsDeployerInstall.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Samples\DeploymentMappings.xml" />
+    <None Include="Samples\DeploymentMappings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj">

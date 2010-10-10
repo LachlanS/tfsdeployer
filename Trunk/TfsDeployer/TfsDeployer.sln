@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{6D225FB9-130C-4074-8CF8-A344CDB990F1}"
 	ProjectSection(SolutionItems) = preProject
+		Dependencies\CodePlexFunctions.ps1 = Dependencies\CodePlexFunctions.ps1
+		Dependencies\ICSharpCode.SharpZipLib.dll = Dependencies\ICSharpCode.SharpZipLib.dll
 		Dependencies\System.Management.Automation.dll = Dependencies\System.Management.Automation.dll
 	EndProjectSection
 EndProject
@@ -11,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Build-TfsDeployer.ps1 = Build-TfsDeployer.ps1
 		build.cmd = build.cmd
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-		SolutionInfo.cs = SolutionInfo.cs
-		TfsDeployer.msbuild = TfsDeployer.msbuild
 		TfsDeployer.vsmdi = TfsDeployer.vsmdi
 	EndProjectSection
 EndProject
