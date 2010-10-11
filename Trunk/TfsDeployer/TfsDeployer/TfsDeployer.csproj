@@ -146,7 +146,6 @@
     <Compile Include="IDeployerFactory.cs" />
     <Compile Include="IDeploymentFileSource.cs" />
     <Compile Include="ITfsConnectionProvider.cs" />
-    <Compile Include="SimpleCredentialsProvider.cs" />
     <Compile Include="TeamFoundation\IBuildData.cs" />
     <Compile Include="TeamFoundation\BuildDetailToBuildDataAdapter.cs" />
     <Compile Include="IMappingEvaluator.cs" />
