@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Tests.TfsDeployer.TestHelpers;
 using TfsDeployer.DeployAgent;
 
 namespace Tests.TfsDeployer.DeploymentHostUITests
@@ -25,20 +26,26 @@ namespace Tests.TfsDeployer.DeploymentHostUITests
         }
 
         [TestMethod]
-        public void Should_trace()
+        public void DeploymentHostUI_should_trace()
         {
+            // Arrange
             var listener = new StringBuilderTraceListener();
-            Trace.Listeners.Add(listener);
-            var hostUI = new DeploymentHostUI();
-            try
+            using (new TraceListenersScope())
             {
-                hostUI.ReadLine();
-            } 
-            catch (Exception)
-            {
-                // Swallow. We don't care about any result of ReadLine.
+                Trace.Listeners.Add(listener);
+                var hostUI = new DeploymentHostUI();
+                try
+                {
+                    // Act
+                    hostUI.ReadLine();
+                }
+                catch (Exception)
+                {
+                    // Swallow. We don't care about any result of ReadLine.
+                }
             }
-            Trace.Listeners.Remove(listener);
+
+            // Assert
             Assert.IsTrue(0 <= listener.StringBuilder.ToString().IndexOf("ReadLine", StringComparison.InvariantCultureIgnoreCase));
         }
     }
