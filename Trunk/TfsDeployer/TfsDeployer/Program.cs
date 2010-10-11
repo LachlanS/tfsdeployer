@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.Reflection;
@@ -29,11 +30,18 @@ namespace TfsDeployer
 {
     public static class Program 
     {
-        enum RunMode
+        public enum RunMode
         {
             WindowsService,
             InteractiveConsole
         }
+
+        private static readonly IDictionary<RunMode, TraceListener> RunModeTraceListener
+            = new Dictionary<RunMode, TraceListener>
+                  {
+                      {RunMode.WindowsService, new LargeEventLogTraceListener("TfsDeployer")},
+                      {RunMode.InteractiveConsole, new ConsoleTraceListener()}
+                  };
 
 
         public static void Main(string[] args)
@@ -81,6 +89,8 @@ namespace TfsDeployer
 
         private static void Run(RunMode mode)
         {
+            ConfigureTraceListeners(mode);
+
             var application = new TfsDeployerApplication();
             
             switch (mode)
@@ -92,18 +102,21 @@ namespace TfsDeployer
                 }
                 case RunMode.WindowsService:
                 {
-                    Trace.Listeners.Add(new EventLogTraceListener("TfsDeployer"));
                     ServiceBase.Run(new TfsDeployerService(application));
                     break;
                 }
             }
         }
 
+        public static void ConfigureTraceListeners(RunMode mode)
+        {
+            Trace.Listeners.Add(RunModeTraceListener[mode]);
+        }
+
         private static void RunAsConsole(TfsDeployerApplication application)
         {
             try
             {
-                Trace.Listeners.Add(new ConsoleTraceListener());
                 application.Start();
                 Console.WriteLine("Hit Enter to stop the service");
                 Console.ReadKey();

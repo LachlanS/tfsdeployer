@@ -132,6 +132,7 @@
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated.cs" />
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
+    <Compile Include="ProgramTests.cs" />
     <Compile Include="PowerShellRunnerTests\TemporaryFile.cs" />
     <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
     <Compile Include="PowerShellRunnerTests\When_deploying_a_script_which_writes_to_the_host.cs" />
@@ -149,6 +150,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SerializedDeploymentMappings.resx</DependentUpon>
     </Compile>
+    <Compile Include="TestHelpers\TraceListenersScope.cs" />
     <Compile Include="WorkingDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>

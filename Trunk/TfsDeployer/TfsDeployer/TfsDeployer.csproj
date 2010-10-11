@@ -136,6 +136,7 @@
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
+    <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="VersionControlDeploymentFileSource.cs" />
     <Compile Include="Encrypter.cs">
