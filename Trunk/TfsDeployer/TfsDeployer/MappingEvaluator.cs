@@ -1,20 +1,22 @@
+using System.Linq;
 using System;
 using System.Net;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
+using System.Collections.Generic;
 
 namespace TfsDeployer
 {
     public class MappingEvaluator : IMappingEvaluator
     {
+        #region IMappingEvaluator Members
+
         public bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent, string buildStatus)
         {
             var statusChange = triggerEvent.StatusChange;
 
-            bool isStatusUnchanged = string.Equals(statusChange.NewValue, statusChange.OldValue, StringComparison.InvariantCultureIgnoreCase);
-            if (isStatusUnchanged) return false;
-
+            bool isDifferentStatusMatch = IsDifferentStatusMatch(statusChange);
             bool isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
             bool isComputerMatch = IsComputerMatch(mapping.Computer);
 
@@ -30,19 +32,33 @@ namespace TfsDeployer
                               "    MappingOrigQuality={4}, MappingNewQuality={5}\n" +
                               "    UserIsPermitted={6}, EventCausedBy={7}\n" +
                               "    BuildStatus={8}, MappingStatus={9}",
-                Environment.MachineName, mapping.Computer, 
-                statusChange.OldValue, statusChange.NewValue, 
-                mapping.OriginalQuality, mapping.NewQuality, 
+                Environment.MachineName, mapping.Computer,
+                statusChange.OldValue, statusChange.NewValue,
+                mapping.OriginalQuality, mapping.NewQuality,
                 isUserPermitted, triggerEvent.ChangedBy,
                 buildStatus, mapping.Status);
 
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                               "Eval results:\n" +
-                              "    isComputerMatch={0}, isOldValueMatch={1}, isNewValueMatch={2}, isUserPermitted={3}, isBuildStatusMatch={4}",
-                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted, isBuildStatusMatch);
+                              "    isComputerMatch={0}\n" +
+                              "    isOldValueMatch={1}\n" +
+                              "    isNewValueMatch={2}\n" +
+                              "    isUserPermitted={3}\n" +
+                              "    isBuildStatusMatch={4}\n" +
+                              "    isDifferentStatusMatch={5}\n" +
+                              isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted, isBuildStatusMatch, isDifferentStatusMatch);
 
-            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted && isBuildStatusMatch;
-            
+            return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted && isBuildStatusMatch && isDifferentStatusMatch;
+        }
+
+        #endregion
+
+        private static bool IsDifferentStatusMatch(Change statusChange)
+        {
+            bool isStatusUnchanged = string.Equals(statusChange.NewValue, statusChange.OldValue, StringComparison.InvariantCultureIgnoreCase);
+
+            bool isDifferentStatusMatch = (!isStatusUnchanged);
+            return isDifferentStatusMatch;
         }
 
         private bool IsBuildStatusMatch(Mapping mapping, string buildStatus)

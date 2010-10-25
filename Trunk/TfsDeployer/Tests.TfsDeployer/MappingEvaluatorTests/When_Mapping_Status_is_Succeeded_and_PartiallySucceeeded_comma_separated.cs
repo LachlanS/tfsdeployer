@@ -10,39 +10,10 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
     [TestClass]
     public class When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated
     {
-        private Mapping SimpleMapping
-        {
-            get
-            {
-                return new Mapping
-                {
-                    Computer = Environment.MachineName,
-                    NewQuality = "Same",
-                    PermittedUsers = null,
-                    OriginalQuality = null,
-                    Status = "Succeeded,PartiallySucceeded"
-                };
-            }
-        }
-
-        private BuildStatusChangeEvent SimpleChangeEvent
-        {
-            get
-            {
-                var changeEvent = new BuildStatusChangeEvent();
-                changeEvent.StatusChange = new Change
-                {
-                    NewValue = "Same",
-                    OldValue = null
-                };
-                return changeEvent;
-            }
-        }
-
         private bool DoesMappingApply(string buildStatus)
         {
             var mappingEvaluator = new MappingEvaluator();
-            return mappingEvaluator.DoesMappingApply(SimpleMapping, SimpleChangeEvent, buildStatus);
+            return mappingEvaluator.DoesMappingApply(new MappingBuilder().Mapping, new BuildStatusChangeEventBuilder().BuildStatusChangeEvent, buildStatus);
         }
 
         [TestMethod]
