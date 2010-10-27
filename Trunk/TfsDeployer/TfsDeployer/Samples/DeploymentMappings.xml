@@ -25,7 +25,8 @@
            NotificationAddress="adifferentperson@nowhere.test.com"
            PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
            Status="Succeeded"
-           RetainBuild="true">
+           RetainBuild="true"
+           TimeoutSeconds="300">
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 

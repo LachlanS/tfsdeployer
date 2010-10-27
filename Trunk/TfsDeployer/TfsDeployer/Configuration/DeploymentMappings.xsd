@@ -27,6 +27,7 @@
               <xs:attribute name="PermittedUsers" type="xs:string" />
               <xs:attribute name="RetainBuild" type="xs:boolean" />
               <xs:attribute name="Status" type="xs:string" />
+              <xs:attribute name="TimeoutSeconds" type="xs:nonNegativeInteger" />
             </xs:complexType>
           </xs:element>
         </xs:choice>
