@@ -49,14 +49,17 @@ namespace TfsDeployer.Configuration
                     configuration = Read(localFile.FileInfo.FullName);
                 }
             }
+
             if (configuration == null)
             {
-                return new Mapping[0];
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "No configuration found for this team project.");
+                return Enumerable.Empty<Mapping>();
             }
+
             if (configuration.Mappings == null || configuration.Mappings.Length == 0)
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Configuration did not contain any Mappings.");
-                return new Mapping[0];
+                return Enumerable.Empty<Mapping>();
             }
 
             return configuration.Mappings

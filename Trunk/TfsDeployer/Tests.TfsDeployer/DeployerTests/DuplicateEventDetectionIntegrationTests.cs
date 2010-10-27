@@ -1,4 +1,5 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
+﻿using System.Collections.Generic;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Rhino.Mocks;
@@ -10,10 +11,10 @@ using TfsDeployer.DeployAgent;
 namespace Tests.TfsDeployer.DeployerTests
 {
     [TestClass]
-    public class DeployerTests
+    public class DuplicateEventDetectionIntegrationTests
     {
         [TestMethod]
-        public void Deployer_should_apply_retain_build_when_script_not_specified()
+        public void Only_the_first_matching_event_should_trigger_a_deployment()
         {
             // Arrange
             var deployAgentProvider = new DeployAgentProvider();
@@ -21,14 +22,23 @@ namespace Tests.TfsDeployer.DeployerTests
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var alert = MockRepository.GenerateStub<IAlert>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
-            var duplicateEventDetector = MockRepository.GenerateStub<IDuplicateEventDetector>();
             var buildServer = MockRepository.GenerateStub<IBuildServer>();
 
-            var buildDetail = new StubBuildDetail();
-            ((IBuildDetail)buildDetail).KeepForever = false;
+            var duplicateEventDetector = new DuplicateEventDetector();
+
+            // this one should be triggered
+            var buildDetailShouldKeepForever = new StubBuildDetail();
+            ((IBuildDetail)buildDetailShouldKeepForever).KeepForever = false;
+
+            // this one should be treated as a duplicate and ignored
+            var buildDetailShouldNotKeepForever = new StubBuildDetail();
+            ((IBuildDetail)buildDetailShouldNotKeepForever).KeepForever = false;
+
+            Stack<IBuildDetail> buildDetails = new Stack<IBuildDetail>(new[] { buildDetailShouldNotKeepForever, buildDetailShouldKeepForever });
+
             buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
                 .IgnoreArguments()
-                .Return(buildDetail);
+                .Return(buildDetails.Pop());
 
             var mapping = new Mapping { RetainBuildSpecified = true, RetainBuild = true };
             configurationReader.Stub(o => o.ReadMappings(null))
@@ -39,20 +49,19 @@ namespace Tests.TfsDeployer.DeployerTests
                 .IgnoreArguments()
                 .Return(true);
 
-            duplicateEventDetector.Stub(o => o.IsUnique(null))
-                .IgnoreArguments()
-                .Return(true);
-
             var deployer = new Deployer(deployAgentProvider, configurationReader, deploymentFolderSource, alert, mappingEvaluator, duplicateEventDetector, buildServer);
             var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
             // Act
-            deployer.ExecuteDeploymentProcess(statusChanged);
+            deployer.ExecuteDeploymentProcess(statusChanged);   // will pop the "should keep" build details
+            deployer.ExecuteDeploymentProcess(statusChanged);   // will pop the "should not keep" build details
 
             // Assert
-            Assert.AreEqual(true, ((IBuildDetail)buildDetail).KeepForever, "KeepForever");
-            Assert.AreEqual(1, buildDetail.SaveCount, "Save()");
-        }
+            Assert.AreEqual(true, ((IBuildDetail)buildDetailShouldKeepForever).KeepForever, "KeepForever");
+            Assert.AreEqual(1, buildDetailShouldKeepForever.SaveCount, "Save()");
 
+            Assert.AreEqual(false, ((IBuildDetail)buildDetailShouldNotKeepForever).KeepForever, "KeepForever");
+            Assert.AreEqual(0, buildDetailShouldNotKeepForever.SaveCount, "Save()");
+        }
     }
 }

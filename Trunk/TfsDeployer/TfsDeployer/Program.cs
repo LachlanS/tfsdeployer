@@ -28,7 +28,7 @@ using System.ServiceProcess;
 
 namespace TfsDeployer
 {
-    public static class Program 
+    public static class Program
     {
         public enum RunMode
         {
@@ -91,20 +91,20 @@ namespace TfsDeployer
         {
             ConfigureTraceListeners(mode);
 
-            var application = new TfsDeployerApplication();
-            
+            Func<TfsDeployerApplication> createAppDelegate = delegate() { return new TfsDeployerApplication(); };
+
             switch (mode)
             {
                 case RunMode.InteractiveConsole:
-                {
-                    RunAsConsole(application);
-                    break;
-                }
+                    {
+                        RunAsConsole(createAppDelegate);
+                        break;
+                    }
                 case RunMode.WindowsService:
-                {
-                    ServiceBase.Run(new TfsDeployerService(application));
-                    break;
-                }
+                    {
+                        ServiceBase.Run(new TfsDeployerService(createAppDelegate));
+                        break;
+                    }
             }
         }
 
@@ -113,19 +113,20 @@ namespace TfsDeployer
             Trace.Listeners.Add(RunModeTraceListener[mode]);
         }
 
-        private static void RunAsConsole(TfsDeployerApplication application)
+        private static void RunAsConsole(Func<TfsDeployerApplication> createAppDelegate)
         {
-            try
+            using (TfsDeployerApplication application = createAppDelegate())
             {
-                application.Start();
-                Console.WriteLine("Hit Enter to stop the service");
-                Console.ReadKey();
-
-                application.Stop();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                try
+                {
+                    application.Start();
+                    Console.WriteLine("Hit Enter to stop the service");
+                    Console.ReadKey();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
 

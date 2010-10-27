@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.TeamFoundation.Build.Client;
+﻿using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {
@@ -25,10 +25,11 @@ namespace TfsDeployer
             catch (VersionControlException)
             {
                 // file not found
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Could not download file {0} from version control.", deploymentFile);
                 return false;
             }
         }
-        
+
         private static string GetDeploymentMappingsFileServerPath(IBuildDetail buildDetail)
         {
             var folder = VersionControlPath.GetDeploymentFolderServerPath(buildDetail);

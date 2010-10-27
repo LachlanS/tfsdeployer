@@ -136,6 +136,8 @@
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
+    <Compile Include="DuplicateEventDetector.cs" />
+    <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="VersionControlDeploymentFileSource.cs" />
@@ -185,7 +187,7 @@
     </None>
     <None Include="Convert-DeploymentMappings.ps1" />
     <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Samples\PrepareForDeployment.cmd">

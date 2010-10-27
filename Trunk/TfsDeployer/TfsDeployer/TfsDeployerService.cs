@@ -1,4 +1,5 @@
 using System.ServiceProcess;
+using System;
 
 namespace TfsDeployer
 {
@@ -6,9 +7,9 @@ namespace TfsDeployer
     {
         private readonly TfsDeployerApplication _application;
 
-        public TfsDeployerService(TfsDeployerApplication application)
+        public TfsDeployerService(Func<TfsDeployerApplication> createAppDelegate)
         {
-            _application = application;
+            _application = createAppDelegate();
         }
 
         protected override void OnStart(string[] args)
@@ -16,9 +17,14 @@ namespace TfsDeployer
             _application.Start();
         }
 
-        protected override void OnStop()
+        protected override void Dispose(bool disposing)
         {
-            _application.Stop();
+            if (disposing)
+            {
+                _application.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

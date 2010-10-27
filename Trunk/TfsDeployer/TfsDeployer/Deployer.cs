@@ -35,21 +35,23 @@ namespace TfsDeployer
         private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
+        private readonly IDuplicateEventDetector _duplicateEventDetector;
         private readonly IBuildServer _buildServer;
 
         public Deployer(IDeploymentFileSource deploymentFileSource, IDeploymentFolderSource deploymentFolderSource, IBuildServer buildServer)
-            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), buildServer)
+            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), new DuplicateEventDetector(), buildServer)
         {
         }
 
         public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IDeploymentFolderSource deploymentFolderSource, IAlert alert,
-                        IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
+                        IMappingEvaluator mappingEvaluator, IDuplicateEventDetector duplicateEventDetector, IBuildServer buildServer)
         {
             _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
             _deploymentFolderSource = deploymentFolderSource;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
+            _duplicateEventDetector = duplicateEventDetector;
             _buildServer = buildServer;
         }
 
@@ -64,42 +66,45 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.OldValue,
                                              statusChanged.StatusChange.NewValue);
 
-                var info = new BuildInformation(GetBuildDetail(statusChanged));
-                var mappings = _configurationReader.ReadMappings(info.Detail);
-                foreach (var mapping in mappings)
+                if (_duplicateEventDetector.IsUnique(statusChanged))
                 {
-                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                 "Processing Mapping: Computer:{0}, Script:{1}",
-                                                 mapping.Computer,
-                                                 mapping.Script);
-
-                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
+                    var info = new BuildInformation(GetBuildDetail(statusChanged));
+                    var mappings = _configurationReader.ReadMappings(info.Detail);
+                    foreach (var mapping in mappings)
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                     "Matching mapping found, running script {0}",
+                                                     "Processing Mapping: Computer:{0}, Script:{1}",
+                                                     mapping.Computer,
                                                      mapping.Script);
 
-                        var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-                        DeployAgentResult deployResult;
-                        if (deployAgent == null)
+                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
                         {
-                            deployResult = new DeployAgentResult {HasErrors = false, Output = string.Empty};
-                        }
-                        else 
-                        {
-                            using (var workingDirectory = new WorkingDirectory())
+                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                         "Matching mapping found, running script {0}",
+                                                         mapping.Script);
+
+                            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+                            DeployAgentResult deployResult;
+                            if (deployAgent == null)
                             {
-                                var deployAgentDataFactory = new DeployAgentDataFactory();
-                                var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                               mapping, info);
-
-                                _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
-                                deployResult = deployAgent.Deploy(deployData);
+                                deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
                             }
-                        }
+                            else
+                            {
+                                using (var workingDirectory = new WorkingDirectory())
+                                {
+                                    var deployAgentDataFactory = new DeployAgentDataFactory();
+                                    var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                                   mapping, info);
 
-                        ApplyRetainBuild(mapping, deployResult, info.Detail);
-                        _alerter.Alert(mapping, info.Data, deployResult);
+                                    _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                                    deployResult = deployAgent.Deploy(deployData);
+                                }
+                            }
+
+                            ApplyRetainBuild(mapping, deployResult, info.Detail);
+                            _alerter.Alert(mapping, info.Data, deployResult);
+                        }
                     }
                 }
             }
@@ -111,8 +116,11 @@ namespace TfsDeployer
 
         private static void ApplyRetainBuild(Mapping mapping, DeployAgentResult deployAgentResult, IBuildDetail detail)
         {
+            // bad state?
             if (!mapping.RetainBuildSpecified) return;
             if (deployAgentResult.HasErrors) return;
+
+            // no change to setting?
             if (detail.KeepForever == mapping.RetainBuild) return;
 
             detail.KeepForever = mapping.RetainBuild;

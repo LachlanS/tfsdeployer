@@ -124,11 +124,14 @@
     <Compile Include="ConfigurationReaderTests\StubDeploymentFileSource.cs" />
     <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_CompleteDeployerConfiguration.cs" />
     <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_DeployerConfigurationWithoutBuildDefinitionPattern.cs" />
+    <Compile Include="ConfigurationTests\AppConfigSanityCheckTests.cs" />
     <Compile Include="DeployAgentDataFactoryTests\DeployAgentDataFactoryContext.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_all_source_data.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
     <Compile Include="DeployerTests.cs" />
+    <Compile Include="DeployerTests\DuplicateEventDetectionIntegrationTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
+    <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
     <Compile Include="MappingEvaluatorTests\BuildStatusChangeEventBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingEvaluatorTests.cs" />
