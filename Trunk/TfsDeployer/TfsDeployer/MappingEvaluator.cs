@@ -1,29 +1,25 @@
-using System.Linq;
 using System;
 using System.Net;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
-using System.Collections.Generic;
 
 namespace TfsDeployer
 {
     public class MappingEvaluator : IMappingEvaluator
     {
-        #region IMappingEvaluator Members
-
         public bool DoesMappingApply(Mapping mapping, BuildStatusChangeEvent triggerEvent, string buildStatus)
         {
             var statusChange = triggerEvent.StatusChange;
 
-            bool isDifferentStatusMatch = IsDifferentStatusMatch(statusChange);
-            bool isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
-            bool isComputerMatch = IsComputerMatch(mapping.Computer);
+            var isDifferentStatusMatch = IsDifferentStatusMatch(statusChange);
+            var isBuildStatusMatch = IsBuildStatusMatch(mapping, buildStatus);
+            var isComputerMatch = IsComputerMatch(mapping.Computer);
 
             const string wildcardQuality = "*";
-            bool isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
-            bool isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
-            bool isUserPermitted = IsUserPermitted(triggerEvent, mapping);
+            var isOldValueMatch = IsQualityMatch(statusChange.OldValue, mapping.OriginalQuality, wildcardQuality);
+            var isNewValueMatch = IsQualityMatch(statusChange.NewValue, mapping.NewQuality, wildcardQuality);
+            var isUserPermitted = IsUserPermitted(triggerEvent, mapping);
 
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                               "Mapping evaluation details:\n" +
@@ -51,8 +47,6 @@ namespace TfsDeployer
             return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted && isBuildStatusMatch && isDifferentStatusMatch;
         }
 
-        #endregion
-
         private static bool IsDifferentStatusMatch(Change statusChange)
         {
             bool isStatusUnchanged = string.Equals(statusChange.NewValue, statusChange.OldValue, StringComparison.InvariantCultureIgnoreCase);
@@ -63,8 +57,8 @@ namespace TfsDeployer
 
         private bool IsBuildStatusMatch(Mapping mapping, string buildStatus)
         {
-            const string DefaultMappingStatus = "Succeeded,PartiallySucceeded,Failed";
-            string mappingStatus = string.IsNullOrEmpty(mapping.Status) ? DefaultMappingStatus : mapping.Status;
+            const string defaultMappingStatus = "Succeeded,PartiallySucceeded,Failed";
+            string mappingStatus = string.IsNullOrEmpty(mapping.Status) ? defaultMappingStatus : mapping.Status;
 
             foreach (string status in mappingStatus.Split(','))
             {
