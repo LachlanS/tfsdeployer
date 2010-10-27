@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Readify.Useful.TeamFoundation.Common;
 
@@ -24,9 +23,7 @@ namespace TfsDeployer
             public BuildStatusChangeEvent BuildStatusChangeEvent { get { return _buildStatusChangeEvent; } }
         }
 
-        List<EventRecord> _recentStatusChangeEvents = new List<EventRecord>();
-
-        #region IDuplicateEventDetector Members
+        readonly List<EventRecord> _recentStatusChangeEvents = new List<EventRecord>();
 
         public bool IsUnique(BuildStatusChangeEvent buildStatusChangeEvent)
         {
@@ -47,8 +44,6 @@ namespace TfsDeployer
 
             return true;
         }
-
-        #endregion
 
         private bool AreTooSimilar(BuildStatusChangeEvent a, BuildStatusChangeEvent b)
         {
