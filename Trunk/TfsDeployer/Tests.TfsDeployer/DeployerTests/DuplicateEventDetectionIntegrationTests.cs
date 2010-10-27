@@ -7,6 +7,7 @@ using TfsDeployer;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using System;
 
 namespace Tests.TfsDeployer.DeployerTests
 {
@@ -38,7 +39,8 @@ namespace Tests.TfsDeployer.DeployerTests
 
             buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
                 .IgnoreArguments()
-                .Return(buildDetails.Pop());
+                .WhenCalled(mi => mi.ReturnValue = buildDetails.Pop())
+                .Return(null);
 
             var mapping = new Mapping { RetainBuildSpecified = true, RetainBuild = true };
             configurationReader.Stub(o => o.ReadMappings(null))
