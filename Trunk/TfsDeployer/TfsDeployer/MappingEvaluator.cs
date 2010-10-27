@@ -45,7 +45,7 @@ namespace TfsDeployer
                               "    isNewValueMatch={2}\n" +
                               "    isUserPermitted={3}\n" +
                               "    isBuildStatusMatch={4}\n" +
-                              "    isDifferentStatusMatch={5}\n" +
+                              "    isDifferentStatusMatch={5}\n",
                               isComputerMatch, isOldValueMatch, isNewValueMatch, isUserPermitted, isBuildStatusMatch, isDifferentStatusMatch);
 
             return isComputerMatch && isOldValueMatch && isNewValueMatch && isUserPermitted && isBuildStatusMatch && isDifferentStatusMatch;

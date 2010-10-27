@@ -84,12 +84,11 @@ namespace TfsDeployer
                                                          mapping.Script);
 
                             var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-                            DeployAgentResult deployResult;
-                            if (deployAgent == null)
-                            {
-                                deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
-                            }
-                            else
+
+                            // default to "happy; did nothing" if there's no deployment agent.
+                            DeployAgentResult deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
+
+                            if (deployAgent != null)
                             {
                                 using (var workingDirectory = new WorkingDirectory())
                                 {

@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Readify.Useful.TeamFoundation.Common;
+using System.Threading;
+using System;
 
 namespace TfsDeployer.DeployAgent
 {
@@ -10,56 +12,92 @@ namespace TfsDeployer.DeployAgent
     {
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
-            var errorOccurred = true;
-            string output = string.Empty;
+            //FIXME this method does way too much now. refactor.  -andrewh 27/10/2010
 
             var scriptToRun = Path.Combine(deployAgentData.DeployScriptRoot, deployAgentData.DeployScriptFile);
 
             if (!File.Exists(scriptToRun))
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "BatchRunner - Could not find script: {0}", scriptToRun);
-                output = string.Format("BatchRunner - Could not find script: {0}", scriptToRun);
+
+                return new DeployAgentResult
+                {
+                    HasErrors = true,
+                    Output = string.Format("BatchRunner - Could not find script: {0}", scriptToRun),
+                };
             }
-            else
+
+            var psi = new ProcessStartInfo(scriptToRun)
             {
-                var psi = new ProcessStartInfo(scriptToRun);
-                psi.UseShellExecute = false;
-                psi.RedirectStandardOutput = true;
-                psi.RedirectStandardInput = true;
-                psi.RedirectStandardError = true;
-                psi.WorkingDirectory = deployAgentData.DeployScriptRoot;
-                psi.Arguments = CreateArguments(deployAgentData);
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardInput = true,
+                RedirectStandardError = true,
+                WorkingDirectory = deployAgentData.DeployScriptRoot,
+                Arguments = CreateArguments(deployAgentData),
+            };
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
 
-                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
+            // Start the process
+            Process proc;
+            proc = Process.Start(psi);
+            if (proc == null)
+            {
+                TraceHelper.TraceError(TraceSwitches.TfsDeployer, "Process.Start(...) returned null");
 
-                // Start the process
-                var proc = Process.Start(psi);
-                if (proc == null)
+                return new DeployAgentResult
                 {
-                    TraceHelper.TraceError(TraceSwitches.TfsDeployer, "Process.Start(...) returned null");
-                }
-                else 
-                {
+                    HasErrors = true,
+                    Output = "Process.Start(...) returned null. Could not create deployment process.",
+                };
+            }
 
-                    using (var sOut = proc.StandardOutput)
+            using (var sOut = proc.StandardOutput)
+            {
+                using (var sErr = proc.StandardError)
+                {
+                    var errorOccurred = true;
+                    string output = string.Empty;
+
+                    if (proc.WaitForExit((int)deployAgentData.Timeout.TotalMilliseconds))
                     {
-                        proc.WaitForExit();
-                        output = sOut.ReadToEnd().Trim();
-                        TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", output);
+                        errorOccurred = false;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            proc.KillRecursive();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // swallow. This occurs if the process is killed between when we decide to kill it and when we actually make the call.
+                        }
+
+                        output += "The deployment process failed to complete within the specified time limit and was terminated.\n";
                     }
 
-                    errorOccurred = false;
+                    // try to read from the process's output stream even if we've killed it. This is an entirely legitimate
+                    // thing to do and allows us to capture at least partial output and send it back with any alerts.
+                    try
+                    {
+                        output += sOut.ReadToEnd().Trim();
+                        output += sErr.ReadToEnd().Trim();
+                    }
+                    catch (Exception)
+                    {
+                        // swallow. grab what we can, but don't complain if the streams are nuked already.
+                    }
+
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", output);
+
+                    return new DeployAgentResult
+                    {
+                        HasErrors = errorOccurred,
+                        Output = output
+                    };
                 }
-
             }
-
-            var result = new DeployAgentResult
-                             {
-                                 HasErrors = errorOccurred,
-                                 Output = output
-                             };
-
-            return result;
         }
 
         private static string EscapeArgument(string argument)
@@ -79,7 +117,7 @@ namespace TfsDeployer.DeployAgent
         {
             var buildData = deployAgentData.Tfs2008BuildDetail;
 
-            var defaultArguments = new[] {buildData.DropLocation, buildData.BuildNumber};
+            var defaultArguments = new[] { buildData.DropLocation, buildData.BuildNumber };
 
             var extraArguments = deployAgentData.DeployScriptParameters.Select(p => p.Value);
 
