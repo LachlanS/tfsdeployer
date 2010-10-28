@@ -20,35 +20,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
+using System.Security.Policy;
+using Microsoft.TeamFoundation.Build.Client;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.DeployAgent
 {
     public class LocalPowerShellDeployAgent : IDeployAgent
     {
-        private bool _errorOccurred = true;
-
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var variables = CreateVariables(deployAgentData);
             var scriptPath = Path.Combine(deployAgentData.DeployScriptRoot, deployAgentData.DeployScriptFile);
-
-            ExecuteCommand(scriptPath, variables);
-
-            var result = new DeployAgentResult
-                             {
-                                 HasErrors = _errorOccurred,
-                                 Output = Output
-                             };
+            var result = ExecuteCommand(scriptPath, variables);
 
             return result;
         }
 
         private static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
         {
+            var buildDetail = new BuildDetail();
+            PropertyAdapter.CopyProperties(typeof(IBuildDetail), deployAgentData.Tfs2008BuildDetail, typeof(BuildDetail), buildDetail);
             var dict = new Dictionary<string, object>
                            {
                                {"TfsDeployerComputer", deployAgentData.DeployServer},
@@ -56,7 +50,7 @@ namespace TfsDeployer.DeployAgent
                                {"TfsDeployerOriginalQuality", deployAgentData.OriginalQuality},
                                {"TfsDeployerScript", deployAgentData.DeployScriptFile},
                                {"TfsDeployerBuildData", deployAgentData.Tfs2005BuildData},
-                               {"TfsDeployerBuildDetail", deployAgentData.Tfs2008BuildDetail}
+                               {"TfsDeployerBuildDetail", buildDetail}
                            };
             return dict;
         }
@@ -73,69 +67,31 @@ namespace TfsDeployer.DeployAgent
             return dict;
         }
 
-        public void ExecuteCommand(string scriptPath, IDictionary<string, object> variables)
+        private DeployAgentResult ExecuteCommand(string scriptPath, IDictionary<string, object> variables)
         {
+            AppDomain scriptDomain = null;
             try
             {
-                _errorOccurred = true;
+                scriptDomain = AppDomain.CreateDomain(string.Format("{0}:{1}", GetType(), Guid.NewGuid()),
+                                                      new Evidence(AppDomain.CurrentDomain.Evidence),
+                                                      AppDomain.CurrentDomain.SetupInformation);
 
-                var ui = new DeploymentHostUI();
-                var host = new DeploymentHost(ui);
-                using (var space = RunspaceFactory.CreateRunspace(host))
+                var proxy = (LocalPowerShellScriptExecutor) scriptDomain.CreateInstanceAndUnwrap(
+                    typeof(LocalPowerShellScriptExecutor).Assembly.FullName,
+                    typeof(LocalPowerShellScriptExecutor).FullName);
+
+                var result = proxy.Execute(scriptPath, variables);
+
+                return result;
+            }
+            finally
+            {
+                if (scriptDomain != null)
                 {
-                    space.Open();
-
-                    if (null != variables)
-                    {
-                        foreach (var key in variables.Keys)
-                        {
-                            space.SessionStateProxy.SetVariable(key, variables[key]);
-                        }
-                    }
-
-                    using (var pipeline = space.CreatePipeline())
-                    {
-                        pipeline.StateChanged += PipelineStateChanged;
-
-                        var scriptCommand = new Command(scriptPath, true);
-                        scriptCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
-                        pipeline.Commands.Add(scriptCommand);
-
-                        pipeline.Commands.Add("Out-Default");
-
-                        pipeline.Invoke();
-                        _errorOccurred = ui.HasErrors;
-                        Output = ui.Output;
-                    }
+                    AppDomain.Unload(scriptDomain);
                 }
             }
-            catch (RuntimeException ex)
-            {
-                var record = ex.ErrorRecord;
-                var sb = new StringBuilder();
-                sb.AppendLine(record.Exception.ToString());
-                sb.AppendLine(record.InvocationInfo.PositionMessage);
-                Output = sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                Output = ex.ToString();
-            }
         }
 
-        void PipelineStateChanged(object sender, PipelineStateEventArgs e)
-        {
-            if (e.PipelineStateInfo.State == PipelineState.Failed) _errorOccurred = true;
-        }
-
-        public bool ErrorOccurred
-        {
-            get
-            {
-                return _errorOccurred;
-            }
-        }
-
-        public string Output { get; private set; }
     }
 }

@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace Tests.TfsDeployer.PowerShellRunnerTests
+namespace Tests.TfsDeployer
 {
     class TemporaryFile : IDisposable
     {

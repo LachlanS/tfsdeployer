@@ -130,6 +130,7 @@
     <Compile Include="DeployAgentDataFactoryTests\DeployAgentDataFactoryContext.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_all_source_data.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
+    <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
     <Compile Include="DeployerTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
@@ -140,9 +141,10 @@
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
     <Compile Include="ProgramTests.cs" />
-    <Compile Include="PowerShellRunnerTests\TemporaryFile.cs" />
-    <Compile Include="PowerShellRunnerTests\ExecuteTests.cs" />
+    <Compile Include="TemporaryFile.cs" />
+    <Compile Include="DeployAgent\LocalPowerShellScriptExecutorTests.cs" />
     <Compile Include="PowerShellRunnerTests\When_deploying_a_script_which_writes_to_the_host.cs" />
+    <Compile Include="Resources\Resource.cs" />
     <Compile Include="StubBuildDetail.cs" />
     <Compile Include="PowerShellRunnerTests\When_deploying_a_failing_PowerShell_script.cs" />
     <Compile Include="PowerShellScripts.Designer.cs">
@@ -230,6 +232,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <EmbeddedResource Include="PowerShellRunnerTests\WriteHostScript.ps1" />
+    <EmbeddedResource Include="Resources\LoadSystemWebAssemblyScript.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

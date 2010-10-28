@@ -134,6 +134,7 @@
     <Compile Include="DeployAgent\DeploymentHostRawUI.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
+    <Compile Include="DeployAgent\LocalPowerShellScriptExecutor.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
@@ -142,6 +143,10 @@
     <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="ProcessExtensions.cs" />
+    <Compile Include="TeamFoundation\BuildDefinition.cs" />
+    <Compile Include="TeamFoundation\BuildDetail.cs" />
+    <Compile Include="TeamFoundation\ProcessTemplate.cs" />
+    <Compile Include="TeamFoundation\PropertyAdapter.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="VersionControlDeploymentFileSource.cs" />
     <Compile Include="Encrypter.cs">

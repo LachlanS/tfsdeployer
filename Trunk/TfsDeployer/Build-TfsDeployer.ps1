@@ -38,7 +38,7 @@ if ($Publish) {
     $ItemSpec = New-Object -TypeName $ItemSpecType -ArgumentList $PSScriptRoot,'Full'
     $Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
         Measure-Object -Property Version -Maximum).Maximum
-    $ReleaseVersion = "1.2.0.$Changeset"
+    $ReleaseVersion = "1.3.0.$Changeset"
 
     Write-Output 'Writing version number to assembly attributes'
     $SolutionInfoPath = $PSScriptRoot | Join-Path -ChildPath SolutionInfo.cs
