@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Microsoft.TeamFoundation.Build.Client;
 using Rhino.Mocks;
 
@@ -6,279 +7,124 @@ namespace Tests.TfsDeployer
 {
     internal class StubBuildDetail : IBuildDetail
     {
-        private readonly IBuildDefinition _buildDefinition;
         private int _saveCount;
         
         public StubBuildDetail()
         {
-            _buildDefinition = MockRepository.GenerateStub<IBuildDefinition>();
+            BuildController = MockRepository.GenerateStub<IBuildController>();
+            BuildDefinition = MockRepository.GenerateStub<IBuildDefinition>();
+            BuildDefinitionUri = new Uri("http://builddefinitionuri");
+            TeamProject = "StubTeamProject";
+            Uri = new Uri("http://uri");
         }
 
         public int SaveCount { get { return _saveCount; } }
 
-        IBuildAgent IBuildDetail.BuildAgent
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        Uri IBuildDetail.BuildAgentUri
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IBuildController IBuildDetail.BuildController
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        Uri IBuildDetail.BuildControllerUri
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IBuildDefinition IBuildDetail.BuildDefinition
-        {
-            get { return _buildDefinition; }
-        }
-
-        Uri IBuildDetail.BuildDefinitionUri
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool IBuildDetail.BuildFinished
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.BuildNumber { get; set; }
-
-        IBuildServer IBuildDetail.BuildServer
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.CommandLineArguments
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        BuildPhaseStatus IBuildDetail.CompilationStatus
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        string IBuildDetail.ConfigurationFolderPath
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        Uri IBuildDetail.ConfigurationFolderUri
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        void IBuildDetail.Connect()
+        public void Connect(int pollingInterval, ISynchronizeInvoke synchronizingObject)
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.Connect(int pollingInterval, System.ComponentModel.ISynchronizeInvoke synchronizingObject)
+        public void Connect()
         {
             throw new NotImplementedException();
         }
 
-        IBuildDeletionResult IBuildDetail.Delete()
+        public IBuildDeletionResult Delete()
         {
             throw new NotImplementedException();
         }
 
-        IBuildDeletionResult IBuildDetail.Delete(DeleteOptions options)
+        public IBuildDeletionResult Delete(DeleteOptions options)
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.Disconnect()
+        public void Disconnect()
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.FinalizeStatus()
+        public void FinalizeStatus()
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.FinalizeStatus(BuildStatus status)
+        public void FinalizeStatus(BuildStatus status)
         {
             throw new NotImplementedException();
         }
 
-        string IBuildDetail.DropLocation
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        DateTime IBuildDetail.FinishTime
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IBuildInformation IBuildDetail.Information
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool IBuildDetail.KeepForever { get; set; }
-
-        string IBuildDetail.DropLocationRoot
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.LabelName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        string IBuildDetail.LastChangedBy
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        DateTime IBuildDetail.LastChangedOn
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.ProcessParameters
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        BuildReason IBuildDetail.Reason
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.LogLocation
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        event PollingCompletedEventHandler IBuildDetail.PollingCompleted
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.Quality
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        void IBuildDetail.Refresh(string[] informationTypes, QueryOptions queryOptions)
+        public void RefreshMinimalDetails()
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.RefreshAllDetails()
+        public void RefreshAllDetails()
         {
             throw new NotImplementedException();
         }
 
-        void IBuildDetail.RefreshMinimalDetails()
+        public void Refresh(string[] informationTypes, QueryOptions queryOptions)
         {
             throw new NotImplementedException();
         }
 
-        string IBuildDetail.RequestedBy
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.RequestedFor
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.ShelvesetName
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool IBuildDetail.IsDeleted
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        void IBuildDetail.Save()
+        public void Save()
         {
             _saveCount++;
         }
 
-        string IBuildDetail.SourceGetVersion
+        public void Stop()
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
 
-        DateTime IBuildDetail.StartTime
+        public void Wait()
         {
-            get { throw new NotImplementedException(); }
+            throw new NotImplementedException();
         }
 
-        BuildStatus IBuildDetail.Status { get; set; }
+        public string BuildNumber { get; set; }
+        public BuildPhaseStatus CompilationStatus { get; set; }
+        public string ConfigurationFolderPath { get; set; }
+        public string DropLocation { get; set; }
+        public string DropLocationRoot { get; set; }
+        public string LabelName { get; set; }
+        public bool KeepForever { get; set; }
+        public string LogLocation { get; set; }
+        public string Quality { get; set; }
+        public BuildStatus Status { get; set; }
+        public BuildPhaseStatus TestStatus { get; set; }
+        public IBuildAgent BuildAgent { get; set; }
+        public Uri BuildAgentUri { get; set; }
+        public IBuildController BuildController { get; set; }
+        public Uri BuildControllerUri { get; set; }
+        public IBuildDefinition BuildDefinition { get; set; }
+        public Uri BuildDefinitionUri { get; set; }
+        public bool BuildFinished { get; set; }
+        public IBuildServer BuildServer { get; set; }
+        public string CommandLineArguments { get; set; }
+        public IBuildInformation Information { get; set; }
+        public Uri ConfigurationFolderUri { get; set; }
+        public string LastChangedBy { get; set; }
+        public DateTime LastChangedOn { get; set; }
+        public string ProcessParameters { get; set; }
+        public BuildReason Reason { get; set; }
+        public string RequestedBy { get; set; }
+        public string RequestedFor { get; set; }
+        public string ShelvesetName { get; set; }
+        public bool IsDeleted { get; set; }
+        public string SourceGetVersion { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime FinishTime { get; set; }
+        public Uri Uri { get; set; }
+        public string TeamProject { get; set; }
 
         event StatusChangedEventHandler IBuildDetail.StatusChanged
         {
             add { throw new NotImplementedException(); }
             remove { throw new NotImplementedException(); }
-        }
-
-        string IBuildDetail.TeamProject
-        {
-            get { return "StubTeamProject"; }
         }
 
         event StatusChangedEventHandler IBuildDetail.StatusChanging
@@ -287,32 +133,11 @@ namespace Tests.TfsDeployer
             remove { throw new NotImplementedException(); }
         }
 
-        void IBuildDetail.Stop()
+        event PollingCompletedEventHandler IBuildDetail.PollingCompleted
         {
-            throw new NotImplementedException();
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
-
-        BuildPhaseStatus IBuildDetail.TestStatus
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        Uri IBuildDetail.Uri
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        void IBuildDetail.Wait()
-        {
-            throw new NotImplementedException();
-        }
-
     }
+
 }
