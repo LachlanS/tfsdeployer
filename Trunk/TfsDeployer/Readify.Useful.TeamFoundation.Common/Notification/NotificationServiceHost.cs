@@ -63,6 +63,10 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
             var preference = CreateDeliveryPreference(address);
 
             _subscriptionId = _eventService.SubscribeEvent(typeof (TEventType).Name, null, preference);
+
+            Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose,
+                              string.Format("Subscribed to Notification event at address {0} as id {1}", address, _subscriptionId),
+                              Constants.NotificationServiceHost);
         }
       
     }
