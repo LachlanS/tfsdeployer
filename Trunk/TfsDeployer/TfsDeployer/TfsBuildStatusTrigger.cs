@@ -1,5 +1,4 @@
-using System;
-using Microsoft.TeamFoundation.Framework.Client;
+using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using Readify.Useful.TeamFoundation.Common.Notification;
 
@@ -9,13 +8,15 @@ namespace TfsDeployer
     {
         private delegate void ExecuteDeploymentProcessDelegate(BuildStatusChangeEvent ev);
 
-        private readonly TfsListener _listener;
+        private readonly ITfsListener _listener;
         private readonly IDeployerFactory _deployerFactory;
+        private readonly IDuplicateEventDetector _duplicateEventDetector;
 
-        public TfsBuildStatusTrigger(IEventService eventService, IDeployerFactory deployerFactory, Uri baseAddress)
+        public TfsBuildStatusTrigger(ITfsListener listener, IDeployerFactory deployerFactory, IDuplicateEventDetector duplicateEventDetector)
         {
-            _listener = new TfsListener(eventService, baseAddress);
+            _listener = listener;
             _deployerFactory = deployerFactory;
+            _duplicateEventDetector = duplicateEventDetector;
         }
 
         public void Start()
@@ -32,9 +33,18 @@ namespace TfsDeployer
 
         private void OnListenerBuildStatusChangeEventReceived(object sender, BuildStatusChangeEventArgs e)
         {
-            var deployer = _deployerFactory.Create();
-            ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
-            edpd.BeginInvoke(e.EventRaised, null, null);
+            BuildStatusChangeEvent changeEvent = e.EventRaised;
+
+            if (_duplicateEventDetector.IsUnique(changeEvent))
+            {
+                var deployer = _deployerFactory.Create();
+                ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
+                edpd.BeginInvoke(changeEvent, null, null);
+            }
+            else
+            {
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Received duplicate event '{0}' from TFS.", changeEvent.Title);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Readify.Useful.TeamFoundation.Common.Notification;
+using System;
 
 namespace TfsDeployer
 {
@@ -16,5 +17,10 @@ namespace TfsDeployer
         /// on the server I was having trouble with.  -andrewh 22/10/2010
         /// </remarks>
         bool IsUnique(BuildStatusChangeEvent buildStatusChangeEvent);
+
+        /// <summary>
+        /// The timespan during which events that look the same will be identified as unique.
+        /// </summary>
+        TimeSpan TimeoutPeriod { get; }
     }
 }

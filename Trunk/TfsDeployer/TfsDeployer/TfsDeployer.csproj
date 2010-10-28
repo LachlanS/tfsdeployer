@@ -138,6 +138,7 @@
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
     <Compile Include="DuplicateEventDetector.cs" />
+    <Compile Include="IDeployer.cs" />
     <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="ProcessExtensions.cs" />

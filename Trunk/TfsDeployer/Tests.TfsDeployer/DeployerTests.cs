@@ -21,7 +21,6 @@ namespace Tests.TfsDeployer.DeployerTests
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var alert = MockRepository.GenerateStub<IAlert>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
-            var duplicateEventDetector = MockRepository.GenerateStub<IDuplicateEventDetector>();
             var buildServer = MockRepository.GenerateStub<IBuildServer>();
 
             var buildDetail = new StubBuildDetail();
@@ -39,11 +38,7 @@ namespace Tests.TfsDeployer.DeployerTests
                 .IgnoreArguments()
                 .Return(true);
 
-            duplicateEventDetector.Stub(o => o.IsUnique(null))
-                .IgnoreArguments()
-                .Return(true);
-
-            var deployer = new Deployer(deployAgentProvider, configurationReader, deploymentFolderSource, alert, mappingEvaluator, duplicateEventDetector, buildServer);
+            var deployer = new Deployer(deployAgentProvider, configurationReader, deploymentFolderSource, alert, mappingEvaluator, buildServer);
             var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
             // Act

@@ -16,7 +16,7 @@ namespace TfsDeployer
             _versionControlServer = versionControlServer;
         }
 
-        public Deployer Create()
+        public IDeployer Create()
         {
             var deploymentFolderSource = new VersionControlDeploymentFolderSource(_versionControlServer);
             var deploymentFileSource = new VersionControlDeploymentFileSource(_versionControlServer);

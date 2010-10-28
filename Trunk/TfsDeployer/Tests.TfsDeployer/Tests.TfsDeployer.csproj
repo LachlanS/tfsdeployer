@@ -102,6 +102,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\ReferenceAssemblies\v2.0\Microsoft.TeamFoundation.Build.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Rhino.Mocks">
       <HintPath>..\Dependencies\Rhino.Mocks\Rhino.Mocks.dll</HintPath>
@@ -118,6 +119,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="BuildStatusTriggerTests\DuplicateEventDetectionTests.cs" />
     <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />
     <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_DeployerConfigurationWithBlankMappingNamespace.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFolderSource.cs" />
@@ -129,7 +131,6 @@
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_all_source_data.cs" />
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
     <Compile Include="DeployerTests.cs" />
-    <Compile Include="DeployerTests\DuplicateEventDetectionIntegrationTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
     <Compile Include="MappingEvaluatorTests\BuildStatusChangeEventBuilder.cs" />

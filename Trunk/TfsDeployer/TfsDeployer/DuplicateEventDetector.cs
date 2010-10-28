@@ -25,17 +25,19 @@ namespace TfsDeployer
 
         readonly List<EventRecord> _recentStatusChangeEvents = new List<EventRecord>();
 
+        readonly TimeSpan _timeoutPeriod = TimeSpan.FromSeconds(5);
+        public TimeSpan TimeoutPeriod { get { return _timeoutPeriod; } }
+
         public bool IsUnique(BuildStatusChangeEvent buildStatusChangeEvent)
         {
             lock (_recentStatusChangeEvents)
             {
-                var cutoffDate = DateTime.Now.Subtract(new TimeSpan(0, 0, 5));
+                var cutoffDate = DateTime.Now.Subtract(_timeoutPeriod);
                 var toRemove = _recentStatusChangeEvents.Where(ev => ev.WhenSeen < cutoffDate).ToArray();
                 foreach (var expiredEvent in toRemove) _recentStatusChangeEvents.Remove(expiredEvent);
 
                 if (_recentStatusChangeEvents.Any(ev => AreTooSimilar(ev.BuildStatusChangeEvent, buildStatusChangeEvent)))
                 {
-                    TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Received duplicate event '{0}' from TFS.", buildStatusChangeEvent.Title);
                     return false;
                 }
 

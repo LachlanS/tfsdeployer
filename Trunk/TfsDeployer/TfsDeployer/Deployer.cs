@@ -28,30 +28,28 @@ using TfsDeployer.DeployAgent;
 
 namespace TfsDeployer
 {
-    public class Deployer
+    public class Deployer : IDeployer
     {
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IConfigurationReader _configurationReader;
         private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IAlert _alerter;
         private readonly IMappingEvaluator _mappingEvaluator;
-        private readonly IDuplicateEventDetector _duplicateEventDetector;
         private readonly IBuildServer _buildServer;
 
         public Deployer(IDeploymentFileSource deploymentFileSource, IDeploymentFolderSource deploymentFolderSource, IBuildServer buildServer)
-            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), new DuplicateEventDetector(), buildServer)
+            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), buildServer)
         {
         }
 
         public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IDeploymentFolderSource deploymentFolderSource, IAlert alert,
-                        IMappingEvaluator mappingEvaluator, IDuplicateEventDetector duplicateEventDetector, IBuildServer buildServer)
+                        IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
         {
             _deployAgentProvider = deployAgentProvider;
             _configurationReader = reader;
             _deploymentFolderSource = deploymentFolderSource;
             _alerter = alert;
             _mappingEvaluator = mappingEvaluator;
-            _duplicateEventDetector = duplicateEventDetector;
             _buildServer = buildServer;
         }
 
@@ -66,44 +64,41 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.OldValue,
                                              statusChanged.StatusChange.NewValue);
 
-                if (_duplicateEventDetector.IsUnique(statusChanged))
+                var info = new BuildInformation(GetBuildDetail(statusChanged));
+                var mappings = _configurationReader.ReadMappings(info.Detail);
+                foreach (var mapping in mappings)
                 {
-                    var info = new BuildInformation(GetBuildDetail(statusChanged));
-                    var mappings = _configurationReader.ReadMappings(info.Detail);
-                    foreach (var mapping in mappings)
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
+                                                 "Processing Mapping: Computer:{0}, Script:{1}",
+                                                 mapping.Computer,
+                                                 mapping.Script);
+
+                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                     "Processing Mapping: Computer:{0}, Script:{1}",
-                                                     mapping.Computer,
+                                                     "Matching mapping found, running script {0}",
                                                      mapping.Script);
 
-                        if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
+                        var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+
+                        // default to "happy; did nothing" if there's no deployment agent.
+                        DeployAgentResult deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
+
+                        if (deployAgent != null)
                         {
-                            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
-                                                         "Matching mapping found, running script {0}",
-                                                         mapping.Script);
-
-                            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-                            // default to "happy; did nothing" if there's no deployment agent.
-                            DeployAgentResult deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
-
-                            if (deployAgent != null)
+                            using (var workingDirectory = new WorkingDirectory())
                             {
-                                using (var workingDirectory = new WorkingDirectory())
-                                {
-                                    var deployAgentDataFactory = new DeployAgentDataFactory();
-                                    var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                                   mapping, info);
+                                var deployAgentDataFactory = new DeployAgentDataFactory();
+                                var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                               mapping, info);
 
-                                    _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
-                                    deployResult = deployAgent.Deploy(deployData);
-                                }
+                                _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                                deployResult = deployAgent.Deploy(deployData);
                             }
-
-                            ApplyRetainBuild(mapping, deployResult, info.Detail);
-                            _alerter.Alert(mapping, info.Data, deployResult);
                         }
+
+                        ApplyRetainBuild(mapping, deployResult, info.Detail);
+                        _alerter.Alert(mapping, info.Data, deployResult);
                     }
                 }
             }

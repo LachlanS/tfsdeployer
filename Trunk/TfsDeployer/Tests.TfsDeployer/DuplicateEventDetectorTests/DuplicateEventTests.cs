@@ -33,7 +33,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
             }
 
             [TestMethod]
-            public void Subsequent_events_within_five_seconds_should_not_be_unique()
+            public void Subsequent_events_within_the_timeout_period_should_not_be_unique()
             {
                 // I know, I know.. multiple asserts in a single test. This one's a bit of a pain, though, as it
                 // takes nn seconds for the duplicate detector to flush events from its event record, and I don't
@@ -45,7 +45,10 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                 isUnique = _duplicateEventDetector.IsUnique(_event);
                 Assert.AreEqual(true, isUnique);
 
-                while (DateTime.Now < startTime.AddMilliseconds(4 * 1000))
+                // one second before the timeout should expire...
+                DateTime waitUntil = DateTime.Now.Add(_duplicateEventDetector.TimeoutPeriod).Subtract(TimeSpan.FromSeconds(1));
+
+                while (DateTime.Now < waitUntil)
                 {
                     isUnique = _duplicateEventDetector.IsUnique(_event);
                     Assert.AreEqual(false, isUnique);
@@ -53,7 +56,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
                     Thread.Sleep(100);
                 }
 
-                // ensure >5 seconds between
+                // ensure _duplicateEventDetector.TimeoutPeriod seconds between
                 Thread.Sleep(1 * 1000);
 
                 isUnique = _duplicateEventDetector.IsUnique(_event);

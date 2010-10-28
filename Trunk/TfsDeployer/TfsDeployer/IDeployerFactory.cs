@@ -2,6 +2,6 @@
 {
     public interface IDeployerFactory
     {
-        Deployer Create();
+        IDeployer Create();
     }
 }

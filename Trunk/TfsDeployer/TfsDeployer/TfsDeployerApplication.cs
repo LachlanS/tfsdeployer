@@ -2,10 +2,11 @@
 using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using Readify.Useful.TeamFoundation.Common.Listener;
 
 namespace TfsDeployer
 {
-    public class TfsDeployerApplication: IDisposable
+    public class TfsDeployerApplication : IDisposable
     {
         private TfsBuildStatusTrigger _trigger;
 
@@ -19,7 +20,10 @@ namespace TfsDeployer
             var buildServer = server.GetService<IBuildServer>();
             var versionControlServer = server.GetService<VersionControlServer>();
             var baseAddress = new Uri(Properties.Settings.Default.BaseAddress);
-            _trigger = new TfsBuildStatusTrigger(eventService, new DeployerFactory(buildServer, versionControlServer), baseAddress);
+            var listener = new TfsListener(eventService, baseAddress);
+            var duplicateEventDetector = new DuplicateEventDetector();
+
+            _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, versionControlServer), duplicateEventDetector);
             _trigger.Start();
         }
 
