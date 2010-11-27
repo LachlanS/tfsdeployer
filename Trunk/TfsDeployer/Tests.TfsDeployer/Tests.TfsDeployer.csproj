@@ -135,6 +135,7 @@
     <Compile Include="DeployerTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
+    <Compile Include="SanityTests.cs" />
     <Compile Include="MappingEvaluatorTests\BuildStatusChangeEventBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingEvaluatorTests.cs" />
@@ -234,7 +235,9 @@
     <None Include="App.config" />
     <EmbeddedResource Include="PowerShellRunnerTests\WriteHostScript.ps1" />
     <EmbeddedResource Include="Resources\LoadSystemWebAssemblyScript.ps1" />
+    <None Include="Set-TfsDeployerTestEnvironment.ps1" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
