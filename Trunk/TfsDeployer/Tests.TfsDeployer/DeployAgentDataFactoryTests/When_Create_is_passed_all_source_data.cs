@@ -58,13 +58,6 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
         }
 
         [TestMethod]
-        public void Should_have_Tfs2005BuildData()
-        {
-            var data = CreateDeployAgentData();
-            Assert.AreEqual("test_build_number", data.Tfs2005BuildData.BuildNumber);
-        }
-
-        [TestMethod]
         public void Should_have_first_DeployScriptParameter()
         {
             var data = CreateDeployAgentData();

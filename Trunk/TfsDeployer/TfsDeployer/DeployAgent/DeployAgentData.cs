@@ -13,7 +13,6 @@ namespace TfsDeployer.DeployAgent
         public string DeployScriptRoot { get; set; }
         public TimeSpan Timeout { get; set; }
         public ICollection<DeployScriptParameter> DeployScriptParameters { get; set; }
-        public IBuildData Tfs2005BuildData { get; set; }
         public BuildDetail TfsBuildDetail { get; set; }
     }
 }

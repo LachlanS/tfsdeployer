@@ -143,7 +143,6 @@
     <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="ProcessExtensions.cs" />
-    <Compile Include="TeamFoundation\BuildData.cs" />
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
     <Compile Include="TeamFoundation\BuildDetail.cs" />
     <Compile Include="TeamFoundation\ProcessTemplate.cs" />
@@ -157,7 +156,6 @@
     <Compile Include="IDeployerFactory.cs" />
     <Compile Include="IDeploymentFileSource.cs" />
     <Compile Include="ITfsConnectionProvider.cs" />
-    <Compile Include="TeamFoundation\IBuildData.cs" />
     <Compile Include="IMappingEvaluator.cs" />
     <Compile Include="IWorkingDirectory.cs" />
     <Compile Include="MappingEvaluator.cs" />

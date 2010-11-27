@@ -22,7 +22,6 @@ namespace TfsDeployer.DeployAgent
                                DeployScriptRoot = deployScriptRoot,
                                DeployScriptParameters = CreateParameters(mapping.ScriptParameters),
                                Timeout = mapping.TimeoutSeconds == 0 ? TimeSpan.MaxValue : TimeSpan.FromSeconds(mapping.TimeoutSeconds),
-                               Tfs2005BuildData = buildInfo.Data,
                                TfsBuildDetail = buildDetail
                            };
             return data;

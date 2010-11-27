@@ -37,7 +37,7 @@ namespace TfsDeployer.Alert
  
 {4}";
         
-        public void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult)
+        public void Alert(Mapping mapping, BuildDetail build, DeployAgentResult deployAgentResult)
         {
             try
             {
@@ -73,13 +73,13 @@ namespace TfsDeployer.Alert
             }
         }
 
-        private static string GetBody(Mapping map, IBuildData build, DeployAgentResult deployAgentResult)
+        private static string GetBody(Mapping map, BuildDetail build, DeployAgentResult deployAgentResult)
         {
             var builder = new StringBuilder();
-            builder.AppendLine(string.Format("Team Project/Build: {0} to {1}", build.TeamProject, build.BuildType));
+            builder.AppendLine(string.Format("Team Project/Build: {0} to {1}", build.TeamProject, build.BuildDefinition.Name));
             builder.AppendLine(string.Format("Quality Change: {0} to {1}", map.OriginalQuality, map.NewQuality));
             builder.AppendLine(string.Format("Drop Location: {0}", build.DropLocation));
-            builder.AppendLine(string.Format("Build Uri: {0}", build.BuildUri));
+            builder.AppendLine(string.Format("Build Uri: {0}", build.Uri));
             builder.AppendLine(string.Format("Script: {0}", map.Script));
             builder.AppendLine(string.Format("Executed on Machine: {0}", map.Computer));
             builder.AppendLine("Output:");
@@ -87,7 +87,7 @@ namespace TfsDeployer.Alert
             return builder.ToString();
         }
 
-        private static string GetSubject(Mapping map, IBuildData build, DeployAgentResult deployAgentResult )
+        private static string GetSubject(Mapping map, BuildDetail build, DeployAgentResult deployAgentResult )
         {
             var errorMessage = "Success: ";
             if (deployAgentResult.HasErrors)
@@ -95,7 +95,7 @@ namespace TfsDeployer.Alert
                 errorMessage = "Failed: ";
             }
 
-            return string.Format("{0} TfsDeployer Ran Script {1} on Machine {2} for {3}/{4}/{5}", errorMessage, map.Script, map.Computer, build.TeamProject, build.BuildType, build.BuildNumber);
+            return string.Format("{0} TfsDeployer Ran Script {1} on Machine {2} for {3}/{4}/{5}", errorMessage, map.Script, map.Computer, build.TeamProject, build.BuildDefinition.Name, build.BuildNumber);
         }
     }
 }

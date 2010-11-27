@@ -44,7 +44,6 @@ namespace TfsDeployer.DeployAgent
                                {"TfsDeployerNewQuality", deployAgentData.NewQuality},
                                {"TfsDeployerOriginalQuality", deployAgentData.OriginalQuality},
                                {"TfsDeployerScript", deployAgentData.DeployScriptFile},
-                               {"TfsDeployerBuildData", deployAgentData.Tfs2005BuildData},
                                {"TfsDeployerBuildDetail", deployAgentData.TfsBuildDetail}
                            };
             return dict;

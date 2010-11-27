@@ -82,23 +82,21 @@ namespace TfsDeployer
                         var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
 
                         // default to "happy; did nothing" if there's no deployment agent.
-                        DeployAgentResult deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
+                        var deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
 
-                        if (deployAgent != null)
+                        using (var workingDirectory = new WorkingDirectory())
                         {
-                            using (var workingDirectory = new WorkingDirectory())
-                            {
-                                var deployAgentDataFactory = new DeployAgentDataFactory();
-                                var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                               mapping, info);
+                            var deployAgentDataFactory = new DeployAgentDataFactory();
+                            var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                            mapping, info);
 
-                                _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
-                                deployResult = deployAgent.Deploy(deployData);
-                            }
+                            _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                            if (deployAgent != null) deployResult = deployAgent.Deploy(deployData);
+
+                            ApplyRetainBuild(mapping, deployResult, info.Detail);
+                            _alerter.Alert(mapping, deployData.TfsBuildDetail, deployResult);
                         }
-
-                        ApplyRetainBuild(mapping, deployResult, info.Detail);
-                        _alerter.Alert(mapping, info.Data, deployResult);
+                        
                     }
                 }
             }

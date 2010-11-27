@@ -26,6 +26,6 @@ namespace TfsDeployer.Alert
 {
     public interface IAlert
     {
-        void Alert(Mapping mapping, IBuildData build, DeployAgentResult deployAgentResult);
+        void Alert(Mapping mapping, BuildDetail build, DeployAgentResult deployAgentResult);
     }
 }
