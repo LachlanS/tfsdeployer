@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.TeamFoundation.Build.Client;
 using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.DeployAgent
@@ -15,7 +14,6 @@ namespace TfsDeployer.DeployAgent
         public TimeSpan Timeout { get; set; }
         public ICollection<DeployScriptParameter> DeployScriptParameters { get; set; }
         public IBuildData Tfs2005BuildData { get; set; }
-        public IBuildDetail Tfs2008BuildDetail { get; set; }
-        //TODO generic BuildInformation
+        public BuildDetail TfsBuildDetail { get; set; }
     }
 }

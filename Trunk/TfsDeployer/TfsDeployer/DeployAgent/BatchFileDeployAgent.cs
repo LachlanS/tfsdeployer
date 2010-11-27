@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Readify.Useful.TeamFoundation.Common;
-using System.Threading;
 using System;
 
 namespace TfsDeployer.DeployAgent
@@ -39,8 +37,7 @@ namespace TfsDeployer.DeployAgent
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
 
             // Start the process
-            Process proc;
-            proc = Process.Start(psi);
+            var proc = Process.Start(psi);
             if (proc == null)
             {
                 TraceHelper.TraceError(TraceSwitches.TfsDeployer, "Process.Start(...) returned null");
@@ -84,7 +81,7 @@ namespace TfsDeployer.DeployAgent
                         output += sOut.ReadToEnd().Trim();
                         output += sErr.ReadToEnd().Trim();
                     }
-                    catch (Exception)
+                    catch
                     {
                         // swallow. grab what we can, but don't complain if the streams are nuked already.
                     }
@@ -115,9 +112,9 @@ namespace TfsDeployer.DeployAgent
 
         private static string CreateArguments(DeployAgentData deployAgentData)
         {
-            var buildData = deployAgentData.Tfs2008BuildDetail;
+            var buildDetail = deployAgentData.TfsBuildDetail;
 
-            var defaultArguments = new[] { buildData.DropLocation, buildData.BuildNumber };
+            var defaultArguments = new[] { buildDetail.DropLocation, buildDetail.BuildNumber };
 
             var extraArguments = deployAgentData.DeployScriptParameters.Select(p => p.Value);
 

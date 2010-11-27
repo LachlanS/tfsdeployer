@@ -20,11 +20,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Policy;
-using Microsoft.TeamFoundation.Build.Client;
-using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.DeployAgent
 {
@@ -41,8 +38,6 @@ namespace TfsDeployer.DeployAgent
 
         private static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
         {
-            var buildDetail = new BuildDetail();
-            PropertyAdapter.CopyProperties(typeof(IBuildDetail), deployAgentData.Tfs2008BuildDetail, typeof(BuildDetail), buildDetail);
             var dict = new Dictionary<string, object>
                            {
                                {"TfsDeployerComputer", deployAgentData.DeployServer},
@@ -50,7 +45,7 @@ namespace TfsDeployer.DeployAgent
                                {"TfsDeployerOriginalQuality", deployAgentData.OriginalQuality},
                                {"TfsDeployerScript", deployAgentData.DeployScriptFile},
                                {"TfsDeployerBuildData", deployAgentData.Tfs2005BuildData},
-                               {"TfsDeployerBuildDetail", buildDetail}
+                               {"TfsDeployerBuildDetail", deployAgentData.TfsBuildDetail}
                            };
             return dict;
         }

@@ -51,10 +51,10 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
         }
 
         [TestMethod]
-        public void Should_have_Tfs2008BuildDetail()
+        public void Should_have_TfsBuildDetail()
         {
             var data = CreateDeployAgentData();
-            Assert.AreEqual("test_build_number", data.Tfs2008BuildDetail.BuildNumber);
+            Assert.AreEqual("test_build_number", data.TfsBuildDetail.BuildNumber);
         }
 
         [TestMethod]

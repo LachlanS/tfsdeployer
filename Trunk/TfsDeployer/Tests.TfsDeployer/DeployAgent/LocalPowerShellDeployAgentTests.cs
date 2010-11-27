@@ -4,7 +4,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.TfsDeployer.Resources;
 using TfsDeployer;
+using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.DeployAgent
 {
@@ -25,7 +27,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     DeployScriptFile = scriptFile.FileInfo.Name,
                     DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
                     DeployScriptParameters = new List<DeployScriptParameter>(),
-                    Tfs2008BuildDetail = new StubBuildDetail()
+                    TfsBuildDetail = new BuildDetail()
                 };
 
                 var agent = new LocalPowerShellDeployAgent();
@@ -51,16 +53,15 @@ namespace Tests.TfsDeployer.DeployAgent
             {
                 var buildInformation = new BuildInformation(new StubBuildDetail());
 
-                var testDeployData = new DeployAgentData
-                {
-                    NewQuality = "Released",
-                    OriginalQuality = null,
-                    DeployScriptFile = scriptFile.FileInfo.Name,
-                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
-                    DeployScriptParameters = new List<DeployScriptParameter>(),
-                    Tfs2005BuildData = buildInformation.Data,
-                    Tfs2008BuildDetail = buildInformation.Detail
-                };
+                var mapping = new Mapping
+                                  {
+                                      NewQuality = "Released",
+                                      OriginalQuality = null,
+                                      ScriptParameters = new ScriptParameter[0],
+                                      Script = scriptFile.FileInfo.Name
+                                  };
+
+                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildInformation);
 
                 var agent = new LocalPowerShellDeployAgent();
 
