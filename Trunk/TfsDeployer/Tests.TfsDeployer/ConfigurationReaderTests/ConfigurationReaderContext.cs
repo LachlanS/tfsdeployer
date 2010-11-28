@@ -14,7 +14,7 @@ namespace Tests.TfsDeployer.ConfigurationReaderTests
                                   };
 
             var deploymentFileSource = new StubDeploymentFileSource(configurationXml);
-            var configReader = new ConfigurationReader(deploymentFileSource);
+            var configReader = new ConfigurationReader(deploymentFileSource, string.Empty);
 
             return configReader.ReadMappings(buildDetail);
         }

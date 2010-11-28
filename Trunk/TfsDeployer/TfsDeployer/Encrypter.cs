@@ -35,8 +35,6 @@ namespace TfsDeployer
 
         public static RSACryptoServiceProvider GenerateKey()
         {
-
-
             // Create a new RSA signing key and save it in the container. 
             RSACryptoServiceProvider rsaKey = new RSACryptoServiceProvider();
             return rsaKey;

@@ -31,10 +31,12 @@ namespace TfsDeployer.Configuration
     public class ConfigurationReader : IConfigurationReader
     {
         private readonly IDeploymentFileSource _deploymentFileSource;
+        private readonly string _signingKeyFile;
 
-        public ConfigurationReader(IDeploymentFileSource deploymentFileSource)
+        public ConfigurationReader(IDeploymentFileSource deploymentFileSource, string signingKeyFile)
         {
             _deploymentFileSource = deploymentFileSource;
+            _signingKeyFile = signingKeyFile;
         }
 
         public IEnumerable<Mapping> ReadMappings(BuildDetail buildDetail)
@@ -68,7 +70,7 @@ namespace TfsDeployer.Configuration
                 .ToArray(); 
         }
 
-        private static DeploymentMappings Read(Stream deployerConfiguration)
+        private DeploymentMappings Read(Stream deployerConfiguration)
         {
             var tempFileName = Path.GetTempFileName();
             using (var tempFile = File.OpenWrite(tempFileName))
@@ -85,12 +87,12 @@ namespace TfsDeployer.Configuration
             return config;
         }
 
-        private static DeploymentMappings Read(string configFileName)
+        private DeploymentMappings Read(string configFileName)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFileName);
-            if (Properties.Settings.Default.SignDeploymentMappingFile)
+            if (!string.IsNullOrEmpty(_signingKeyFile))
             {
-                if (!Encrypter.VerifyXml(configFileName, Properties.Settings.Default.KeyFile))
+                if (!Encrypter.VerifyXml(configFileName, _signingKeyFile))
                 {
                     TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification Failed for the deployment mapping file:{0} and key file {1}", configFileName, Properties.Settings.Default.KeyFile);
                     return null;

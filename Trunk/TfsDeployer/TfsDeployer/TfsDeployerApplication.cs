@@ -3,6 +3,7 @@ using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common.Listener;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer
 {
@@ -19,11 +20,13 @@ namespace TfsDeployer
             var eventService = server.GetService<IEventService>();
             var buildServer = server.GetService<IBuildServer>();
             var versionControlServer = server.GetService<VersionControlServer>();
+            var configurationReader = new ConfigurationReader(new VersionControlDeploymentFileSource(versionControlServer), Properties.Settings.Default.KeyFile);
+            var deploymentFolderSource = new VersionControlDeploymentFolderSource(versionControlServer);
             var baseAddress = new Uri(Properties.Settings.Default.BaseAddress);
             var listener = new TfsListener(eventService, baseAddress);
             var duplicateEventDetector = new DuplicateEventDetector();
 
-            _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, versionControlServer), duplicateEventDetector);
+            _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, configurationReader, deploymentFolderSource), duplicateEventDetector);
             _trigger.Start();
         }
 

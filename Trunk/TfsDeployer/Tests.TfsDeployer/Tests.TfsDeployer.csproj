@@ -135,6 +135,7 @@
     <Compile Include="DeployerTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
+    <Compile Include="EncrypterTests.cs" />
     <Compile Include="SanityTests.cs" />
     <Compile Include="MappingEvaluatorTests\BuildStatusChangeEventBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingBuilder.cs" />

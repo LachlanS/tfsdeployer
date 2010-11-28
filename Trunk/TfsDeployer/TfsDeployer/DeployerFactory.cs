@@ -1,26 +1,29 @@
 ﻿using Microsoft.TeamFoundation.Build.Client;
-using Microsoft.TeamFoundation.VersionControl.Client;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
+using TfsDeployer.DeployAgent;
 
 namespace TfsDeployer
 {
     public class DeployerFactory : IDeployerFactory
     {
         private readonly IBuildServer _buildServer;
-        private readonly VersionControlServer _versionControlServer;
+        private readonly IConfigurationReader _configurationReader;
+        private readonly IDeploymentFolderSource _deploymentFolderSource;
 
-        public DeployerFactory(IBuildServer buildServer, VersionControlServer versionControlServer)
+        public DeployerFactory(IBuildServer buildServer, IConfigurationReader configurationReader, IDeploymentFolderSource deploymentFolderSource)
         {
             _buildServer = buildServer;
-            _versionControlServer = versionControlServer;
+            _configurationReader = configurationReader;
+            _deploymentFolderSource = deploymentFolderSource;
         }
 
         public IDeployer Create()
         {
-            var deploymentFolderSource = new VersionControlDeploymentFolderSource(_versionControlServer);
-            var deploymentFileSource = new VersionControlDeploymentFileSource(_versionControlServer);
-            return new Deployer(deploymentFileSource, deploymentFolderSource, _buildServer);
+            var deployAgentProvider = new DeployAgentProvider();
+            var emailAlerter = new EmailAlerter();
+            var mappingEvaluator = new MappingEvaluator();
+            return new Deployer(deployAgentProvider, _configurationReader, _deploymentFolderSource, emailAlerter, mappingEvaluator, _buildServer);
         }
     }
 }

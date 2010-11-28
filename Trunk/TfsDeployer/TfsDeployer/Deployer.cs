@@ -38,11 +38,6 @@ namespace TfsDeployer
         private readonly IMappingEvaluator _mappingEvaluator;
         private readonly IBuildServer _buildServer;
 
-        public Deployer(IDeploymentFileSource deploymentFileSource, IDeploymentFolderSource deploymentFolderSource, IBuildServer buildServer)
-            : this(new DeployAgentProvider(), new ConfigurationReader(deploymentFileSource), deploymentFolderSource, new EmailAlerter(), new MappingEvaluator(), buildServer)
-        {
-        }
-
         public Deployer(IDeployAgentProvider deployAgentProvider, IConfigurationReader reader, IDeploymentFolderSource deploymentFolderSource, IAlert alert,
                         IMappingEvaluator mappingEvaluator, IBuildServer buildServer)
         {
