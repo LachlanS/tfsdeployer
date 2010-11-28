@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests.TfsDeployer.Resources;
-using TfsDeployer;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.TeamFoundation;
@@ -51,7 +50,7 @@ namespace Tests.TfsDeployer.DeployAgent
             DeployAgentResult result;
             using (var scriptFile = new TemporaryFile(".ps1", "$TfsDeployerBuildData | Format-List"))
             {
-                var buildInformation = new BuildInformation(new StubBuildDetail());
+                var buildDetail = new BuildDetail();
 
                 var mapping = new Mapping
                                   {
@@ -61,7 +60,7 @@ namespace Tests.TfsDeployer.DeployAgent
                                       Script = scriptFile.FileInfo.Name
                                   };
 
-                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildInformation);
+                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail);
 
                 var agent = new LocalPowerShellDeployAgent();
 

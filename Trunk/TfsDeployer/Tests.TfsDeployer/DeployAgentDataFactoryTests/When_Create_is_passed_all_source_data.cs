@@ -10,7 +10,7 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
         private DeployAgentData CreateDeployAgentData()
         {
             var mapping = CreateMapping();
-            var buildInfo = CreateBuildInformation();
+            var buildInfo = CreateBuildDetail();
             var factory = new DeployAgentDataFactory();
             return factory.Create(DeployScriptRoot, mapping, buildInfo);
         }

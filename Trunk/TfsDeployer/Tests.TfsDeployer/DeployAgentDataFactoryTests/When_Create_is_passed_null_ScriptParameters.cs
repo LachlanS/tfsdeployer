@@ -11,7 +11,7 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
         {
             var mapping = CreateMapping();
             mapping.ScriptParameters = null;
-            var buildInfo = CreateBuildInformation();
+            var buildInfo = CreateBuildDetail();
             var factory = new DeployAgentDataFactory();
             return factory.Create(DeployScriptRoot, mapping, buildInfo);
         }

@@ -1,9 +1,9 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
+﻿using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
     public interface IDeploymentFolderSource
     {
-        void DownloadDeploymentFolder(IBuildDetail buildDetail, string destination);
+        void DownloadDeploymentFolder(BuildDetail buildDetail, string destination);
     }
 }

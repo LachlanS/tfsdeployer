@@ -23,8 +23,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer.Configuration
 {
@@ -37,7 +37,7 @@ namespace TfsDeployer.Configuration
             _deploymentFileSource = deploymentFileSource;
         }
 
-        public IEnumerable<Mapping> ReadMappings(IBuildDetail buildDetail)
+        public IEnumerable<Mapping> ReadMappings(BuildDetail buildDetail)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", buildDetail.TeamProject, buildDetail.BuildDefinition.Name);
 

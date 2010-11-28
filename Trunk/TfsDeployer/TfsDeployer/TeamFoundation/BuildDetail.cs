@@ -34,6 +34,7 @@ namespace TfsDeployer.TeamFoundation
         public string ShelvesetName { get; set; }
         public string SourceGetVersion { get; set; }
         public DateTime StartTime { get; set; }
+        public BuildStatus Status { get; set; }
         public string TeamProject { get; set; }
         public Uri Uri { get; set; }
     }

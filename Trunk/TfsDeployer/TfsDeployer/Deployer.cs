@@ -25,6 +25,7 @@ using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
@@ -64,8 +65,11 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.OldValue,
                                              statusChanged.StatusChange.NewValue);
 
-                var info = new BuildInformation(GetBuildDetail(statusChanged));
-                var mappings = _configurationReader.ReadMappings(info.Detail);
+                var tfsBuildDetail = GetBuildDetail(statusChanged);
+                var buildDetail = new BuildDetail();
+                PropertyAdapter.CopyProperties(typeof(IBuildDetail), tfsBuildDetail, typeof(BuildDetail), buildDetail);
+
+                var mappings = _configurationReader.ReadMappings(buildDetail);
                 foreach (var mapping in mappings)
                 {
                     TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
@@ -73,7 +77,7 @@ namespace TfsDeployer
                                                  mapping.Computer,
                                                  mapping.Script);
 
-                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, info.Detail.Status.ToString()))
+                    if (_mappingEvaluator.DoesMappingApply(mapping, statusChanged, buildDetail.Status.ToString()))
                     {
                         TraceHelper.TraceInformation(TraceSwitches.TfsDeployer,
                                                      "Matching mapping found, running script {0}",
@@ -88,12 +92,12 @@ namespace TfsDeployer
                         {
                             var deployAgentDataFactory = new DeployAgentDataFactory();
                             var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                            mapping, info);
+                                                                            mapping, buildDetail);
 
-                            _deploymentFolderSource.DownloadDeploymentFolder(info.Detail, workingDirectory.DirectoryInfo.FullName);
+                            _deploymentFolderSource.DownloadDeploymentFolder(deployData.TfsBuildDetail, workingDirectory.DirectoryInfo.FullName);
                             if (deployAgent != null) deployResult = deployAgent.Deploy(deployData);
 
-                            ApplyRetainBuild(mapping, deployResult, info.Detail);
+                            ApplyRetainBuild(mapping, deployResult, tfsBuildDetail);
                             _alerter.Alert(mapping, deployData.TfsBuildDetail, deployResult);
                         }
                         

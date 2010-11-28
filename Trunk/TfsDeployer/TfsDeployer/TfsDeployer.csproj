@@ -116,7 +116,6 @@
     </Compile>
     <Compile Include="Alert\EmailAlerter.cs" />
     <Compile Include="AppConfigTfsConnectionProvider.cs" />
-    <Compile Include="BuildInformation.cs" />
     <Compile Include="CommandLine\CommandLine.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -145,6 +144,7 @@
     <Compile Include="ProcessExtensions.cs" />
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
     <Compile Include="TeamFoundation\BuildDetail.cs" />
+    <Compile Include="TeamFoundation\BuildStatus.cs" />
     <Compile Include="TeamFoundation\ProcessTemplate.cs" />
     <Compile Include="TeamFoundation\PropertyAdapter.cs" />
     <Compile Include="TemporaryFile.cs" />

@@ -1,6 +1,5 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
-using TfsDeployer;
-using TfsDeployer.Configuration;
+﻿using TfsDeployer.Configuration;
+using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
 {
@@ -32,11 +31,10 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
                        };
         }
 
-        public BuildInformation CreateBuildInformation()
+        public BuildDetail CreateBuildDetail()
         {
-            IBuildDetail buildDetail = new StubBuildDetail();
-            buildDetail.BuildNumber = "test_build_number";
-            return new BuildInformation(buildDetail);
+            var buildDetail = new BuildDetail {BuildNumber = "test_build_number"};
+            return buildDetail;
         }
 
     }

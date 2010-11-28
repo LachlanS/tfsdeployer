@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.TeamFoundation.Build.Client;
 using TfsDeployer.Configuration;
 using TfsDeployer.TeamFoundation;
 
@@ -9,10 +8,8 @@ namespace TfsDeployer.DeployAgent
 {
     public class DeployAgentDataFactory
     {
-        public DeployAgentData Create(string deployScriptRoot, Mapping mapping, BuildInformation buildInfo)
+        public DeployAgentData Create(string deployScriptRoot, Mapping mapping, BuildDetail buildDetail)
         {
-            var buildDetail = new BuildDetail();
-            PropertyAdapter.CopyProperties(typeof(IBuildDetail), buildInfo.Detail, typeof(BuildDetail), buildDetail);
             var data = new DeployAgentData
                            {
                                NewQuality = mapping.NewQuality,

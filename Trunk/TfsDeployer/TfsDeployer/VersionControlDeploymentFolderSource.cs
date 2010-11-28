@@ -19,9 +19,9 @@
 // THE SOFTWARE.
 
 using System;
-using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
@@ -34,7 +34,7 @@ namespace TfsDeployer
             _versionControlServer = versionControlServer;
         }
 
-        public void DownloadDeploymentFolder(IBuildDetail buildDetail, string destination)
+        public void DownloadDeploymentFolder(BuildDetail buildDetail, string destination)
         {
             var serverPath = VersionControlPath.GetDeploymentFolderServerPath(buildDetail);
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Getting files from {0} to {1}", serverPath, destination);

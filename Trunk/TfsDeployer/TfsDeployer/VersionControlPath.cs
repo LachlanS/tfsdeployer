@@ -1,13 +1,17 @@
 using System.Text.RegularExpressions;
-using Microsoft.TeamFoundation.Build.Client;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
     public static class VersionControlPath
     {
-        public static string GetDeploymentFolderServerPath(IBuildDetail buildDetail)
+        public static string GetDeploymentFolderServerPath(BuildDetail buildDetail)
         {
-            var templateFile = buildDetail.BuildDefinition.Process.ServerPath;
+            return GetDeploymentFolderServerPath(buildDetail.BuildDefinition.Process.ServerPath);
+        }
+
+        private static string GetDeploymentFolderServerPath(string templateFile)
+        {
             return Regex.Replace(templateFile, @"/[^/]+$", "/Deployment");
         }
     }

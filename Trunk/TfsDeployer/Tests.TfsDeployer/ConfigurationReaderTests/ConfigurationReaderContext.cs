@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.TeamFoundation.Build.Client;
-using TfsDeployer;
+﻿using System.Collections.Generic;
 using TfsDeployer.Configuration;
+using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.ConfigurationReaderTests
 {
@@ -11,8 +8,10 @@ namespace Tests.TfsDeployer.ConfigurationReaderTests
     {
         protected static IEnumerable<Mapping> ReadMappings(string buildDefinitionName, string configurationXml)
         {
-            IBuildDetail buildDetail = new StubBuildDetail();
-            buildDetail.BuildDefinition.Name = buildDefinitionName;
+            var buildDetail = new BuildDetail
+                                  {
+                                      BuildDefinition = {Name = buildDefinitionName}
+                                  };
 
             var deploymentFileSource = new StubDeploymentFileSource(configurationXml);
             var configReader = new ConfigurationReader(deploymentFileSource);

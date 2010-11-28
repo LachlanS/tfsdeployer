@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Microsoft.TeamFoundation.Build.Client;
 using TfsDeployer;
+using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.ConfigurationReaderTests
 {
@@ -13,7 +13,7 @@ namespace Tests.TfsDeployer.ConfigurationReaderTests
             _configurationXml = configurationXml;
         }
 
-        public bool DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
+        public bool DownloadDeploymentFile(BuildDetail buildDetail, string destination)
         {
             File.WriteAllText(destination, _configurationXml);
             return true;

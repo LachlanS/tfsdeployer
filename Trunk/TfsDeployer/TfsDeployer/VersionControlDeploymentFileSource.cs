@@ -1,6 +1,6 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
-using Microsoft.TeamFoundation.VersionControl.Client;
+﻿using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
+using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
@@ -13,7 +13,7 @@ namespace TfsDeployer
             _versionControlServer = versionControlServer;
         }
 
-        public bool DownloadDeploymentFile(IBuildDetail buildDetail, string destination)
+        public bool DownloadDeploymentFile(BuildDetail buildDetail, string destination)
         {
             var deploymentFile = GetDeploymentMappingsFileServerPath(buildDetail);
 
@@ -30,7 +30,7 @@ namespace TfsDeployer
             }
         }
 
-        private static string GetDeploymentMappingsFileServerPath(IBuildDetail buildDetail)
+        private static string GetDeploymentMappingsFileServerPath(BuildDetail buildDetail)
         {
             var folder = VersionControlPath.GetDeploymentFolderServerPath(buildDetail);
             return folder + "/DeploymentMappings.xml";
