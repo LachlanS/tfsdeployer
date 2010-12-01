@@ -121,6 +121,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="BuildStatusTriggerTests\DuplicateEventDetectionTests.cs" />
+    <Compile Include="Configuration\ConfigurationReaderTests.cs" />
     <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />
     <Compile Include="ConfigurationReaderTests\When_ReadMappings_processes_DeployerConfigurationWithBlankMappingNamespace.cs" />
     <Compile Include="ConfigurationReaderTests\StubDeploymentFolderSource.cs" />

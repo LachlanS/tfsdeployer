@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -86,42 +85,36 @@ namespace TfsDeployer
 
         }
 
-
-        public static Boolean VerifyXml(string fileName, string rsaKeyName)
+        public static Boolean VerifyXml(Stream xml, string rsaKeyFilename)
         {
-            if (!File.Exists(rsaKeyName))
+            if (!File.Exists(rsaKeyFilename))
             {
-                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer,"Cannot find key file {0} in order to verify the deployment mappings file.",rsaKeyName);
+                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Cannot find key file {0} in order to verify the deployment mappings file.", rsaKeyFilename);
                 return false;
             }
-            if (!File.Exists(fileName))
-            {
-                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer,"Cannot find deployment mapping file {0}.",fileName);
-                return false;
-            }
-            XmlDocument doc = new XmlDocument();
-            doc.Load(fileName);
-            RSACryptoServiceProvider key = ReadKey(rsaKeyName);
+            var doc = new XmlDocument();
+            doc.Load(xml);
+            var key = ReadKey(rsaKeyFilename);
             return VerifyXml(doc, key);
         }
 
         // Verify the signature of an XML file against an asymmetric 
         // algorithm and return the result.
-        public static Boolean VerifyXml(XmlDocument Doc, RSA Key)
+        private static Boolean VerifyXml(XmlDocument document, AsymmetricAlgorithm key)
         {
             // Check arguments.
-            if (Doc == null)
-                throw new ArgumentException("Doc");
-            if (Key == null)
-                throw new ArgumentException("Key");
+            if (document == null)
+                throw new ArgumentNullException("document");
+            if (key == null)
+                throw new ArgumentNullException("key");
 
             // Create a new SignedXml object and pass it
             // the XML document class.
-            SignedXml signedXml = new SignedXml(Doc);
+            var signedXml = new SignedXml(document);
 
             // Find the "Signature" node and create a new
             // XmlNodeList object.
-            XmlNodeList nodeList = Doc.GetElementsByTagName("Signature");
+            var nodeList = document.GetElementsByTagName("Signature");
 
             // Throw an exception if no signature was found.
             if (nodeList.Count <= 0)
@@ -143,7 +136,7 @@ namespace TfsDeployer
             signedXml.LoadXml((XmlElement)nodeList[0]);
 
             // Check the signature and return the result.
-            return signedXml.CheckSignature(Key);
+            return signedXml.CheckSignature(key);
         }
 
         // Sign an XML file. 

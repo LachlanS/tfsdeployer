@@ -87,30 +87,33 @@ namespace TfsDeployer.Configuration
             return config;
         }
 
-        private DeploymentMappings Read(string configFileName)
+        private DeploymentMappings Read(string configFilename)
         {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFileName);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFilename);
             if (!string.IsNullOrEmpty(_signingKeyFile))
             {
-                if (!Encrypter.VerifyXml(configFileName, _signingKeyFile))
+                using (var configStream = File.OpenRead(configFilename))
                 {
-                    TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification Failed for the deployment mapping file:{0} and key file {1}", configFileName, Properties.Settings.Default.KeyFile);
-                    return null;
+                    if (!Encrypter.VerifyXml(configStream, _signingKeyFile))
+                    {
+                        TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification Failed for the deployment mapping file:{0} and key file {1}", configFilename, Properties.Settings.Default.KeyFile);
+                        return null;
+                    }
+                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Verification Succeeded for the deployment mapping file:{0}", configFilename);
                 }
-                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Verification Succeeded for the deployment mapping file:{0}", configFileName);
             }
 
-            if (File.Exists(configFileName))
+            if (File.Exists(configFilename))
             {
                 var serializer = new XmlSerializer(typeof(DeploymentMappings));
-                using (TextReader reader = new StreamReader(configFileName))
+                using (TextReader reader = new StreamReader(configFilename))
                 {
                     var config = (DeploymentMappings)serializer.Deserialize(reader);
                     return config;
                 }
             }
             
-            TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Reading Configuration File:{0} failed.", configFileName);
+            TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Reading Configuration File:{0} failed.", configFilename);
             return null;
         }
 

@@ -24,7 +24,15 @@ namespace Tests.TfsDeployer
             doc.Save(docFile);
 
             // Act
-            var result = Encrypter.VerifyXml(docFile, keyFile);
+            bool result;
+            using (var docStream = new FileStream(docFile, FileMode.Open))
+            {
+                result = Encrypter.VerifyXml(docStream, keyFile);
+            }
+
+            // Absterge
+            File.Delete(keyFile);
+            File.Delete(docFile);
 
             // Assert
             Assert.IsTrue(result);
@@ -42,12 +50,20 @@ namespace Tests.TfsDeployer
             doc.LoadXml(@"<root><element /></root>");
 
             Encrypter.SignXml(doc, newKey);
-            doc.DocumentElement.AppendChild(doc.CreateElement("Foo"));
+            doc.DocumentElement.AppendChild(doc.CreateElement("Foo")); // change document after signing
             var docFile = Path.GetTempFileName();
             doc.Save(docFile);
 
             // Act
-            var result = Encrypter.VerifyXml(docFile, keyFile);
+            bool result;
+            using (var docStream = new FileStream(docFile, FileMode.Open))
+            {
+                result = Encrypter.VerifyXml(docStream, keyFile);
+            }
+
+            // Absterge
+            File.Delete(keyFile);
+            File.Delete(docFile);
 
             // Assert
             Assert.IsFalse(result);
