@@ -72,5 +72,34 @@ namespace Tests.TfsDeployer.DeployAgent
             Assert.IsFalse(result.HasErrors, "Test script failed.");
         }
 
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_return_output_prior_to_a_script_error()
+        {
+            // Arrange
+            DeployAgentResult result;
+            using (var scriptFile = new TemporaryFile(".ps1", "'Output this first'\nthrow 'fail'"))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsTrue(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "Output this first");
+        }
+
     }
 }

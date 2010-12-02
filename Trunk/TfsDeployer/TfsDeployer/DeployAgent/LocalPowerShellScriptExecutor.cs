@@ -13,9 +13,9 @@ namespace TfsDeployer.DeployAgent
             var hasErrors = true;
             string output;
 
+            var ui = new DeploymentHostUI();
             try
             {
-                var ui = new DeploymentHostUI();
                 var host = new DeploymentHost(ui);
                 using (var space = RunspaceFactory.CreateRunspace(host))
                 {
@@ -31,12 +31,6 @@ namespace TfsDeployer.DeployAgent
 
                     using (var pipeline = space.CreatePipeline())
                     {
-                        pipeline.StateChanged += (s, e) =>
-                                                     {
-                                                         if (e.PipelineStateInfo.State == PipelineState.Failed)
-                                                             hasErrors = true;
-                                                     };
-
                         var scriptCommand = new Command(scriptPath, true);
                         scriptCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
                         pipeline.Commands.Add(scriptCommand);
@@ -55,11 +49,11 @@ namespace TfsDeployer.DeployAgent
                 var sb = new StringBuilder();
                 sb.AppendLine(record.Exception.ToString());
                 sb.AppendLine(record.InvocationInfo.PositionMessage);
-                output = sb.ToString();
+                output = string.Format("{0}\n{1}", ui.Output, sb);
             }
             catch (Exception ex)
             {
-                output = ex.ToString();
+                output = string.Format("{0}\n{1}", ui.Output, ex);
             }
 
             return new DeployAgentResult { HasErrors = hasErrors, Output = output };
