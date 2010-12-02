@@ -95,7 +95,7 @@ namespace TfsDeployer
                             ApplyRetainBuild(mapping, deployResult, tfsBuildDetail);
                             _alerter.Alert(mapping, deployData.TfsBuildDetail, deployResult);
                         }
-                        
+
                     }
                 }
             }
@@ -115,7 +115,14 @@ namespace TfsDeployer
             if (detail.KeepForever == mapping.RetainBuild) return;
 
             detail.KeepForever = mapping.RetainBuild;
-            detail.Save();
+            try
+            {
+                detail.Save();
+            }
+            catch (AccessDeniedException ex)
+            {
+                deployAgentResult.Output = string.Format("{0}\n{1}", deployAgentResult.Output, ex);
+            }
         }
 
         private IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
