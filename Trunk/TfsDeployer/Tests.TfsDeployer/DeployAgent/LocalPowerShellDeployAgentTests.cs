@@ -44,11 +44,11 @@ namespace Tests.TfsDeployer.DeployAgent
         }
 
         [TestMethod]
-        public void LocalPowerShellDeployAgent_should_marshal_build_data_across_AppDomains()
+        public void LocalPowerShellDeployAgent_should_marshal_build_detail_across_AppDomains()
         {
             // Arrange
             DeployAgentResult result;
-            using (var scriptFile = new TemporaryFile(".ps1", "$TfsDeployerBuildData | Format-List"))
+            using (var scriptFile = new TemporaryFile(".ps1", "$TfsDeployerBuildDetail | Format-List"))
             {
                 var buildDetail = new BuildDetail();
 
@@ -99,6 +99,35 @@ namespace Tests.TfsDeployer.DeployAgent
             // Assert
             Assert.IsTrue(result.HasErrors, "HasErrors");
             StringAssert.Contains(result.Output, "Output this first");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_expose_build_process_server_path_to_scripts()
+        {
+            // Arrange
+            DeployAgentResult result;
+            using (var scriptFile = new TemporaryFile(".ps1", @"$TfsDeployerBuildDetail.BuildDefinition.Process.ServerPath"))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail { BuildDefinition = { Process = { ServerPath = "$/foo.xaml"}}}
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "$/foo.xaml");
         }
 
     }
