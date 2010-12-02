@@ -120,6 +120,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Alert\EmailAlerterTests.cs" />
     <Compile Include="BuildStatusTriggerTests\DuplicateEventDetectionTests.cs" />
     <Compile Include="Configuration\ConfigurationReaderTests.cs" />
     <Compile Include="ConfigurationReaderTests\ConfigurationReaderContext.cs" />

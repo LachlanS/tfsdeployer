@@ -39,6 +39,12 @@ namespace TfsDeployer.Alert
         
         public void Alert(Mapping mapping, BuildDetail build, DeployAgentResult deployAgentResult)
         {
+            if (string.IsNullOrEmpty(mapping.NotificationAddress))
+            {
+                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, string.Format("Skipping email alert because NotificationAddress is not specified."));
+                return;
+            }
+
             try
             {
                 var client = new SmtpClient();
