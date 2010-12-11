@@ -4,7 +4,8 @@
            Computer="BuildServerA"
            OriginalQuality="*"
            NewQuality="Under Investigation"
-           Script="PrepareForInvestigation.ps1" />
+           Script="PrepareForInvestigation.ps1"
+           Queue="MyQueue"/>
 
   <Mapping BuildDefinitionPattern="MyBuildDefB"
            Computer="AnotherBuildServer"
@@ -23,7 +24,8 @@
            NotificationAddress="adifferentperson@nowhere.test.com"
            PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
            Status="Succeeded"
-           RetainBuild="true">
+           RetainBuild="true"
+           Queue="MyQueue">
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 

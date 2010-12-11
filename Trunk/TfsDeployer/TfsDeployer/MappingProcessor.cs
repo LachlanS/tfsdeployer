@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
@@ -11,6 +11,9 @@ namespace TfsDeployer
 {
     public class MappingProcessor : IMappingProcessor
     {
+        private static readonly object LocksLock = new object();
+        private static readonly IDictionary Locks = new Hashtable();
+
         private delegate void ProcessMappingDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction);
 
         private readonly IDeployAgentProvider _deployAgentProvider;
@@ -41,27 +44,42 @@ namespace TfsDeployer
             }
         }
 
+        private static object GetLockObject(Mapping mapping)
+        {
+            if (string.IsNullOrEmpty(mapping.Queue)) return new object();
+
+            lock (LocksLock)
+            {
+                TraceHelper.TraceVerbose(TraceSwitches.TfsDeployer, "Providing lock object for queue: {0}", mapping.Queue);
+                if (!Locks.Contains(mapping.Queue)) Locks.Add(mapping.Queue, new object());
+                return Locks[mapping.Queue];
+            }
+        }
+        
         private void ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction)
         {
-            var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-            // default to "happy; did nothing" if there's no deployment agent.
-            var deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
-
-            if (deployAgent != null)
+            lock(GetLockObject(mapping))
             {
-                using (var workingDirectory = new WorkingDirectory())
+                var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
+
+                // default to "happy; did nothing" if there's no deployment agent.
+                var deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
+
+                if (deployAgent != null)
                 {
-                    var deployAgentDataFactory = new DeployAgentDataFactory();
-                    var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                   mapping, buildDetail, statusChanged);
+                    using (var workingDirectory = new WorkingDirectory())
+                    {
+                        var deployAgentDataFactory = new DeployAgentDataFactory();
+                        var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
+                                                                       mapping, buildDetail, statusChanged);
 
-                    _deploymentFolderSource.DownloadDeploymentFolder(deployData.TfsBuildDetail, workingDirectory.DirectoryInfo.FullName);
-                    deployResult = deployAgent.Deploy(deployData);
+                        _deploymentFolderSource.DownloadDeploymentFolder(deployData.TfsBuildDetail, workingDirectory.DirectoryInfo.FullName);
+                        deployResult = deployAgent.Deploy(deployData);
+                    }
                 }
-            }
 
-            postDeployAction.DeploymentFinished(mapping, deployResult);
+                postDeployAction.DeploymentFinished(mapping, deployResult);
+            }
         }
 
     }

@@ -81,6 +81,44 @@ namespace Tests.TfsDeployer
             Assert.IsTrue(deployAgent.WasParallel);
         }
 
+        [TestMethod]
+        public void MappingProcessor_should_process_multiple_mappings_in_same_queue_in_series()
+        {
+            // Arrange
+            var deployAgent = new ParallelDeployAgent();
+
+            var deployAgentProvider = MockRepository.GenerateStub<IDeployAgentProvider>();
+            deployAgentProvider.Stub(o => o.GetDeployAgent(Arg<Mapping>.Is.Anything))
+                .Return(deployAgent);
+
+            var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
+            var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+            var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
+
+            var buildDetail = new BuildDetail();
+
+            var mappings = new[] { new Mapping { Queue = "A" }, new Mapping { Queue = "A"} };
+
+            mappingEvaluator.Stub(o => o.DoesMappingApply(null, null, null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
+
+            // Act
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+            var expire = DateTime.UtcNow.AddSeconds(5);
+            while (!deployAgent.HasExecuted && DateTime.UtcNow < expire)
+            {
+                Thread.Sleep(500);
+            }
+
+            // Assert
+            Assert.IsFalse(deployAgent.WasParallel);
+        }
+
         class ParallelDeployAgent : IDeployAgent
         {
             private readonly object _lock = new object();
@@ -106,7 +144,7 @@ namespace Tests.TfsDeployer
                     _executing = true;
                 }
 
-                var expire = DateTime.UtcNow.AddSeconds(5);
+                var expire = DateTime.UtcNow.AddSeconds(3);
                 while (!WasParallel && DateTime.UtcNow < expire)
                 {
                     Thread.Sleep(500);

@@ -5,7 +5,8 @@
            OriginalQuality="*"
            NewQuality="Under Investigation"
            Script="PrepareForInvestigation.ps1" 
-           NotificationAddress="someperson@nowhere.test.com" />
+           NotificationAddress="someperson@nowhere.test.com"
+           Queue="DefAQueue" />
 
   <Mapping BuildDefinitionPattern="MyBuildDefB"
            Computer="AnotherBuildServer"
@@ -26,7 +27,8 @@
            PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
            Status="Succeeded"
            RetainBuild="true"
-           TimeoutSeconds="300">
+           TimeoutSeconds="300"
+           Queue="DefAQueue" >
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 

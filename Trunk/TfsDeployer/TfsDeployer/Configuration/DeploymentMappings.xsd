@@ -23,11 +23,12 @@
               <xs:attribute name="NewQuality" type="xs:string" />
               <xs:attribute name="Script" type="xs:string" />
               <xs:attribute name="RunnerType" type="RunnerType" />
-              <xs:attribute name="NotificationAddress" type="xs:string" use="required" />
+              <xs:attribute name="NotificationAddress" type="xs:string" />
               <xs:attribute name="PermittedUsers" type="xs:string" />
               <xs:attribute name="RetainBuild" type="xs:boolean" />
               <xs:attribute name="Status" type="xs:string" />
               <xs:attribute name="TimeoutSeconds" type="xs:nonNegativeInteger" />
+              <xs:attribute name="Queue" type="xs:string" />
             </xs:complexType>
           </xs:element>
         </xs:choice>

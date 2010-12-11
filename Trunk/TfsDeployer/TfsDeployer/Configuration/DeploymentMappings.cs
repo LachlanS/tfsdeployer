@@ -54,6 +54,10 @@ namespace TfsDeployer.Configuration
 
         [XmlAttribute]
         public int TimeoutSeconds { get; set; }
+
+        [XmlAttribute]
+        public string Queue { get; set; }
+
     }
 
     public class ScriptParameter

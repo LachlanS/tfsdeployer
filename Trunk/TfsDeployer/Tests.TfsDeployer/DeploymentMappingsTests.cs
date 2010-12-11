@@ -43,5 +43,23 @@ namespace Tests.TfsDeployer
             }
         }
 
+        [TestMethod]
+        public void DeploymentMappings_should_deserialize_Queue_attribute()
+        {
+            string queue;
+
+            // Arrange
+            using (var textReader = new StringReader(SerializedDeploymentMappings.CompleteDeployerConfiguration))
+            {
+                var serializer = new XmlSerializer(typeof(DeploymentMappings));
+
+                // Act
+                var mappings = (DeploymentMappings)serializer.Deserialize(textReader);
+                queue = mappings.Mappings[0].Queue;
+            }
+
+            Assert.AreEqual("MyQueue", queue);
+        }
+
     }
 }
