@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Readify.Useful.TeamFoundation.Common.Notification;
 using Tests.TfsDeployer.Resources;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
@@ -60,7 +61,9 @@ namespace Tests.TfsDeployer.DeployAgent
                                       Script = scriptFile.FileInfo.Name
                                   };
 
-                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail);
+                var buildStatusChangeEvent = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail, buildStatusChangeEvent);
 
                 var agent = new LocalPowerShellDeployAgent();
 

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.DeployAgent;
 
 namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
@@ -12,8 +13,9 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
             var mapping = CreateMapping();
             mapping.ScriptParameters = null;
             var buildInfo = CreateBuildDetail();
+            var buildStatusChangeEvent = new BuildStatusChangeEvent { StatusChange = new Change() };
             var factory = new DeployAgentDataFactory();
-            return factory.Create(DeployScriptRoot, mapping, buildInfo);
+            return factory.Create(DeployScriptRoot, mapping, buildInfo, buildStatusChangeEvent);
         }
 
         [TestMethod]

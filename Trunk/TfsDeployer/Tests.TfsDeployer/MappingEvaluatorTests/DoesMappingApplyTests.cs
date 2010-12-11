@@ -15,7 +15,7 @@ namespace Tests.TfsDeployer.MappingEvaluatorTests
         {
             const string TestNewQuality = "Pass";
 
-            var changeEvent = new BuildStatusChangeEvent();
+            var changeEvent = new BuildStatusChangeEvent{StatusChange = new Change()};
 
             var mapping = new Mapping
                               {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
 using TfsDeployer.TeamFoundation;
 
@@ -8,12 +9,12 @@ namespace TfsDeployer.DeployAgent
 {
     public class DeployAgentDataFactory
     {
-        public DeployAgentData Create(string deployScriptRoot, Mapping mapping, BuildDetail buildDetail)
+        public DeployAgentData Create(string deployScriptRoot, Mapping mapping, BuildDetail buildDetail, BuildStatusChangeEvent buildStatusChangeEvent)
         {
             var data = new DeployAgentData
                            {
-                               NewQuality = mapping.NewQuality,
-                               OriginalQuality = mapping.OriginalQuality,
+                               NewQuality = buildStatusChangeEvent.StatusChange.NewValue,
+                               OriginalQuality = buildStatusChangeEvent.StatusChange.OldValue,
                                DeployServer = mapping.Computer,
                                DeployScriptFile = mapping.Script,
                                DeployScriptRoot = deployScriptRoot,

@@ -11,8 +11,6 @@ namespace Tests.TfsDeployer.DeployAgentDataFactoryTests
         {
             return new Mapping
                        {
-                           NewQuality = "new_quality",
-                           OriginalQuality = "original_quality",
                            Computer = "deploy_server",
                            Script = "deploy_script_file",
                            ScriptParameters = new[]
