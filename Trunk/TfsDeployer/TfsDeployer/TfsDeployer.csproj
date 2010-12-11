@@ -140,7 +140,11 @@
     <Compile Include="DuplicateEventDetector.cs" />
     <Compile Include="IDeployer.cs" />
     <Compile Include="IDuplicateEventDetector.cs" />
+    <Compile Include="IMappingProcessor.cs" />
+    <Compile Include="IPostDeployAction.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
+    <Compile Include="MappingProcessor.cs" />
+    <Compile Include="PostDeployAction.cs" />
     <Compile Include="ProcessExtensions.cs" />
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
     <Compile Include="TeamFoundation\BuildDetail.cs" />

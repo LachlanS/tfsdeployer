@@ -23,7 +23,8 @@ namespace TfsDeployer
             var deployAgentProvider = new DeployAgentProvider();
             var emailAlerter = new EmailAlerter();
             var mappingEvaluator = new MappingEvaluator();
-            return new Deployer(deployAgentProvider, _configurationReader, _deploymentFolderSource, emailAlerter, mappingEvaluator, _buildServer);
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, _deploymentFolderSource, mappingEvaluator);
+            return new Deployer(_configurationReader, emailAlerter, _buildServer, mappingProcessor);
         }
     }
 }

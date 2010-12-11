@@ -135,10 +135,11 @@
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
     <Compile Include="DeployAgent\DeployAgentDataFactoryTests.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
-    <Compile Include="DeployerTests.cs" />
+    <Compile Include="MappingProcessorTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
     <Compile Include="EncrypterTests.cs" />
+    <Compile Include="PostDeployActionTests.cs" />
     <Compile Include="SanityTests.cs" />
     <Compile Include="MappingEvaluatorTests\BuildStatusChangeEventBuilder.cs" />
     <Compile Include="MappingEvaluatorTests\MappingBuilder.cs" />
