@@ -210,6 +210,9 @@
     <None Include="Samples\Publish.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Samples\Set-TfsDeployerEnvironment.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test-TfsDeployerInstall.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
