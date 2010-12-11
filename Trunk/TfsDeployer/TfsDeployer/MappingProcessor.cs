@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
@@ -10,6 +11,8 @@ namespace TfsDeployer
 {
     public class MappingProcessor : IMappingProcessor
     {
+        private delegate void ProcessMappingDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction);
+
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IMappingEvaluator _mappingEvaluator;
@@ -34,13 +37,11 @@ namespace TfsDeployer
                                              mapping.Computer,
                                              mapping.Script);
 
-                var deployResult = ProcessMapping(statusChanged, buildDetail, mapping);
-
-                postDeployAction.DeploymentFinished(mapping, deployResult);
+                ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, null, null);
             }
         }
 
-        private DeployAgentResult ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping)
+        private void ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction)
         {
             var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
 
@@ -60,7 +61,7 @@ namespace TfsDeployer
                 }
             }
 
-            return deployResult;
+            postDeployAction.DeploymentFinished(mapping, deployResult);
         }
 
     }

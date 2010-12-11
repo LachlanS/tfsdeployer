@@ -1,8 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Rhino.Mocks;
 using TfsDeployer;
-using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.TeamFoundation;
@@ -18,18 +19,11 @@ namespace Tests.TfsDeployer
             // Arrange
             var deployAgentProvider = new DeployAgentProvider();
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
-            //var alert = MockRepository.GenerateStub<IAlert>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
-            //var buildServer = MockRepository.GenerateStub<IBuildServer>();
             var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
             var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
 
             var buildDetail = new BuildDetail();
-            //var buildDetail = new StubBuildDetail();
-            //((IBuildDetail)buildDetail).KeepForever = false;
-            //buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
-            //    .IgnoreArguments()
-            //    .Return(buildDetail);
 
             var mappings = new[] {new Mapping {RetainBuildSpecified = true, RetainBuild = true}};
 
@@ -47,9 +41,85 @@ namespace Tests.TfsDeployer
                 Arg<Mapping>.Is.Equal(mappings[0]), 
                 Arg<DeployAgentResult>.Matches(result => !result.HasErrors))
                 );
-            //Assert.AreEqual(true, ((IBuildDetail)buildDetail).KeepForever, "KeepForever");
-            //Assert.AreEqual(1, buildDetail.SaveCount, "Save()");
         }
 
+        [TestMethod]
+        public void MappingProcessor_should_process_multiple_mappings_in_parallel()
+        {
+            // Arrange
+            var deployAgent = new ParallelDeployAgent();
+
+            var deployAgentProvider = MockRepository.GenerateStub<IDeployAgentProvider>();
+            deployAgentProvider.Stub(o => o.GetDeployAgent(Arg<Mapping>.Is.Anything))
+                .Return(deployAgent);
+
+            var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
+            var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+            var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
+
+            var buildDetail = new BuildDetail();
+
+            var mappings = new [] {new Mapping(), new Mapping()};
+
+            mappingEvaluator.Stub(o => o.DoesMappingApply(null, null, null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
+
+            // Act
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+            var expire = DateTime.UtcNow.AddSeconds(5);
+            while (!deployAgent.HasExecuted && DateTime.UtcNow < expire)
+            {
+                Thread.Sleep(500);
+            }
+
+            // Assert
+            Assert.IsTrue(deployAgent.WasParallel);
+        }
+
+        class ParallelDeployAgent : IDeployAgent
+        {
+            private readonly object _lock = new object();
+            private bool _executing;
+            private bool _hasExecuted;
+            private bool _wasParallel;
+
+            public bool HasExecuted
+            {
+                get { return _hasExecuted; }
+            }
+
+            public bool WasParallel
+            {
+                get { return _wasParallel; }
+            }
+
+            public DeployAgentResult Deploy(DeployAgentData deployAgentData)
+            {
+                lock(_lock)
+                {
+                    if (_executing) _wasParallel = true;
+                    _executing = true;
+                }
+
+                var expire = DateTime.UtcNow.AddSeconds(5);
+                while (!WasParallel && DateTime.UtcNow < expire)
+                {
+                    Thread.Sleep(500);
+                }
+
+                lock (_lock)
+                {
+                    _executing = false;
+                }
+
+                _hasExecuted = true;
+                return new DeployAgentResult();
+            }
+        }
     }
 }
