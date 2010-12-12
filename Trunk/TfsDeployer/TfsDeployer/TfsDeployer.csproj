@@ -91,11 +91,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.TeamFoundation.Build.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.TeamFoundation.Build.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.TeamFoundation.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.TeamFoundation.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.TeamFoundation.VersionControl.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
@@ -109,6 +107,9 @@
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebShell">
+      <HintPath>..\Dependencies\WebShell\WebShell.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
@@ -138,6 +139,8 @@
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerFactory.cs" />
     <Compile Include="DuplicateEventDetector.cs" />
+    <Compile Include="Hosting\DeployerContext.cs" />
+    <Compile Include="Hosting\DeployerContextProvider.cs" />
     <Compile Include="IDeployer.cs" />
     <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="IMappingProcessor.cs" />
@@ -227,6 +230,10 @@
       <Project>{7FEC9CED-38BA-4AA5-8270-CCA02AEA55EE}</Project>
       <Name>Readify.Useful.TeamFoundation.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.Data\TfsDeployer.Data.csproj">
+      <Project>{A77AD549-8F87-45EC-8868-CD18AA603432}</Project>
+      <Name>TfsDeployer.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -250,12 +257,27 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <PropertyGroup>
+    <WebSourcePath>$(MSBuildProjectDirectory)\..\TfsDeployer.Web</WebSourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(CommonOutDir)' != '' ">
+    <OutDir>$(CommonOutDir)\$(MSBuildProjectName)</OutDir>
+    <WebSourcePath>$(CommonOutDir)\_PublishedWebsites\TfsDeployer.Web</WebSourcePath>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <WebDestinationPath>$(OutDir)\web</WebDestinationPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <WebSourceFiles Include="$(WebSourcePath)\**\*.*" />
+    </ItemGroup>
+    <MakeDir Directories="$(WebDestinationPath)" />
+    <Copy SourceFiles="@(WebSourceFiles)" DestinationFiles="@(WebSourceFiles->'$(WebDestinationPath)\%(RecursiveDir)%(Filename)%(Extension)')" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

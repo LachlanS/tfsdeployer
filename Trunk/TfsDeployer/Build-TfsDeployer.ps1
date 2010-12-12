@@ -1,7 +1,7 @@
 #requires -version 2.0
 [CmdletBinding()]
 param (
-    [ValidateSet('Alpha', 'Beta', 'Stable')]
+    [ValidateSet('Local', 'Alpha', 'Beta', 'Stable')]
     [string]
     $Publish,
     
@@ -28,7 +28,7 @@ if ($Publish) {
     Write-Output 'Calculating latest changeset number'
     if ($Workspace.GetPendingChanges($PSScriptRoot, 'Full', $false)) {
         $Message = 'Commit or undo pending changes before building a release.'
-        if ($Force) {
+        if ($Force -or $Publish -eq 'Local') {
             Write-Warning $Message
         } else {
             throw $Message
@@ -56,8 +56,13 @@ $MSBuildExe = Join-Path -Path $MSBuildToolsPath -ChildPath MSBuild.exe
 
 $SolutionPath = Join-Path -Path $PSScriptRoot -ChildPath TfsDeployer.sln
 
+$CommonOutDirPath = $PSScriptRoot | Join-Path -ChildPath output
+if ($CommonOutDirPath | Test-Path -PathType Container) {
+    $CommonOutDirPath | Remove-Item -Recurse -Force
+}
+
 Write-Output "Building $Configuration configuration"
-& $MSBuildExe $SolutionPath /p:Configuration=$Configuration /p:Platform="Any CPU" /t:Build
+& $MSBuildExe $SolutionPath /p:Configuration=$Configuration /p:Platform="Any CPU" /p:CommonOutDir="$CommonOutDirPath" /t:Build
 if (-not $?) {
     throw 'Build failed.'
 }
@@ -80,55 +85,59 @@ if ($Publish) {
     
     Write-Output 'Packaging files to be published'
 
-    $BinariesPath = $PSScriptRoot | Join-Path -ChildPath TfsDeployer\bin\$Configuration
-    $PackagePath = $Env:TEMP | Join-Path -ChildPath ([Guid]::NewGuid())
+    $BinariesPath = $CommonOutDirPath | Join-Path -ChildPath TfsDeployer
+    $PackagePath = $BinariesPath #$Env:TEMP | Join-Path -ChildPath ([Guid]::NewGuid())
+<#
     New-Item -Path $PackagePath -ItemType Container | Out-Null
     Get-ChildItem -Path $BinariesPath\* |
         Copy-Item -Destination $PackagePath -Recurse
+#>
     Get-ChildItem -Path $PackagePath\* -Include *.pdb |
         Remove-Item
     
-    $ZipPath = $PSScriptRoot | Join-Path -ChildPath "TfsDeployer-$ReleaseVersion.zip"
+    $ZipPath = $CommonOutDirPath | Join-Path -ChildPath "TfsDeployer-$ReleaseVersion.zip"
     
     [Reflection.Assembly]::LoadFrom(($PSScriptRoot | Join-Path -ChildPath Dependencies\ICSharpCode.SharpZipLib.dll)) | Out-Null
     $FastZip = New-Object -TypeName ICSharpCode.SharpZipLib.Zip.FastZip
     $FastZip.CreateZip($ZipPath, $PackagePath, $true, '')
 
-    Remove-Item -Path $PackagePath -Recurse
+    if ($Publish -ne 'Local') {
+        Remove-Item -Path $PackagePath -Recurse
 
-    Write-Output 'Uploading new release to CodePlex'
-    . ($PSScriptRoot | Join-Path -ChildPath Dependencies\CodePlexFunctions.ps1)
-    $ReleaseFile = New-CodePlexReleaseFile -Path $ZipPath -FileType RuntimeBinary
+        Write-Output 'Uploading new release to CodePlex'
+        . ($PSScriptRoot | Join-Path -ChildPath Dependencies\CodePlexFunctions.ps1)
+        $ReleaseFile = New-CodePlexReleaseFile -Path $ZipPath -FileType RuntimeBinary
 
-    $CodePlexCred = (Get-Host).UI.PromptForCredential('CodePlex Login','Provide Developer or Coordinator credentials for the TFS Deployer CodePlex project','','')
-    if (-not $CodePlexCred) {
-        throw 'Cannot publish without CodePlex credentials.'
+        $CodePlexCred = (Get-Host).UI.PromptForCredential('CodePlex Login','Provide Developer or Coordinator credentials for the TFS Deployer CodePlex project','','')
+        if (-not $CodePlexCred) {
+            throw 'Cannot publish without CodePlex credentials.'
+        }
+
+        $ReleaseName = "TFS Deployer $ReleaseVersion"
+        if ($Force) {
+            $ReleaseName += ' (Forced)'
+        }
+
+        $PublicRelease = -not $Force
+
+        $Release = Add-CodePlexRelease `
+            -Name $ReleaseName `
+            -Description "$Configuration build from changeset $Changeset" `
+            -ProjectName 'tfsdeployer' `
+            -Date (Get-Date) `
+            -Status $Publish `
+            -Public:$PublicRelease `
+            -Credential $CodePlexCred
+
+        Send-CodePlexReleaseFiles `
+            -ReleaseName $ReleaseName `
+            -ProjectName 'tfsdeployer' `
+            -Files @($ReleaseFile) `
+            -Credential $CodePlexCred
+            
+        Remove-Item -Path $ZipPath
+
+        Write-Output "Release '$ReleaseName' published"
+        Write-Output $Release.Uri
     }
-
-    $ReleaseName = "TFS Deployer $ReleaseVersion"
-    if ($Force) {
-        $ReleaseName += ' (Forced)'
-    }
-
-    $PublicRelease = -not $Force
-
-    $Release = Add-CodePlexRelease `
-        -Name $ReleaseName `
-        -Description "$Configuration build from changeset $Changeset" `
-        -ProjectName 'tfsdeployer' `
-        -Date (Get-Date) `
-        -Status $Publish `
-        -Public:$PublicRelease `
-        -Credential $CodePlexCred
-
-    Send-CodePlexReleaseFiles `
-        -ReleaseName $ReleaseName `
-        -ProjectName 'tfsdeployer' `
-        -Files @($ReleaseFile) `
-        -Credential $CodePlexCred
-        
-    Remove-Item -Path $ZipPath
-
-    Write-Output "Release '$ReleaseName' published"
-    Write-Output $Release.Uri
 }

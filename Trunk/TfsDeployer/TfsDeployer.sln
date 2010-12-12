@@ -17,6 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer", "TfsDeployer\TfsDeployer.csproj", "{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{604D8775-9748-49E0-B058-62661A5DC742} = {604D8775-9748-49E0-B058-62661A5DC742}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readify.Useful.TeamFoundation.Common", "Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj", "{7FEC9CED-38BA-4AA5-8270-CCA02AEA55EE}"
 EndProject
@@ -24,9 +27,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.TfsDeployer", "Tests.
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{97E76AAC-E95B-4447-AC00-5070817369F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.Web", "TfsDeployer.Web\TfsDeployer.Web.csproj", "{604D8775-9748-49E0-B058-62661A5DC742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.Data", "TfsDeployer.Data\TfsDeployer.Data.csproj", "{A77AD549-8F87-45EC-8868-CD18AA603432}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -39,6 +46,12 @@ Global
 		SccProjectUniqueName3 = Tests.TfsDeployer\\Tests.TfsDeployer.csproj
 		SccProjectName3 = Tests.TfsDeployer
 		SccLocalPath3 = Tests.TfsDeployer
+		SccProjectUniqueName4 = TfsDeployer.Web\\TfsDeployer.Web.csproj
+		SccProjectName4 = TfsDeployer.Web
+		SccLocalPath4 = TfsDeployer.Web
+		SccProjectUniqueName5 = TfsDeployer.Data\\TfsDeployer.Data.csproj
+		SccProjectName5 = TfsDeployer.Data
+		SccLocalPath5 = TfsDeployer.Data
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = TfsDeployer.vsmdi
@@ -80,6 +93,18 @@ Global
 		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|Any CPU.ActiveCfg = Release|x86
 		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.ActiveCfg = Release|x86
 		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.Build.0 = Release|x86
+		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{604D8775-9748-49E0-B058-62661A5DC742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{604D8775-9748-49E0-B058-62661A5DC742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{604D8775-9748-49E0-B058-62661A5DC742}.Release|x86.ActiveCfg = Release|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A77AD549-8F87-45EC-8868-CD18AA603432}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
