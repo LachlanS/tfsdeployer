@@ -7,13 +7,18 @@ namespace TfsDeployer.TeamFoundation
     {
         public static void CopyProperties(Type sourceType, object source, Type targetType, object target)
         {
-            foreach (var sourceProperty in sourceType.GetProperties())
+            foreach (var sourceProperty in sourceType.GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance))
             {
                 var targetProperty = targetType.GetProperty(sourceProperty.Name);
                 if (targetProperty != null)
                 {
                     CopyProperty(sourceProperty, source, targetProperty, target);
                 }
+            }
+
+            foreach (var interfaceType in sourceType.GetInterfaces())
+            {
+                CopyProperties(interfaceType, source, targetType, target);
             }
         }
 
@@ -30,7 +35,9 @@ namespace TfsDeployer.TeamFoundation
                 return;
             }
 
-            if (targetProperty.PropertyType == sourceProperty.PropertyType && targetProperty.CanWrite)
+            var compatibleProperties = targetProperty.PropertyType == sourceProperty.PropertyType ||
+                                       (targetProperty.PropertyType.IsEnum && sourceProperty.PropertyType.IsEnum);
+            if (compatibleProperties && targetProperty.CanWrite)
             {
                 targetProperty.SetValue(target, sourcePropertyValue, null);
             }
