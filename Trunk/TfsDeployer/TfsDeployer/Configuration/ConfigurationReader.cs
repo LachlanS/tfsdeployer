@@ -30,6 +30,8 @@ namespace TfsDeployer.Configuration
 {
     public class ConfigurationReader : IConfigurationReader
     {
+        private static readonly XmlSerializer DeploymentMappingsSerializer = new XmlSerializer(typeof(DeploymentMappings));
+
         private readonly IDeploymentFileSource _deploymentFileSource;
         private readonly string _signingKeyFile;
 
@@ -72,50 +74,37 @@ namespace TfsDeployer.Configuration
 
         private DeploymentMappings Read(Stream deployerConfiguration)
         {
-            var tempFileName = Path.GetTempFileName();
-            using (var tempFile = File.OpenWrite(tempFileName))
+            if (!string.IsNullOrEmpty(_signingKeyFile))
             {
-                int bytesRead;
-                var buffer = new byte[0x1000];
-                while ((bytesRead = deployerConfiguration.Read(buffer, 0, buffer.Length)) != 0)
+                if (!Encrypter.VerifyXml(deployerConfiguration, _signingKeyFile))
                 {
-                    tempFile.Write(buffer, 0, bytesRead);
+                    TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification Failed for the deployment mapping using key file {0}", Properties.Settings.Default.KeyFile);
+                    return null;
                 }
+                deployerConfiguration.Seek(0, SeekOrigin.Begin);
+                TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Verification Succeeded for the deployment mapping");
             }
-            var config = Read(tempFileName);
-            File.Delete(tempFileName);
-            return config;
+
+            using (var reader = new StreamReader(deployerConfiguration))
+            {
+                return (DeploymentMappings)DeploymentMappingsSerializer.Deserialize(reader);
+            }
         }
 
         private DeploymentMappings Read(string configFilename)
         {
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFilename);
-            if (!string.IsNullOrEmpty(_signingKeyFile))
-            {
-                using (var configStream = File.OpenRead(configFilename))
-                {
-                    if (!Encrypter.VerifyXml(configStream, _signingKeyFile))
-                    {
-                        TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification Failed for the deployment mapping file:{0} and key file {1}", configFilename, Properties.Settings.Default.KeyFile);
-                        return null;
-                    }
-                    TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Verification Succeeded for the deployment mapping file:{0}", configFilename);
-                }
-            }
 
             if (File.Exists(configFilename))
             {
-                var serializer = new XmlSerializer(typeof(DeploymentMappings));
-                using (TextReader reader = new StreamReader(configFilename))
+                using (var stream = File.OpenRead(configFilename))
                 {
-                    var config = (DeploymentMappings)serializer.Deserialize(reader);
-                    return config;
+                    return Read(stream);
                 }
             }
-            
+
             TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Reading Configuration File:{0} failed.", configFilename);
             return null;
         }
-
     }
 }

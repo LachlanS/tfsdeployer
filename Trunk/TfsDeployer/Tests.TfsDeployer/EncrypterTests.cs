@@ -68,5 +68,43 @@ namespace Tests.TfsDeployer
             // Assert
             Assert.IsFalse(result);
         }
+
+        [TestMethod]
+        public void Encrypter_should_verify_and_not_close_input_stream()
+        {
+            // Arrange
+            var newKey = Encrypter.GenerateKey();
+            var keyFile = Path.GetTempFileName();
+            Encrypter.SaveKey(keyFile, newKey);
+
+            var doc = new XmlDocument();
+            doc.LoadXml(@"<root><element /></root>");
+
+            Encrypter.SignXml(doc, newKey);
+            var docFile = Path.GetTempFileName();
+            doc.Save(docFile);
+
+            // Act
+            try
+            {
+                using (var docStream = new FileStream(docFile, FileMode.Open))
+                {
+                    Encrypter.VerifyXml(docStream, keyFile);
+                    docStream.Seek(0, SeekOrigin.Begin);
+                    docStream.ReadByte(); // throws an exception if stream is closed
+                }
+            } 
+            finally
+            {
+                // Absterge
+                File.Delete(keyFile);
+                File.Delete(docFile);
+            }
+
+            // Assert
+            // no exception
+        }
+
+
     }
 }

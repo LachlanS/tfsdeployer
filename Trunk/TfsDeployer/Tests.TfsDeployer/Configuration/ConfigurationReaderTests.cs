@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,11 +38,17 @@ namespace Tests.TfsDeployer.Configuration
 
             var buildDetail = new BuildDetail {BuildDefinition = {Name = "MyBuildDefA"}};
 
+            IEnumerable<Mapping> mappings;
             // Act
-            var mappings = reader.ReadMappings(buildDetail);
-
-            // Absterge
-            File.Delete(keyFile);
+            try
+            {
+                mappings = reader.ReadMappings(buildDetail);
+            }            
+            finally
+            {
+                // Absterge
+                File.Delete(keyFile);
+            }
 
             // Assert
             Assert.IsTrue(mappings.Any());
