@@ -1,9 +1,10 @@
+using System.IO;
 using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
 {
     public interface IDeploymentFileSource
     {
-        bool DownloadDeploymentFile(BuildDetail buildDetail, string destination);
+        Stream DownloadDeploymentFile(BuildDetail buildDetail);
     }
 }

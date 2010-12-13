@@ -1,4 +1,5 @@
-﻿using Microsoft.TeamFoundation.VersionControl.Client;
+﻿using System.IO;
+using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 using TfsDeployer.TeamFoundation;
 
@@ -13,21 +14,17 @@ namespace TfsDeployer
             _versionControlServer = versionControlServer;
         }
 
-        public bool DownloadDeploymentFile(BuildDetail buildDetail, string destination)
+        public Stream DownloadDeploymentFile(BuildDetail buildDetail)
         {
             var deploymentFile = GetDeploymentMappingsFileServerPath(buildDetail);
-
-            try
+            var itemSpec = new ItemSpec(deploymentFile, RecursionType.None);
+            var itemSet = _versionControlServer.GetItems(itemSpec, VersionSpec.Latest, DeletedState.NonDeleted, ItemType.File, GetItemsOptions.Download);
+            if (itemSet.Items.Length == 0)
             {
-                _versionControlServer.DownloadFile(deploymentFile, destination);
-                return true;
-            }
-            catch (VersionControlException)
-            {
-                // file not found
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Could not download file {0} from version control.", deploymentFile);
-                return false;
+                return null;
             }
+            return itemSet.Items[0].DownloadFile();
         }
 
         private static string GetDeploymentMappingsFileServerPath(BuildDetail buildDetail)

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using TfsDeployer;
 using TfsDeployer.TeamFoundation;
 
@@ -13,10 +14,13 @@ namespace Tests.TfsDeployer.ConfigurationReaderTests
             _configurationXml = configurationXml;
         }
 
-        public bool DownloadDeploymentFile(BuildDetail buildDetail, string destination)
+        public Stream DownloadDeploymentFile(BuildDetail buildDetail)
         {
-            File.WriteAllText(destination, _configurationXml);
-            return true;
+            var stream = new MemoryStream();
+            var bytes = Encoding.UTF8.GetBytes(_configurationXml);
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
         }
     }
 }

@@ -167,6 +167,7 @@
       <DependentUpon>SerializedDeploymentMappings.resx</DependentUpon>
     </Compile>
     <Compile Include="TestHelpers\TraceListenersScope.cs" />
+    <Compile Include="VersionControlDeploymentFileSourceTests.cs" />
     <Compile Include="WorkingDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>

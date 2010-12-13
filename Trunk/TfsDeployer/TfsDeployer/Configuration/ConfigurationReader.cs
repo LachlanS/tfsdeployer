@@ -46,11 +46,11 @@ namespace TfsDeployer.Configuration
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration for Team Project: {0} Team Build: {1}", buildDetail.TeamProject, buildDetail.BuildDefinition.Name);
 
             DeploymentMappings configuration = null;
-            using (var localFile = new TemporaryFile())
+            using (var stream = _deploymentFileSource.DownloadDeploymentFile(buildDetail))
             {
-                if (_deploymentFileSource.DownloadDeploymentFile(buildDetail, localFile.FileInfo.FullName))
+                if (stream != null)
                 {
-                    configuration = Read(localFile.FileInfo.FullName);
+                    configuration = Read(stream);
                 }
             }
 
@@ -91,20 +91,5 @@ namespace TfsDeployer.Configuration
             }
         }
 
-        private DeploymentMappings Read(string configFilename)
-        {
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "Reading Configuration File:{0}", configFilename);
-
-            if (File.Exists(configFilename))
-            {
-                using (var stream = File.OpenRead(configFilename))
-                {
-                    return Read(stream);
-                }
-            }
-
-            TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Reading Configuration File:{0} failed.", configFilename);
-            return null;
-        }
     }
 }
