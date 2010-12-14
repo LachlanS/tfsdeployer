@@ -90,6 +90,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\Dependencies\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.TeamFoundation.Build.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.TeamFoundation.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -153,7 +156,6 @@
     <Compile Include="TeamFoundation\BuildDetail.cs" />
     <Compile Include="TeamFoundation\BuildStatus.cs" />
     <Compile Include="TeamFoundation\ProcessTemplate.cs" />
-    <Compile Include="TeamFoundation\PropertyAdapter.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="VersionControlDeploymentFileSource.cs" />
     <Compile Include="Encrypter.cs">

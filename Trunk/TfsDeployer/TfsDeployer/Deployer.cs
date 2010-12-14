@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 using System;
+using AutoMapper;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -35,6 +36,14 @@ namespace TfsDeployer
         private readonly IBuildServer _buildServer;
         private readonly IMappingProcessor _mappingProcessor;
 
+        static Deployer()
+        {
+            Mapper.CreateMap<IProcessTemplate, ProcessTemplate>();
+            Mapper.CreateMap<IBuildDefinition, BuildDefinition>();
+            Mapper.CreateMap<IBuildDetail, BuildDetail>();
+            Mapper.AssertConfigurationIsValid();
+        }
+        
         public Deployer(IConfigurationReader reader, IAlert alert, IBuildServer buildServer, IMappingProcessor mappingProcessor)
         {
             _configurationReader = reader;
@@ -55,8 +64,7 @@ namespace TfsDeployer
                                              statusChanged.StatusChange.NewValue);
 
                 var tfsBuildDetail = GetBuildDetail(statusChanged);
-                var buildDetail = new BuildDetail();
-                PropertyAdapter.CopyProperties(typeof(IBuildDetail), tfsBuildDetail, typeof(BuildDetail), buildDetail);
+                var buildDetail = Mapper.Map<IBuildDetail, BuildDetail>(tfsBuildDetail);
 
                 var postDeployAction = new PostDeployAction(buildDetail, tfsBuildDetail, _alerter);
                 

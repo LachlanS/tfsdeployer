@@ -135,6 +135,7 @@
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
     <Compile Include="DeployAgent\DeployAgentDataFactoryTests.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
+    <Compile Include="DeployerTests.cs" />
     <Compile Include="MappingProcessorTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
     <Compile Include="ProgramTests.cs" />
     <Compile Include="StubBuildDetail.cs" />
-    <Compile Include="TeamFoundation\PropertyAdapterTests.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutorTests.cs" />
     <Compile Include="PowerShellRunnerTests\When_deploying_a_script_which_writes_to_the_host.cs" />
@@ -244,7 +244,9 @@
     <EmbeddedResource Include="Resources\LoadSystemWebAssemblyScript.ps1" />
     <None Include="Set-TfsDeployerTestEnvironment.ps1" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TeamFoundation\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
