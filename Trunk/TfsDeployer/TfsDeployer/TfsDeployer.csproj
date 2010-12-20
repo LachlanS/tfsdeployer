@@ -120,12 +120,6 @@
     </Compile>
     <Compile Include="Alert\EmailAlerter.cs" />
     <Compile Include="AppConfigTfsConnectionProvider.cs" />
-    <Compile Include="CommandLine\CommandLine.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="CommandLine\CommandLineParser.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Configuration\DeploymentMappings.cs">
       <DependentUpon>DeploymentMappings.xsd</DependentUpon>
     </Compile>
@@ -202,6 +196,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Convert-DeploymentMappings.ps1" />
+    <None Include="Create-SigningKey.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -216,6 +213,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Samples\Set-TfsDeployerEnvironment.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Sign-DeploymentMappings.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Test-TfsDeployerInstall.ps1">

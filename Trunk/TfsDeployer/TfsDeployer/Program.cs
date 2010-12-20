@@ -60,26 +60,6 @@ namespace TfsDeployer
                 {
                     Run(RunMode.InteractiveConsole);
                 }
-                else
-                {
-                    var command = new CommandLine();
-                    if (command.ParseAndContinue(args))
-                    {
-                        try
-                        {
-                            Encrypter.Encrypt(command);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(command.GetUsage());
-                            Console.WriteLine(ex);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine(command.GetUsage());
-                    }
-                }
             }
             else
             {
@@ -91,7 +71,7 @@ namespace TfsDeployer
         {
             ConfigureTraceListeners(mode);
 
-            Func<TfsDeployerApplication> createAppDelegate = delegate() { return new TfsDeployerApplication(); };
+            Func<TfsDeployerApplication> createAppDelegate = () => new TfsDeployerApplication();
 
             switch (mode)
             {

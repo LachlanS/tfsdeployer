@@ -19,9 +19,9 @@ namespace Tests.TfsDeployer.Configuration
         public void ConfigurationReader_should_read_mappings_from_a_signed_xml_document()
         {
             // Arrange
-            var newKey = Encrypter.GenerateKey();
             var keyFile = Path.GetTempFileName();
-            Encrypter.SaveKey(keyFile, newKey);
+            Encrypter.CreateKey(keyFile);
+            var newKey = Encrypter.ReadKey(keyFile);
 
             var doc = new XmlDocument();
             doc.LoadXml(SerializedDeploymentMappings.CompleteDeployerConfiguration);

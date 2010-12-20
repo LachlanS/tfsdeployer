@@ -19,8 +19,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
@@ -32,57 +32,21 @@ namespace TfsDeployer
     public static class Encrypter
     {
 
-        public static RSACryptoServiceProvider GenerateKey()
+        private static readonly XmlSerializer RsaParametersSerializer = new XmlSerializer(typeof(RSAParameters));
+
+        public static AsymmetricAlgorithm ReadKey(string keyPath)
         {
-            // Create a new RSA signing key and save it in the container. 
-            RSACryptoServiceProvider rsaKey = new RSACryptoServiceProvider();
-            return rsaKey;
-        }
+            if (string.IsNullOrEmpty(keyPath)) throw new ArgumentNullException("keyPath");
+            if (!File.Exists(keyPath)) throw new ArgumentException("File not found.", "keyPath");
 
-        public static RSACryptoServiceProvider ReadKey(string fileName)
-        {
-
-            if (File.Exists(fileName))
+            using (var reader = File.OpenRead(keyPath))
             {
-                using (TextReader reader = new StreamReader(fileName))
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(RSAParameters));
-                    RSAParameters parameters = (RSAParameters)serializer.Deserialize(reader);
-                    reader.Close();
-                    RSACryptoServiceProvider rsaKey = new RSACryptoServiceProvider();
-                    rsaKey.ImportParameters(parameters);
-                    return rsaKey;
-                }
+                var parameters = (RSAParameters)RsaParametersSerializer.Deserialize(reader);
 
+                var key = new RSACryptoServiceProvider();
+                key.ImportParameters(parameters);
+                return key;
             }
-            else
-            {
-                throw new ArgumentOutOfRangeException("fileName", fileName, "Key File cannot be found");
-            }
-
-        }
-
-        public static void SaveKey(string fileName, RSACryptoServiceProvider key)
-        {
-            RSAParameters parameters = key.ExportParameters(true);
-            XmlSerializer serializer = new XmlSerializer(typeof(RSAParameters));
-            try
-            {
-                using (FileStream fs = new FileStream(fileName, FileMode.Create))
-                {
-                    TextWriter writer = new StreamWriter(fs, new UTF8Encoding());
-                    // Serialize using the XmlTextWriter.
-                    serializer.Serialize(writer, parameters);
-                    writer.Close();
-
-                }
-            }
-            catch(Exception ex)
-            {
-                TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Cannot save key file {0}: {1}", fileName, ex);
-                throw;
-            }
-
         }
 
         public static Boolean VerifyXml(Stream xml, string rsaKeyFilename)
@@ -112,12 +76,11 @@ namespace TfsDeployer
             // the XML document class.
             var signedXml = new SignedXml(document);
 
-            // Find the "Signature" node and create a new
-            // XmlNodeList object.
-            var nodeList = document.GetElementsByTagName("Signature");
+            // Find the "Signature" node 
+            var signatureElements = document.GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl).Cast<XmlElement>().ToArray();
 
             // Throw an exception if no signature was found.
-            if (nodeList.Count <= 0)
+            if (signatureElements.Length == 0)
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer,"Verification failed: No Signature was found in the document.");
                 return false;
@@ -126,14 +89,14 @@ namespace TfsDeployer
             // This example only supports one signature for
             // the entire XML document.  Throw an exception 
             // if more than one signature was found.
-            if (nodeList.Count >= 2)
+            if (signatureElements.Length > 1)
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Verification failed: More that one signature was found for the document.");
                 return false;
             }
 
             // Load the first <signature> node.  
-            signedXml.LoadXml((XmlElement)nodeList[0]);
+            signedXml.LoadXml(signatureElements.First());
 
             // Check the signature and return the result.
             return signedXml.CheckSignature(key);
@@ -142,27 +105,24 @@ namespace TfsDeployer
         // Sign an XML file. 
         // This document cannot be verified unless the verifying 
         // code has the key with which it was signed.
-        public static void SignXml(XmlDocument Doc, RSA Key)
+        public static void SignXml(XmlDocument document, AsymmetricAlgorithm key)
         {
-            // Check arguments.
-            if (Doc == null)
-                throw new ArgumentException("Doc");
-            if (Key == null)
-                throw new ArgumentException("Key");
+            if (document == null) throw new ArgumentException("document");
+            if (key == null) throw new ArgumentException("key");
 
-            // Create a SignedXml object.
-            SignedXml signedXml = new SignedXml(Doc);
+            var signatureElements = document.GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl).Cast<XmlElement>().ToArray();
+            foreach (var signature in signatureElements)
+            {
+                signature.ParentNode.RemoveChild(signature);
+            }
 
-            // Add the key to the SignedXml document.
-            signedXml.SigningKey = Key;
+            var signedXml = new SignedXml(document) {SigningKey = key};
 
             // Create a reference to be signed.
-            Reference reference = new Reference();
-            reference.Uri = "";
+            var reference = new Reference("");
 
             // Add an enveloped transformation to the reference.
-            XmlDsigEnvelopedSignatureTransform env = new XmlDsigEnvelopedSignatureTransform();
-            reference.AddTransform(env);
+            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
 
             // Add the reference to the SignedXml object.
             signedXml.AddReference(reference);
@@ -172,39 +132,29 @@ namespace TfsDeployer
 
             // Get the XML representation of the signature and save
             // it to an XmlElement object.
-            XmlElement xmlDigitalSignature = signedXml.GetXml();
+            var xmlDigitalSignature = signedXml.GetXml();
 
             // Append the element to the XML document.
-            Doc.DocumentElement.AppendChild(Doc.ImportNode(xmlDigitalSignature, true));
-
+            document.DocumentElement.AppendChild(document.ImportNode(xmlDigitalSignature, true));
         }
 
-        public static void Encrypt(CommandLine commandLine)
+        public static void Sign(string deploymentMappingsPath, string keyPath)
         {
-            RSACryptoServiceProvider key = RetrieveKey(commandLine);
-            if (commandLine.EncryptDeploymentFile)
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(commandLine.DeploymentMappingFileName);
-                SignXml(doc, key);
-                doc.Save(commandLine.DeploymentMappingFileName);
-            }
+            var key = ReadKey(keyPath);
+            var doc = new XmlDocument();
+            doc.Load(deploymentMappingsPath);
+            SignXml(doc, key);
+            doc.Save(deploymentMappingsPath);
         }
 
-        private static RSACryptoServiceProvider RetrieveKey(CommandLine commandLine)
+        public static void CreateKey(string keyPath)
         {
-            RSACryptoServiceProvider key;
-            if (commandLine.CreateKeyFile)
+            var key = new RSACryptoServiceProvider();
+            var parameters = key.ExportParameters(true);
+            using (var writer = File.CreateText(keyPath))
             {
-                key = GenerateKey();
-                SaveKey(commandLine.CreateKeyFileName, key);
-                Console.WriteLine(string.Format("Created the Key File {0}.", commandLine.CreateKeyFileName));
+                RsaParametersSerializer.Serialize(writer, parameters);
             }
-            else
-            {
-                key = ReadKey(commandLine.KeyFileName);
-            }
-            return key;
         }
 
     }
