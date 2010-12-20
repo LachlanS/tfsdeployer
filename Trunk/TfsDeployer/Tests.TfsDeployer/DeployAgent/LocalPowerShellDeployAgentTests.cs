@@ -133,5 +133,129 @@ namespace Tests.TfsDeployer.DeployAgent
             StringAssert.Contains(result.Output, "$/foo.xaml");
         }
 
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_support_spaces_in_script_path()
+        {
+            // Arrange
+            DeployAgentResult result;
+            const string subDirectory = "white space";
+            using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "Script path is", "Output prefix");
+            StringAssert.Contains(result.Output, subDirectory, "Output subdirectory");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_support_apostrophes_in_script_path()
+        {
+            // Arrange
+            DeployAgentResult result;
+            const string subDirectory = "isn't";
+            using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "Script path is", "Output prefix");
+            StringAssert.Contains(result.Output, subDirectory, "Output subdirectory");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_support_dollars_in_script_path()
+        {
+            // Arrange
+            DeployAgentResult result;
+            const string subDirectory = "not$home$null";
+            using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors: {0}", result.Output);
+            StringAssert.Contains(result.Output, "Script path is", "Output prefix");
+            StringAssert.Contains(result.Output, subDirectory, "Output subdirectory");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_support_backticks_in_script_path()
+        {
+            // Arrange
+            DeployAgentResult result;
+            const string subDirectory = "back`tick";
+            using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors: {0}", result.Output);
+            StringAssert.Contains(result.Output, "Script path is", "Output prefix");
+            StringAssert.Contains(result.Output, subDirectory, "Output subdirectory");
+        }
+
     }
 }

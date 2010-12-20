@@ -74,7 +74,8 @@ namespace TfsDeployer.DeployAgent
                     typeof(LocalPowerShellScriptExecutor).Assembly.FullName,
                     typeof(LocalPowerShellScriptExecutor).FullName);
 
-                var result = proxy.Execute(scriptPath, variables);
+                var commandText = string.Format("& '{0}'", scriptPath.Replace("'", "''"));
+                var result = proxy.Execute(commandText, variables);
 
                 return result;
             }

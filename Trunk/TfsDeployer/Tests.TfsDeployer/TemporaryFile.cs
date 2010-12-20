@@ -19,11 +19,21 @@ namespace Tests.TfsDeployer
         }
 
         private readonly FileInfo _fileInfo;
-        public TemporaryFile(string extension, string content)
+        public TemporaryFile(string extension, string content) : this(extension, content, string.Empty)
+        {
+        }
+
+        public TemporaryFile(string extension, string content, string subDirectory)
         {
             if (!extension.StartsWith(".")) extension = "." + extension;
             var fileName = Path.GetRandomFileName() + extension;
-            _fileInfo = new FileInfo(Path.Combine(Path.GetTempPath(), fileName));
+            var path = Path.GetTempPath();
+            if (!string.IsNullOrEmpty(subDirectory))
+            {
+                path = Path.Combine(path, subDirectory);
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+            _fileInfo = new FileInfo(Path.Combine(path, fileName));
             using (var stream = _fileInfo.OpenWrite())
             using (var writer = new StreamWriter(stream, Encoding.ASCII))
             {

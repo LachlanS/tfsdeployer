@@ -8,7 +8,7 @@ namespace TfsDeployer.DeployAgent
 {
     public class LocalPowerShellScriptExecutor : MarshalByRefObject
     {
-        public DeployAgentResult Execute(string scriptPath, IDictionary<string, object> variables)
+        public DeployAgentResult Execute(string commandText, IDictionary<string, object> variables)
         {
             var hasErrors = true;
             string output;
@@ -31,7 +31,7 @@ namespace TfsDeployer.DeployAgent
 
                     using (var pipeline = space.CreatePipeline())
                     {
-                        var scriptCommand = new Command(scriptPath, true);
+                        var scriptCommand = new Command(commandText, true);
                         scriptCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
                         pipeline.Commands.Add(scriptCommand);
 
