@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using TfsDeployer.Configuration;
-using TfsDeployer.Hosting;
-using WebShell.Hosting;
 
 namespace TfsDeployer
 {
@@ -16,7 +13,6 @@ namespace TfsDeployer
         public static readonly DateTime StartTime = DateTime.UtcNow;
 
         private TfsBuildStatusTrigger _trigger;
-        private WebShellServer _webServer;
 
         public void Start()
         {
@@ -38,14 +34,6 @@ namespace TfsDeployer
 
             _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, configurationReader, deploymentFolderSource), duplicateEventDetector);
             _trigger.Start();
-
-            var physicalPath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), "web");
-
-            var ub = new UriBuilder(listenPrefix + "web/");
-            ub.Host = "+";
-
-            _webServer = new WebShellServer(physicalPath, ub.ToString(), new DeployerContextProvider());
-            _webServer.Start();
         }
 
         #region IDisposable Members
@@ -76,11 +64,6 @@ namespace TfsDeployer
                     {
                         _trigger.Stop();
                         _trigger = null;
-                    }
-                    if (_webServer != null)
-                    {
-                        _webServer.Dispose();
-                        _webServer = null;
                     }
                 }
                 catch (Exception)

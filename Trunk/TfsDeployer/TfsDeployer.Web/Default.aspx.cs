@@ -1,6 +1,4 @@
 ﻿using System.Web.UI;
-using TfsDeployer.Data;
-using WebShell;
 
 namespace TfsDeployer.Web
 {
@@ -8,7 +6,10 @@ namespace TfsDeployer.Web
     {
         public string UptimeText
         {
-            get { return HostContext<IDeployerContext>.Current.Uptime.ToString(); }
+            get
+            {
+                return "unknown"; // HostContext<IDeployerContext>.Current.Uptime.ToString(); 
+            }
         }
     }
 }
