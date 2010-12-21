@@ -70,9 +70,10 @@ if (-not $?) {
 $MSTestExe = Join-Path -Path $Env:VS100COMNTOOLS -ChildPath ..\IDE\MSTest.exe
 
 $TestContainerPath = Join-Path -Path $PSScriptRoot -ChildPath Tests.TfsDeployer\bin\$Configuration\Tests.TfsDeployer.dll
+$TestSettingsPath = Join-Path -Path $PSScriptRoot -ChildPath LocalTestRun.testrunconfig
 
 Write-Output "Executing tests"
-& $MSTestExe /testContainer:"$TestContainerPath"
+& $MSTestExe /testContainer:"$TestContainerPath" /testSettings:"$TestSettingsPath"
 if (-not $?) {
     throw 'Tests failed.'
 }
