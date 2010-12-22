@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Readify.Useful.TeamFoundation.Common;
 using System;
 
@@ -38,43 +39,41 @@ namespace TfsDeployer.DeployAgent
 
             // Start the process
             var proc = Process.Start(psi);
-            if (proc == null)
-            {
-                TraceHelper.TraceError(TraceSwitches.TfsDeployer, "Process.Start(...) returned null");
-
-                return new DeployAgentResult
-                {
-                    HasErrors = true,
-                    Output = "Process.Start(...) returned null. Could not create deployment process.",
-                };
-            }
 
             using (var sOut = proc.StandardOutput)
             {
                 using (var sErr = proc.StandardError)
                 {
-                    var errorOccurred = true;
-                    string output = string.Empty;
+                    var errorOccurred = false;
+                    var output = string.Empty;
 
-                    if (proc.WaitForExit((int)deployAgentData.Timeout.TotalMilliseconds))
+                    // The calls to .ReadToEnd() below will block so we can't make those calls and also check timeouts in the same thread.
+                    new Thread(() =>
                     {
-                        errorOccurred = false;
-                    }
-                    else
-                    {
+                        // FIXME we should extract this to an instance method but this class needs to be refactored first so that it's a single-use,
+                        // throw-away class.  -andrewh 22/12/2010
+
+                        var timeoutMilliseconds = (int)Math.Floor(deployAgentData.Timeout.TotalMilliseconds);
+                        var hasExited = proc.WaitForExit(timeoutMilliseconds);
+
+                        if (hasExited) return;
+
                         try
                         {
+                            errorOccurred = true;
                             proc.KillRecursive();
                         }
                         catch (InvalidOperationException)
                         {
-                            // swallow. This occurs if the process is killed between when we decide to kill it and when we actually make the call.
+                            // swallow. This occurs if the process exits or is killed between when we decide to kill it and when we actually make the call.
                         }
+                    })
+                    {
+                        IsBackground = true,
+                        Name = "StalledDeploymentMonitor",
+                    }.Start();
 
-                        output += "The deployment process failed to complete within the specified time limit and was terminated.\n";
-                    }
-
-                    // try to read from the process's output stream even if we've killed it. This is an entirely legitimate
+                    // try to read from the process's output stream - even if we've killed it. This is an entirely legitimate
                     // thing to do and allows us to capture at least partial output and send it back with any alerts.
                     try
                     {
@@ -84,6 +83,11 @@ namespace TfsDeployer.DeployAgent
                     catch
                     {
                         // swallow. grab what we can, but don't complain if the streams are nuked already.
+                    }
+
+                    if (errorOccurred)
+                    {
+                        output += "The deployment process failed to complete within the specified time limit and was terminated.\n";
                     }
 
                     TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Output From Command: {0}", output);
