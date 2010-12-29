@@ -5,6 +5,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using TfsDeployer.Configuration;
+using TfsDeployer.Service;
 
 namespace TfsDeployer
 {
@@ -13,6 +14,7 @@ namespace TfsDeployer
         public static readonly DateTime StartTime = DateTime.UtcNow;
 
         private TfsBuildStatusTrigger _trigger;
+        private DeployerServiceHost _serviceHost;
 
         public void Start()
         {
@@ -34,6 +36,8 @@ namespace TfsDeployer
 
             _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, configurationReader, deploymentFolderSource), duplicateEventDetector);
             _trigger.Start();
+
+            _serviceHost = new DeployerServiceHost(new Uri(listenPrefix));
         }
 
         #region IDisposable Members
@@ -64,6 +68,11 @@ namespace TfsDeployer
                     {
                         _trigger.Stop();
                         _trigger = null;
+                    }
+                    if (_serviceHost != null)
+                    {
+                        _serviceHost.Dispose();
+                        _serviceHost = null;
                     }
                 }
                 catch (Exception)

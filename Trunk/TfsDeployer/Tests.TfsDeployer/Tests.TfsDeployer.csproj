@@ -114,6 +114,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +150,7 @@
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
     <Compile Include="ProgramTests.cs" />
+    <Compile Include="Service\DeployerServiceHostTests.cs" />
     <Compile Include="StubBuildDetail.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutorTests.cs" />
@@ -195,6 +197,10 @@
     <ProjectReference Include="..\Readify.Useful.TeamFoundation.Common\Readify.Useful.TeamFoundation.Common.csproj">
       <Project>{7FEC9CED-38BA-4AA5-8270-CCA02AEA55EE}</Project>
       <Name>Readify.Useful.TeamFoundation.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.Data\TfsDeployer.Data.csproj">
+      <Project>{A77AD549-8F87-45EC-8868-CD18AA603432}</Project>
+      <Name>TfsDeployer.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\TfsDeployer\TfsDeployer.csproj">
       <Project>{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}</Project>

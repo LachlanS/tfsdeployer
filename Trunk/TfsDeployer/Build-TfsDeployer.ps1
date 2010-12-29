@@ -62,10 +62,11 @@ if ($CommonOutDirPath | Test-Path -PathType Container) {
 }
 
 Write-Output "Building $Configuration configuration"
-& $MSBuildExe $SolutionPath /p:Configuration=$Configuration /p:Platform="Any CPU" /p:CommonOutDir="$CommonOutDirPath" /t:Build
+& $MSBuildExe $SolutionPath /p:Configuration=$Configuration /p:Platform="Any CPU" /p:CommonOutDir="$CommonOutDirPath" /t:"Clean;Build"
 if (-not $?) {
     throw 'Build failed.'
 }
+Remove-Item -Path $CommonOutDirPath\TfsDeployer\Microsoft.TeamFoundation.WorkItemTracking.Client.*.dll
 
 $MSTestExe = Join-Path -Path $Env:VS100COMNTOOLS -ChildPath ..\IDE\MSTest.exe
 

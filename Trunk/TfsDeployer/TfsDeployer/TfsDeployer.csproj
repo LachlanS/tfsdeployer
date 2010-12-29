@@ -141,6 +141,10 @@
     <Compile Include="MappingProcessor.cs" />
     <Compile Include="PostDeployAction.cs" />
     <Compile Include="ProcessExtensions.cs" />
+    <Compile Include="Service\DeployerService.cs" />
+    <Compile Include="Service\DeployerServiceHost.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
     <Compile Include="TeamFoundation\BuildDetail.cs" />
     <Compile Include="TeamFoundation\BuildStatus.cs" />
