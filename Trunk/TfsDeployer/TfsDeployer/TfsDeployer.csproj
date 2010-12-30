@@ -90,6 +90,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\Dependencies\Autofac\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper">
       <HintPath>..\Dependencies\AutoMapper.dll</HintPath>
     </Reference>

@@ -25,6 +25,7 @@ using System.Configuration.Install;
 using System.Diagnostics;
 using System.Reflection;
 using System.ServiceProcess;
+using Autofac;
 
 namespace TfsDeployer
 {
@@ -43,6 +44,7 @@ namespace TfsDeployer
                       {RunMode.InteractiveConsole, new ConsoleTraceListener()}
                   };
 
+        private static IContainer _container;
 
         public static void Main(string[] args)
         {
@@ -71,18 +73,21 @@ namespace TfsDeployer
         {
             ConfigureTraceListeners(mode);
 
-            Func<TfsDeployerApplication> createAppDelegate = () => new TfsDeployerApplication();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterType<TfsDeployerApplication>();
+            containerBuilder.RegisterType<TfsDeployerService>();
+            _container = containerBuilder.Build();
 
             switch (mode)
             {
                 case RunMode.InteractiveConsole:
                     {
-                        RunAsConsole(createAppDelegate);
+                        RunAsConsole(_container.Resolve<Func<TfsDeployerApplication>>());
                         break;
                     }
                 case RunMode.WindowsService:
                     {
-                        ServiceBase.Run(new TfsDeployerService(createAppDelegate));
+                        ServiceBase.Run(_container.Resolve<TfsDeployerService>());
                         break;
                     }
             }
