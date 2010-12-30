@@ -1,5 +1,4 @@
 using System.ServiceProcess;
-using System;
 
 namespace TfsDeployer
 {
@@ -7,9 +6,9 @@ namespace TfsDeployer
     {
         private readonly TfsDeployerApplication _application;
 
-        public TfsDeployerService(Func<TfsDeployerApplication> createAppDelegate)
+        public TfsDeployerService(TfsDeployerApplication application)
         {
-            _application = createAppDelegate();
+            _application = application;
         }
 
         protected override void OnStart(string[] args)

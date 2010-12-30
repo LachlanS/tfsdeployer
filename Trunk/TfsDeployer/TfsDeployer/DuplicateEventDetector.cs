@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Readify.Useful.TeamFoundation.Common.Notification;
-using Readify.Useful.TeamFoundation.Common;
 
 namespace TfsDeployer
 {

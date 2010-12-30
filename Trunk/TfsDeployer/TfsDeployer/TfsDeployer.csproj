@@ -135,6 +135,7 @@
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutor.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
+    <Compile Include="DeployerContainerBuilder.cs" />
     <Compile Include="DeployerFactory.cs" />
     <Compile Include="DuplicateEventDetector.cs" />
     <Compile Include="IDeployer.cs" />

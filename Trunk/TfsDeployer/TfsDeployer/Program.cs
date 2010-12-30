@@ -29,17 +29,11 @@ namespace TfsDeployer
 {
     public static class Program
     {
-        private enum RunMode
-        {
-            WindowsService,
-            InteractiveConsole
-        }
-
         private static IContainer _container;
 
         public static void Main(string[] args)
         {
-            var mode = RunMode.WindowsService;
+            var mode = DeployerContainerBuilder.RunMode.WindowsService;
 
             if (args.Length > 0)
             {
@@ -55,38 +49,15 @@ namespace TfsDeployer
                 }
                 if (args[0] == "-d")
                 {
-                    mode = RunMode.InteractiveConsole;
+                    mode = DeployerContainerBuilder.RunMode.InteractiveConsole;
                 }
             }
 
-            _container = BuildContainer(mode);
+            var containerBuilder = new DeployerContainerBuilder(mode);
+            _container = containerBuilder.Build();
+
             Trace.Listeners.Add(_container.Resolve<TraceListener>());
             _container.Resolve<IProgramEntryPoint>().Run();
-        }
-
-        private static IContainer BuildContainer(RunMode mode)
-        {
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterType<TfsDeployerApplication>();
-            containerBuilder.RegisterType<TfsDeployerService>();
-
-            switch (mode)
-            {
-                case RunMode.InteractiveConsole:
-                    {
-                        containerBuilder.RegisterType<ConsoleTraceListener>().As(typeof(TraceListener));
-                        containerBuilder.RegisterType<ConsoleEntryPoint>().As(typeof(IProgramEntryPoint));
-                        break;
-                    }
-                case RunMode.WindowsService:
-                    {
-                        containerBuilder.Register(c => new LargeEventLogTraceListener("TfsDeployer")).As(typeof(TraceListener));
-                        containerBuilder.RegisterType<WindowsServiceEntryPoint>().As(typeof(IProgramEntryPoint));
-                        break;
-                    }
-            }
-            
-            return containerBuilder.Build();
         }
 
         private static void Install()

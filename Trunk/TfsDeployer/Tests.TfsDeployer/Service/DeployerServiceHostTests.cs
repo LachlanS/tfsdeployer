@@ -23,6 +23,8 @@ namespace Tests.TfsDeployer.Service
             TimeSpan result;
             using (var host = new DeployerServiceHost(new Uri(address)))
             {
+                host.Start();
+
                 var channel =
                     ChannelFactory<IDeployerService>.CreateChannel(
                         new WSHttpBinding {Security = {Mode = SecurityMode.None}},

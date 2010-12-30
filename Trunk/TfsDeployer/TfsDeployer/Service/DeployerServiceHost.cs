@@ -15,8 +15,12 @@ namespace TfsDeployer.Service
             _host = new ServiceHost(service, baseAddress);
             var binding = new WSHttpBinding {Security = {Mode = SecurityMode.None}};
             var endpoint = _host.AddServiceEndpoint(typeof(IDeployerService), binding, typeof(IDeployerService).Name);
+            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "DeployerService will listen at {0}", endpoint.ListenUri);
+        }
+
+        public void Start()
+        {
             _host.Open();
-            TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "DeployerService listening at {0}", endpoint.ListenUri);
         }
 
         public void Dispose()
