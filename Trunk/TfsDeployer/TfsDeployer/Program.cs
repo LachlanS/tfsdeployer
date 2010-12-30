@@ -20,99 +20,73 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.Reflection;
-using System.ServiceProcess;
 using Autofac;
 
 namespace TfsDeployer
 {
     public static class Program
     {
-        public enum RunMode
+        private enum RunMode
         {
             WindowsService,
             InteractiveConsole
         }
 
-        private static readonly IDictionary<RunMode, TraceListener> RunModeTraceListener
-            = new Dictionary<RunMode, TraceListener>
-                  {
-                      {RunMode.WindowsService, new LargeEventLogTraceListener("TfsDeployer")},
-                      {RunMode.InteractiveConsole, new ConsoleTraceListener()}
-                  };
-
         private static IContainer _container;
 
         public static void Main(string[] args)
         {
+            var mode = RunMode.WindowsService;
+
             if (args.Length > 0)
             {
                 if (args[0] == "-i")
                 {
                     Install();
+                    return;
                 }
-                else if (args[0] == "-u")
+                if (args[0] == "-u")
                 {
                     Uninstall();
+                    return;
                 }
-                else if (args[0] == "-d")
+                if (args[0] == "-d")
                 {
-                    Run(RunMode.InteractiveConsole);
+                    mode = RunMode.InteractiveConsole;
                 }
             }
-            else
-            {
-                Run(RunMode.WindowsService);
-            }
+
+            _container = BuildContainer(mode);
+            Trace.Listeners.Add(_container.Resolve<TraceListener>());
+            _container.Resolve<IProgramEntryPoint>().Run();
         }
 
-        private static void Run(RunMode mode)
+        private static IContainer BuildContainer(RunMode mode)
         {
-            ConfigureTraceListeners(mode);
-
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterType<TfsDeployerApplication>();
             containerBuilder.RegisterType<TfsDeployerService>();
-            _container = containerBuilder.Build();
 
             switch (mode)
             {
                 case RunMode.InteractiveConsole:
                     {
-                        RunAsConsole(_container.Resolve<Func<TfsDeployerApplication>>());
+                        containerBuilder.RegisterType<ConsoleTraceListener>().As(typeof(TraceListener));
+                        containerBuilder.RegisterType<ConsoleEntryPoint>().As(typeof(IProgramEntryPoint));
                         break;
                     }
                 case RunMode.WindowsService:
                     {
-                        ServiceBase.Run(_container.Resolve<TfsDeployerService>());
+                        containerBuilder.Register(c => new LargeEventLogTraceListener("TfsDeployer")).As(typeof(TraceListener));
+                        containerBuilder.RegisterType<WindowsServiceEntryPoint>().As(typeof(IProgramEntryPoint));
                         break;
                     }
             }
-        }
-
-        public static void ConfigureTraceListeners(RunMode mode)
-        {
-            Trace.Listeners.Add(RunModeTraceListener[mode]);
-        }
-
-        private static void RunAsConsole(Func<TfsDeployerApplication> createAppDelegate)
-        {
-            using (TfsDeployerApplication application = createAppDelegate())
-            {
-                try
-                {
-                    application.Start();
-                    Console.WriteLine("Hit Enter to stop the service");
-                    Console.ReadKey();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
+            
+            return containerBuilder.Build();
         }
 
         private static void Install()

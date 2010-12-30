@@ -149,7 +149,7 @@
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated.cs" />
     <Compile Include="MappingEvaluatorTests\DoesMappingApplyTests.cs" />
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
-    <Compile Include="ProgramTests.cs" />
+    <Compile Include="LargeEventLogTraceListenerTests.cs" />
     <Compile Include="Service\DeployerServiceHostTests.cs" />
     <Compile Include="StubBuildDetail.cs" />
     <Compile Include="TemporaryFile.cs" />

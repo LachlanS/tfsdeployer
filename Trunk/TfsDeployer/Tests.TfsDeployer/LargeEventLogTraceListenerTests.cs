@@ -7,16 +7,16 @@ using TfsDeployer;
 namespace Tests.TfsDeployer
 {
     [TestClass]
-    public class ProgramTests
+    public class LargeEventLogTraceListenerTests
     {
         [TestMethod]
-        public void Program_should_handle_large_trace_messages_to_the_eventlog()
+        public void LargeEventLogTraceListener_should_handle_large_trace_messages_to_the_eventlog()
         {
             // Arrange
             using (new TraceListenersScope())
             {
                 Trace.Listeners.Clear();
-                Program.ConfigureTraceListeners(Program.RunMode.WindowsService);
+                Trace.Listeners.Add(new LargeEventLogTraceListener("TfsDeployer"));
 
                 const string tinyMessage = "X";
                 var largeMessage = new string('X', 0x8001);

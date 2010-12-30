@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\ConfigurationReader.cs" />
+    <Compile Include="ConsoleEntryPoint.cs" />
     <Compile Include="DeployAgent\DeployAgentDataFactory.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="IDuplicateEventDetector.cs" />
     <Compile Include="IMappingProcessor.cs" />
     <Compile Include="IPostDeployAction.cs" />
+    <Compile Include="IProgramEntryPoint.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="MappingProcessor.cs" />
     <Compile Include="PostDeployAction.cs" />
@@ -189,6 +191,7 @@
     </Compile>
     <Compile Include="TraceSwitches.cs" />
     <Compile Include="VersionControlPath.cs" />
+    <Compile Include="WindowsServiceEntryPoint.cs" />
     <Compile Include="WorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
