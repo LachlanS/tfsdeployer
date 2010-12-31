@@ -49,6 +49,8 @@ namespace TfsDeployer
             _containerBuilder.RegisterType<MappingProcessor>().As<IMappingProcessor>();
             _containerBuilder.RegisterType<Deployer>().As<IDeployer>();
 
+            _containerBuilder.RegisterType<PostDeployAction>().As<IPostDeployAction>();
+
             var listenPrefix = Settings.Default.BaseAddress;
             if (!listenPrefix.EndsWith("/")) listenPrefix += "/";
             _containerBuilder.RegisterType<TfsListener>().As<ITfsListener>()

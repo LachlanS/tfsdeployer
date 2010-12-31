@@ -1,4 +1,5 @@
-﻿using Microsoft.TeamFoundation.Build.Client;
+﻿using System;
+using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using Rhino.Mocks;
@@ -19,7 +20,6 @@ namespace Tests.TfsDeployer
             BuildDetail buildDetail = null;
 
             var statusChanged = new BuildStatusChangeEvent {StatusChange = new Change()};
-            var alert = MockRepository.GenerateStub<IAlert>();
             var mappingProcessor = MockRepository.GenerateStub<IMappingProcessor>();
 
             var tfsBuildDetail = new StubBuildDetail {BuildDefinition = {Name = "foo"}};
@@ -31,7 +31,9 @@ namespace Tests.TfsDeployer
             var reader = MockRepository.GenerateStub<IConfigurationReader>();
             reader.Stub(o => o.ReadMappings(Arg<BuildDetail>.Is.Anything)).WhenCalled(m => buildDetail = (BuildDetail)m.Arguments[0]);
 
-            var deployer = new Deployer(reader, alert, buildServer, mappingProcessor);
+            Func<BuildDetail, IBuildDetail, IPostDeployAction> postDeployActionFactory = (a, b) => MockRepository.GenerateStub<IPostDeployAction>();
+            
+            var deployer = new Deployer(reader, buildServer, mappingProcessor, postDeployActionFactory);
 
             // Act
             deployer.ExecuteDeploymentProcess(statusChanged);
@@ -61,7 +63,9 @@ namespace Tests.TfsDeployer
                 .IgnoreArguments()
                 .WhenCalled(m => buildDetail = (BuildDetail)m.Arguments[2]);
 
-            var deployer = new Deployer(reader, alert, buildServer, mappingProcessor);
+            Func<BuildDetail, IBuildDetail, IPostDeployAction> postDeployActionFactory = (a, b) => MockRepository.GenerateStub<IPostDeployAction>();
+
+            var deployer = new Deployer(reader, buildServer, mappingProcessor, postDeployActionFactory);
 
             // Act
             deployer.ExecuteDeploymentProcess(statusChanged);

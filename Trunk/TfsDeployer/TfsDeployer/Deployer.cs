@@ -23,7 +23,6 @@ using AutoMapper;
 using Microsoft.TeamFoundation.Build.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
-using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.TeamFoundation;
 
@@ -32,9 +31,9 @@ namespace TfsDeployer
     public class Deployer : IDeployer
     {
         private readonly IConfigurationReader _configurationReader;
-        private readonly IAlert _alerter;
         private readonly IBuildServer _buildServer;
         private readonly IMappingProcessor _mappingProcessor;
+        private readonly Func<BuildDetail, IBuildDetail, IPostDeployAction> _postDeployActionFactory;
 
         static Deployer()
         {
@@ -44,12 +43,12 @@ namespace TfsDeployer
             Mapper.AssertConfigurationIsValid();
         }
         
-        public Deployer(IConfigurationReader reader, IAlert alert, IBuildServer buildServer, IMappingProcessor mappingProcessor)
+        public Deployer(IConfigurationReader reader, IBuildServer buildServer, IMappingProcessor mappingProcessor, Func<BuildDetail, IBuildDetail, IPostDeployAction> postDeployActionFactory)
         {
             _configurationReader = reader;
-            _alerter = alert;
             _buildServer = buildServer;
             _mappingProcessor = mappingProcessor;
+            _postDeployActionFactory = postDeployActionFactory;
         }
 
         public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
@@ -66,7 +65,7 @@ namespace TfsDeployer
                 var tfsBuildDetail = GetBuildDetail(statusChanged);
                 var buildDetail = Mapper.Map<IBuildDetail, BuildDetail>(tfsBuildDetail);
 
-                var postDeployAction = new PostDeployAction(buildDetail, tfsBuildDetail, _alerter);
+                var postDeployAction = _postDeployActionFactory(buildDetail, tfsBuildDetail);
                 
                 var mappings = _configurationReader.ReadMappings(buildDetail);
 
