@@ -134,15 +134,8 @@ namespace Tests.TfsDeployer.BuildStatusTriggerTests
                     .WhenCalled(mi => _deployerExecuteCount++)
                     .Repeat.Any();
 
-                // configure deployer factory stub to return our deployer stub
-                IDeployerFactory deployerFactory = MockRepository.GenerateStub<IDeployerFactory>();
-                deployerFactory.Stub(o => o.Create())
-                    .Return(deployer)
-                    .Repeat.Any()
-                    ;
-
                 _tfsListener.BuildStatusChangeEventReceived += null;
-                _eventRaiser = _tfsListener.GetEventRaiser<ITfsListener>(mo => mo.BuildStatusChangeEventReceived += null);
+                _eventRaiser = _tfsListener.GetEventRaiser(mo => mo.BuildStatusChangeEventReceived += null);
 
                 // we're using a real DuplicateEventDetector
                 _duplicateEventDetector = new DuplicateEventDetector();
@@ -151,7 +144,7 @@ namespace Tests.TfsDeployer.BuildStatusTriggerTests
 
                 _deployerExecuteCount = 0;
 
-                _buildStatusTrigger = new TfsBuildStatusTrigger(_tfsListener, deployerFactory, _duplicateEventDetector);
+                _buildStatusTrigger = new TfsBuildStatusTrigger(_tfsListener, () => deployer, _duplicateEventDetector);
                 _buildStatusTrigger.Start();
             }
 

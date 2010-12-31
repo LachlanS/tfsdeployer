@@ -1,3 +1,4 @@
+using System;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using Readify.Useful.TeamFoundation.Common.Notification;
@@ -9,10 +10,10 @@ namespace TfsDeployer
         private delegate void ExecuteDeploymentProcessDelegate(BuildStatusChangeEvent ev);
 
         private readonly ITfsListener _listener;
-        private readonly IDeployerFactory _deployerFactory;
+        private readonly Func<IDeployer> _deployerFactory;
         private readonly IDuplicateEventDetector _duplicateEventDetector;
 
-        public TfsBuildStatusTrigger(ITfsListener listener, IDeployerFactory deployerFactory, IDuplicateEventDetector duplicateEventDetector)
+        public TfsBuildStatusTrigger(ITfsListener listener, Func<IDeployer> deployerFactory, IDuplicateEventDetector duplicateEventDetector)
         {
             _listener = listener;
             _deployerFactory = deployerFactory;
@@ -37,7 +38,7 @@ namespace TfsDeployer
 
             if (_duplicateEventDetector.IsUnique(changeEvent))
             {
-                var deployer = _deployerFactory.Create();
+                var deployer = _deployerFactory();
                 ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
                 edpd.BeginInvoke(changeEvent, null, null);
             }

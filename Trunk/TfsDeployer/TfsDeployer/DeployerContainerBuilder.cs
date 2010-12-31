@@ -6,7 +6,9 @@ using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common.Listener;
+using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
+using TfsDeployer.DeployAgent;
 using TfsDeployer.Properties;
 using TfsDeployer.Service;
 
@@ -40,7 +42,12 @@ namespace TfsDeployer
                 .WithParameter("signingKeyFile", Settings.Default.KeyFile);
 
             _containerBuilder.RegisterType<DuplicateEventDetector>().As<IDuplicateEventDetector>();
-            _containerBuilder.RegisterType<DeployerFactory>().As<IDeployerFactory>();
+
+            _containerBuilder.RegisterType<DeployAgentProvider>().As<IDeployAgentProvider>();
+            _containerBuilder.RegisterType<EmailAlerter>().As<IAlert>();
+            _containerBuilder.RegisterType<MappingEvaluator>().As<IMappingEvaluator>();
+            _containerBuilder.RegisterType<MappingProcessor>().As<IMappingProcessor>();
+            _containerBuilder.RegisterType<Deployer>().As<IDeployer>();
 
             var listenPrefix = Settings.Default.BaseAddress;
             if (!listenPrefix.EndsWith("/")) listenPrefix += "/";
