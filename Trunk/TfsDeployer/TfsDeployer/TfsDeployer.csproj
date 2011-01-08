@@ -93,6 +93,9 @@
     <Reference Include="Autofac">
       <HintPath>..\Dependencies\Autofac\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Autofac.Integration.Wcf">
+      <HintPath>..\Dependencies\Autofac\Autofac.Integration.Wcf.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper">
       <HintPath>..\Dependencies\AutoMapper.dll</HintPath>
     </Reference>

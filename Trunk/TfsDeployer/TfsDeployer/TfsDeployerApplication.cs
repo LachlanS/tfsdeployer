@@ -5,7 +5,6 @@ namespace TfsDeployer
 {
     public class TfsDeployerApplication : IDisposable
     {
-        public static readonly DateTime StartTime = DateTime.UtcNow;
 
         private readonly TfsBuildStatusTrigger _trigger;
         private readonly DeployerServiceHost _serviceHost;
@@ -20,7 +19,10 @@ namespace TfsDeployer
         {
             _trigger.Start();
             _serviceHost.Start();
+            StartTime = DateTime.UtcNow;
         }
+
+        public DateTime StartTime { get; private set; }
 
         public void Dispose()
         {

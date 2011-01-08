@@ -1,15 +1,20 @@
 ﻿using System;
-using System.ServiceModel;
 using TfsDeployer.Data;
 
 namespace TfsDeployer.Service
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class DeployerService : IDeployerService
     {
+        private readonly TfsDeployerApplication _application;
+
+        public DeployerService(TfsDeployerApplication application)
+        {
+            _application = application;
+        }
+
         public TimeSpan GetUptime()
         {
-            return DateTime.UtcNow.Subtract(TfsDeployerApplication.StartTime);
+            return DateTime.UtcNow.Subtract(_application.StartTime);
         }
     }
 }

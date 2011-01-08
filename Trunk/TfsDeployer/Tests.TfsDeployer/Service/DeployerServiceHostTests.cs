@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ServiceModel;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer;
 using TfsDeployer.Data;
@@ -16,12 +15,9 @@ namespace Tests.TfsDeployer.Service
         {
             // Arrange
             var address = string.Format("http://localhost:80/Temporary_Listen_Addresses/{0}", GetType().FullName);
-            var startTime = TfsDeployerApplication.StartTime;
-            Thread.Sleep(100);
 
-            // Act
-            TimeSpan result;
-            using (var host = new DeployerServiceHost(new Uri(address)))
+            var containerBuilder = new DeployerContainerBuilder(DeployerContainerBuilder.RunMode.InteractiveConsole);
+            using (var host = new DeployerServiceHost(new Uri(address), containerBuilder.Build()))
             {
                 host.Start();
 
@@ -29,11 +25,13 @@ namespace Tests.TfsDeployer.Service
                     ChannelFactory<IDeployerService>.CreateChannel(
                         new WSHttpBinding {Security = {Mode = SecurityMode.None}},
                         new EndpointAddress(address + "/IDeployerService"));
-                result = channel.GetUptime();
+
+                // Act
+                channel.GetUptime();
             }
 
             // Assert
-            Assert.AreNotEqual(0, result.TotalMilliseconds);
+            // no exception
         }
     }
 }

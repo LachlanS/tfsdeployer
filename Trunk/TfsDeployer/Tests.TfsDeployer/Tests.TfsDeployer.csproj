@@ -153,6 +153,7 @@
     <Compile Include="MappingEvaluatorTests\When_Mapping_Status_not_specified.cs" />
     <Compile Include="LargeEventLogTraceListenerTests.cs" />
     <Compile Include="Service\DeployerServiceHostTests.cs" />
+    <Compile Include="Service\DeployerServiceTests.cs" />
     <Compile Include="StubBuildDetail.cs" />
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutorTests.cs" />

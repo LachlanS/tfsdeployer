@@ -8,6 +8,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
+using TfsDeployer.Data;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.Properties;
 using TfsDeployer.Service;
@@ -27,8 +28,8 @@ namespace TfsDeployer
         public DeployerContainerBuilder(RunMode mode)
         {
             _containerBuilder = new ContainerBuilder();
-            _containerBuilder.RegisterType<TfsDeployerApplication>();
-            _containerBuilder.RegisterType<TfsDeployerService>();
+            _containerBuilder.RegisterType<TfsDeployerApplication>().SingleInstance();
+            _containerBuilder.RegisterType<TfsDeployerService>().SingleInstance();
 
             _containerBuilder.RegisterType<AppConfigTfsConnectionProvider>().As<ITfsConnectionProvider>();
             _containerBuilder.Register(c => c.Resolve<ITfsConnectionProvider>().GetConnection()).InstancePerLifetimeScope();
@@ -54,10 +55,13 @@ namespace TfsDeployer
             var listenPrefix = Settings.Default.BaseAddress;
             if (!listenPrefix.EndsWith("/")) listenPrefix += "/";
             _containerBuilder.RegisterType<TfsListener>().As<ITfsListener>()
+                .SingleInstance()
                 .WithParameter("baseAddress", new Uri(listenPrefix + "event/"));
 
             _containerBuilder.RegisterType<TfsBuildStatusTrigger>();
+            _containerBuilder.RegisterType<DeployerService>().As<IDeployerService>();
             _containerBuilder.RegisterType<DeployerServiceHost>()
+                .SingleInstance()
                 .WithParameter("baseAddress", new Uri(listenPrefix));
 
             switch (mode)
@@ -65,13 +69,13 @@ namespace TfsDeployer
                 case RunMode.InteractiveConsole:
                     {
                         _containerBuilder.RegisterType<ConsoleTraceListener>().As<TraceListener>();
-                        _containerBuilder.RegisterType<ConsoleEntryPoint>().As<IProgramEntryPoint>();
+                        _containerBuilder.RegisterType<ConsoleEntryPoint>().As<IProgramEntryPoint>().SingleInstance();
                         break;
                     }
                 case RunMode.WindowsService:
                     {
                         _containerBuilder.Register(c => new LargeEventLogTraceListener("TfsDeployer")).As<TraceListener>();
-                        _containerBuilder.RegisterType<WindowsServiceEntryPoint>().As<IProgramEntryPoint>();
+                        _containerBuilder.RegisterType<WindowsServiceEntryPoint>().As<IProgramEntryPoint>().SingleInstance();
                         break;
                     }
             }
