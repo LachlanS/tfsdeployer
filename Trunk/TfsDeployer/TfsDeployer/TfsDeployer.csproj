@@ -145,6 +145,9 @@
     <Compile Include="IMappingProcessor.cs" />
     <Compile Include="IPostDeployAction.cs" />
     <Compile Include="IProgramEntryPoint.cs" />
+    <Compile Include="Journal\DeploymentEventJournal.cs" />
+    <Compile Include="Journal\IDeploymentEventAccessor.cs" />
+    <Compile Include="Journal\IDeploymentEventRecorder.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="MappingProcessor.cs" />
     <Compile Include="PostDeployAction.cs" />

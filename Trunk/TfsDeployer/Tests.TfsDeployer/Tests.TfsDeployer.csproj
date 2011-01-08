@@ -140,6 +140,7 @@
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
     <Compile Include="DeployerContainerBuilderTests.cs" />
     <Compile Include="DeployerTests.cs" />
+    <Compile Include="Journal\DeploymentEventJournalTests.cs" />
     <Compile Include="MappingProcessorTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />
@@ -173,6 +174,7 @@
       <DependentUpon>SerializedDeploymentMappings.resx</DependentUpon>
     </Compile>
     <Compile Include="TestHelpers\TraceListenersScope.cs" />
+    <Compile Include="TfsBuildStatusTriggerTests.cs" />
     <Compile Include="VersionControlDeploymentFileSourceTests.cs" />
     <Compile Include="WorkingDirectoryTests.cs" />
   </ItemGroup>

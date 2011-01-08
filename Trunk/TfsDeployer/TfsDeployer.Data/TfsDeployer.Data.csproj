@@ -47,6 +47,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="DeploymentEvent.cs" />
     <Compile Include="IDeployerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

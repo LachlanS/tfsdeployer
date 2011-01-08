@@ -6,5 +6,18 @@
 </head>
 <body>
     <p>TFS Deployer has been running for <%= UptimeText %></p>
+    <table>
+    <%
+    foreach(var recentEvent in RecentEvents)
+    {
+        %>
+        <tr>
+            <td><%= recentEvent.BuildNumber %></td>
+            <td><%= recentEvent.Triggered.ToString() %></td>
+        </tr>
+        <%
+    }
+    %>
+    </table>
 </body>
 </html>

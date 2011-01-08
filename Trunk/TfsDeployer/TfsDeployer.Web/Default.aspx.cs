@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Collections.Generic;
+using System.ServiceModel;
 using System.Web.UI;
 using TfsDeployer.Data;
 
@@ -14,13 +15,22 @@ namespace TfsDeployer.Web
             {
                 if (_uptimeText == null)
                 {
-                    var binding = new WSHttpBinding {Security = {Mode = SecurityMode.None}};
-                    var endpointAddress = new EndpointAddress("http://localhost/Temporary_Listen_Addresses/TfsDeployer/IDeployerService");
-                    var deployerService = ChannelFactory<IDeployerService>.CreateChannel(binding, endpointAddress);
-                    _uptimeText = deployerService.GetUptime().ToString();
+                    _uptimeText = GetDeployerService().GetUptime().ToString();
                 }
                 return _uptimeText;
             }
+        }
+
+        public IEnumerable<DeploymentEvent> RecentEvents
+        {
+            get { return GetDeployerService().RecentEvents(5); }
+        }
+
+        private static IDeployerService GetDeployerService()
+        {
+            var binding = new WSHttpBinding {Security = {Mode = SecurityMode.None}};
+            var endpointAddress = new EndpointAddress("http://localhost/Temporary_Listen_Addresses/TfsDeployer/IDeployerService");
+            return ChannelFactory<IDeployerService>.CreateChannel(binding, endpointAddress);
         }
     }
 }

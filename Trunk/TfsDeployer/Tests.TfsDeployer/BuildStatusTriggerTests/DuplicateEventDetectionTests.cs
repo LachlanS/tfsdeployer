@@ -5,6 +5,7 @@ using Readify.Useful.TeamFoundation.Common.Notification;
 using Rhino.Mocks;
 using Rhino.Mocks.Interfaces;
 using TfsDeployer;
+using TfsDeployer.Journal;
 
 namespace Tests.TfsDeployer.BuildStatusTriggerTests
 {
@@ -142,9 +143,11 @@ namespace Tests.TfsDeployer.BuildStatusTriggerTests
 
                 _statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
+                var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
                 _deployerExecuteCount = 0;
 
-                _buildStatusTrigger = new TfsBuildStatusTrigger(_tfsListener, () => deployer, _duplicateEventDetector);
+                _buildStatusTrigger = new TfsBuildStatusTrigger(_tfsListener, () => deployer, _duplicateEventDetector, deploymentEventRecorder);
                 _buildStatusTrigger.Start();
             }
 

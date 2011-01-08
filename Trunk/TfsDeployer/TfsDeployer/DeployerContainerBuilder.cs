@@ -10,6 +10,7 @@ using TfsDeployer.Alert;
 using TfsDeployer.Configuration;
 using TfsDeployer.Data;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.Properties;
 using TfsDeployer.Service;
 
@@ -30,6 +31,11 @@ namespace TfsDeployer
             _containerBuilder = new ContainerBuilder();
             _containerBuilder.RegisterType<TfsDeployerApplication>().SingleInstance();
             _containerBuilder.RegisterType<TfsDeployerService>().SingleInstance();
+
+            _containerBuilder.RegisterType<DeploymentEventJournal>()
+                .SingleInstance()
+                .As<IDeploymentEventRecorder>()
+                .As<IDeploymentEventAccessor>();
 
             _containerBuilder.RegisterType<AppConfigTfsConnectionProvider>().As<ITfsConnectionProvider>();
             _containerBuilder.Register(c => c.Resolve<ITfsConnectionProvider>().GetConnection()).InstancePerLifetimeScope();

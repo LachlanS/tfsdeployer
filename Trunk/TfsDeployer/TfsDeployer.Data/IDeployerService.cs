@@ -8,5 +8,8 @@ namespace TfsDeployer.Data
     {
         [OperationContract]
         TimeSpan GetUptime();
+
+        [OperationContract]
+        DeploymentEvent[] RecentEvents(int count);
     }
 }

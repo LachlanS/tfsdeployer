@@ -2,6 +2,7 @@ using System;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Journal;
 
 namespace TfsDeployer
 {
@@ -12,12 +13,14 @@ namespace TfsDeployer
         private readonly ITfsListener _listener;
         private readonly Func<IDeployer> _deployerFactory;
         private readonly IDuplicateEventDetector _duplicateEventDetector;
+        private readonly IDeploymentEventRecorder _deploymentEventRecorder;
 
-        public TfsBuildStatusTrigger(ITfsListener listener, Func<IDeployer> deployerFactory, IDuplicateEventDetector duplicateEventDetector)
+        public TfsBuildStatusTrigger(ITfsListener listener, Func<IDeployer> deployerFactory, IDuplicateEventDetector duplicateEventDetector, IDeploymentEventRecorder deploymentEventRecorder)
         {
             _listener = listener;
             _deployerFactory = deployerFactory;
             _duplicateEventDetector = duplicateEventDetector;
+            _deploymentEventRecorder = deploymentEventRecorder;
         }
 
         public void Start()
@@ -38,6 +41,8 @@ namespace TfsDeployer
 
             if (_duplicateEventDetector.IsUnique(changeEvent))
             {
+                _deploymentEventRecorder.RecordTriggered(changeEvent.Id, changeEvent.TeamProject, null);
+
                 var deployer = _deployerFactory();
                 ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
                 edpd.BeginInvoke(changeEvent, null, null);
