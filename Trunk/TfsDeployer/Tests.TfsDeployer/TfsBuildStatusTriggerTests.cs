@@ -95,5 +95,48 @@ namespace Tests.TfsDeployer
                 ));
         }
 
+        [TestMethod]
+        public void TfsBuildStatusTrigger_should_pass_recorded_event_id_to_deployer()
+        {
+            // Arrange
+            const int eventId = 9;
+            
+            var listener = MockRepository.GenerateStub<ITfsListener>();
+            var buildStatusEventRaiser = listener.GetEventRaiser(o => o.BuildStatusChangeEventReceived += null);
+            var buildStatusEventArgs = new BuildStatusChangeEventArgs(
+                new BuildStatusChangeEvent
+                {
+                    Id = "Foobar_123.5",
+                    StatusChange = new Change()
+                },
+                new TfsIdentity()
+                );
+
+            var deployer = MockRepository.GenerateStub<IDeployer>();
+            Func<IDeployer> deployerFactory = () => deployer;
+
+            var duplicateEventDetector = MockRepository.GenerateStub<IDuplicateEventDetector>();
+            duplicateEventDetector.Stub(o => o.IsUnique(null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+            deploymentEventRecorder.Stub(o => o.RecordTriggered(null, null, null, null, null, null))
+                .IgnoreArguments()
+                .Return(eventId);
+
+            var trigger = new TfsBuildStatusTrigger(listener, deployerFactory, duplicateEventDetector, deploymentEventRecorder);
+            trigger.Start();
+
+            // Act
+            buildStatusEventRaiser.Raise(listener, buildStatusEventArgs);
+
+            // Assert
+            deployer.AssertWasCalled(o => o.ExecuteDeploymentProcess(
+                Arg<BuildStatusChangeEvent>.Is.Anything,
+                Arg<int>.Is.Equal(eventId)
+                                              ));
+        }
+
     }
 }

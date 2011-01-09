@@ -5,6 +5,7 @@ using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace TfsDeployer
@@ -19,15 +20,17 @@ namespace TfsDeployer
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IMappingEvaluator _mappingEvaluator;
+        private readonly IDeploymentEventRecorder _deploymentEventRecorder;
 
-        public MappingProcessor(IDeployAgentProvider deployAgentProvider, IDeploymentFolderSource deploymentFolderSource, IMappingEvaluator mappingEvaluator)
+        public MappingProcessor(IDeployAgentProvider deployAgentProvider, IDeploymentFolderSource deploymentFolderSource, IMappingEvaluator mappingEvaluator, IDeploymentEventRecorder deploymentEventRecorder)
         {
             _deployAgentProvider = deployAgentProvider;
             _deploymentFolderSource = deploymentFolderSource;
             _mappingEvaluator = mappingEvaluator;
+            _deploymentEventRecorder = deploymentEventRecorder;
         }
 
-        public void ProcessMappings(IEnumerable<Mapping> mappings, BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, IPostDeployAction postDeployAction)
+        public void ProcessMappings(IEnumerable<Mapping> mappings, BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, IPostDeployAction postDeployAction, int eventId)
         {
             var applicableMappings = from mapping in mappings
                                      where _mappingEvaluator.DoesMappingApply(mapping, statusChanged, buildDetail.Status.ToString())
@@ -39,6 +42,8 @@ namespace TfsDeployer
                                              "Matching mapping found, executing, Computer:{0}, Script:{1}",
                                              mapping.Computer,
                                              mapping.Script);
+
+                _deploymentEventRecorder.RecordMapped(eventId, mapping.Script);
 
                 ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, null, null);
             }

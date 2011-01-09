@@ -8,7 +8,7 @@ namespace TfsDeployer
 {
     public class TfsBuildStatusTrigger
     {
-        private delegate void ExecuteDeploymentProcessDelegate(BuildStatusChangeEvent ev);
+        private delegate void ExecuteDeploymentProcessDelegate(BuildStatusChangeEvent ev, int eventId);
 
         private readonly ITfsListener _listener;
         private readonly Func<IDeployer> _deployerFactory;
@@ -41,7 +41,7 @@ namespace TfsDeployer
 
             if (_duplicateEventDetector.IsUnique(changeEvent))
             {
-                _deploymentEventRecorder.RecordTriggered(
+                var eventId = _deploymentEventRecorder.RecordTriggered(
                     changeEvent.Id, 
                     changeEvent.TeamProject, 
                     changeEvent.TeamFoundationServerUrl, 
@@ -52,7 +52,7 @@ namespace TfsDeployer
 
                 var deployer = _deployerFactory();
                 ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
-                edpd.BeginInvoke(changeEvent, null, null);
+                edpd.BeginInvoke(changeEvent, eventId, null, null);
             }
             else
             {

@@ -7,6 +7,6 @@ namespace TfsDeployer
 {
     public interface IMappingProcessor
     {
-        void ProcessMappings(IEnumerable<Mapping> mappings, BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, IPostDeployAction postDeployAction);
+        void ProcessMappings(IEnumerable<Mapping> mappings, BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, IPostDeployAction postDeployAction, int eventId);
     }
 }

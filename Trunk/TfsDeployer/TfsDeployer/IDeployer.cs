@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Readify.Useful.TeamFoundation.Common.Notification;
 
 namespace TfsDeployer
 {
     public interface IDeployer
     {
-        void ExecuteDeploymentProcess(Readify.Useful.TeamFoundation.Common.Notification.BuildStatusChangeEvent statusChanged);
+        void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged, int eventId);
     }
 }

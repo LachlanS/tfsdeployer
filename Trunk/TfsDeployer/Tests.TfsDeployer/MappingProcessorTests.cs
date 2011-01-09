@@ -6,6 +6,7 @@ using Rhino.Mocks;
 using TfsDeployer;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer
@@ -14,13 +15,43 @@ namespace Tests.TfsDeployer
     public class MappingProcessorTests
     {
         [TestMethod]
+        public void MappingProcessor_should_record_mapped_event_for_applicable_mappings()
+        {
+            // Arrange
+            const int eventId = 7;
+            var deployAgentProvider = new DeployAgentProvider();
+            var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
+            var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator, deploymentEventRecorder);
+            var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
+
+            var buildDetail = new BuildDetail();
+
+            var mappings = new[] { new Mapping() };
+
+            mappingEvaluator.Stub(o => o.DoesMappingApply(null, null, null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+            // Act
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, eventId);
+
+            // Assert
+            deploymentEventRecorder.AssertWasCalled(o => o.RecordMapped(eventId, mappings[0].Script));
+        }
+
+        [TestMethod]
         public void MappingProcessor_should_call_post_deploy_action_when_script_not_specified()
         {
             // Arrange
             var deployAgentProvider = new DeployAgentProvider();
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
-            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator, deploymentEventRecorder);
             var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
 
             var buildDetail = new BuildDetail();
@@ -34,7 +65,7 @@ namespace Tests.TfsDeployer
             var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
             // Act
-            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, 0);
 
             // Assert
             postDeployAction.AssertWasCalled(o => o.DeploymentFinished(
@@ -55,6 +86,7 @@ namespace Tests.TfsDeployer
 
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
             var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
 
             var buildDetail = new BuildDetail();
@@ -67,10 +99,10 @@ namespace Tests.TfsDeployer
 
             var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
-            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator, deploymentEventRecorder);
 
             // Act
-            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, 0);
             var expire = DateTime.UtcNow.AddSeconds(5);
             while (!deployAgent.HasExecuted && DateTime.UtcNow < expire)
             {
@@ -93,6 +125,7 @@ namespace Tests.TfsDeployer
 
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
             var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
 
             var buildDetail = new BuildDetail();
@@ -105,10 +138,10 @@ namespace Tests.TfsDeployer
 
             var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
 
-            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator);
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator, deploymentEventRecorder);
 
             // Act
-            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+            mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, 0);
             var expire = DateTime.UtcNow.AddSeconds(5);
             while (!deployAgent.HasExecuted && DateTime.UtcNow < expire)
             {

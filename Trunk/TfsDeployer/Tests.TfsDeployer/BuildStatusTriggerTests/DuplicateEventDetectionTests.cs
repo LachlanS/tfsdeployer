@@ -130,7 +130,7 @@ namespace Tests.TfsDeployer.BuildStatusTriggerTests
                 // configure deployer
                 var deployer = MockRepository.GenerateStub<IDeployer>();
 
-                deployer.Stub(o => o.ExecuteDeploymentProcess(null))
+                deployer.Stub(o => o.ExecuteDeploymentProcess(null, 0))
                     .IgnoreArguments()
                     .WhenCalled(mi => _deployerExecuteCount++)
                     .Repeat.Any();

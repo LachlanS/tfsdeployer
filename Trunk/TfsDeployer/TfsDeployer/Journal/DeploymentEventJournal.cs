@@ -6,20 +6,34 @@ namespace TfsDeployer.Journal
 {
     public class DeploymentEventJournal : IDeploymentEventRecorder, IDeploymentEventAccessor
     {
+        private readonly object _eventsLock = new object();
         private readonly IList<DeploymentEvent> _events = new List<DeploymentEvent>();
 
-        public void RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
+        public int RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
         {
-            _events.Add(new DeploymentEvent
-                            {
-                                BuildNumber = buildNumber,
-                                TeamProject = teamProject,
-                                TeamProjectCollectionUri = teamProjectCollectionUri,
-                                Triggered = DateTime.UtcNow,
-                                TriggeredBy = triggeredBy,
-                                OriginalQuality = originalQuality,
-                                NewQuality = newQuality
-                            });
+            var deploymentEvent = new DeploymentEvent
+                                      {
+                                          BuildNumber = buildNumber,
+                                          TeamProject = teamProject,
+                                          TeamProjectCollectionUri = teamProjectCollectionUri,
+                                          Triggered = DateTime.UtcNow,
+                                          TriggeredBy = triggeredBy,
+                                          OriginalQuality = originalQuality,
+                                          NewQuality = newQuality
+                                      };
+
+            lock (_eventsLock)
+            {
+                _events.Add(deploymentEvent);
+                return _events.Count - 1;
+            }
+
+        }
+
+        public int RecordMapped(int eventId, string script)
+        {
+            // noop
+            return 0;
         }
 
         public IEnumerable<DeploymentEvent> Events { get { return _events; } }

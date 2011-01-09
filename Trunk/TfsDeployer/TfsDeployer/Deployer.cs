@@ -51,7 +51,7 @@ namespace TfsDeployer
             _postDeployActionFactory = postDeployActionFactory;
         }
 
-        public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged)
+        public void ExecuteDeploymentProcess(BuildStatusChangeEvent statusChanged, int eventId)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace TfsDeployer
                 
                 var mappings = _configurationReader.ReadMappings(buildDetail);
 
-                _mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction);
+                _mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, eventId);
             }
             catch (Exception ex)
             {
