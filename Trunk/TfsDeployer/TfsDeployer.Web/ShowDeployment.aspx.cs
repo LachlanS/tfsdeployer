@@ -2,7 +2,7 @@
 
 namespace TfsDeployer.Web
 {
-    public partial class DeploymentOutput : Page
+    public partial class ShowDeployment : Page
     {
     }
 }

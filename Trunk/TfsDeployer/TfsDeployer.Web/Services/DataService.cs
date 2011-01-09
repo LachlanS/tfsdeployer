@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ServiceModel;
 using TfsDeployer.Data;
 
 namespace TfsDeployer.Web.Services
@@ -31,11 +30,7 @@ namespace TfsDeployer.Web.Services
 
         private IDeployerService GetDeployerService()
         {
-            var endpointUri = _configurationService.GetDeployerInstanceAddress()[0];
-            var binding = new WSHttpBinding { Security = { Mode = SecurityMode.None } };
-            var endpointAddress = new EndpointAddress(endpointUri);
-            return ChannelFactory<IDeployerService>.CreateChannel(binding, endpointAddress);
+            return _configurationService.CreateDeployerService(0);
         }
-
     }
 }

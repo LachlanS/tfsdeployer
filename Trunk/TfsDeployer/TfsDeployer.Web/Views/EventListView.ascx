@@ -41,7 +41,7 @@
                                     }
                                     if (queuedDeployment.StartedUtc.HasValue)
                                     {
-                                        %>&gt;&gt; <a href="DeploymentOutput.aspx?deploymentid=<%= queuedDeployment.Id %>">View output</a><br /><%
+                                        %>&gt;&gt; <a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=queuedDeployment.Id") %>">View details</a><br /><%
                                     }
                                 }
                             }

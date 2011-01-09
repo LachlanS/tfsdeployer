@@ -8,15 +8,15 @@ namespace TfsDeployer.Web.Presenters
 {
     public class DeploymentOutputPresenter : Presenter<IView<DeploymentOutputModel>>
     {
-        private readonly IDataService _dataService;
+        private readonly IConfigurationService _configurationService;
 
         public DeploymentOutputPresenter(IView<DeploymentOutputModel> view) :
-            this(view, new DataService(new ConfigurationService()))
+            this(view, new ConfigurationService())
         { }
         
-        public DeploymentOutputPresenter(IView<DeploymentOutputModel> view, IDataService dataService) : base(view)
+        public DeploymentOutputPresenter(IView<DeploymentOutputModel> view, IConfigurationService configurationService) : base(view)
         {
-            _dataService = dataService;
+            _configurationService = configurationService;
             view.Load += ViewLoad;
         }
 
@@ -34,7 +34,7 @@ namespace TfsDeployer.Web.Presenters
                 return;
             }
 
-            var output = _dataService.GetDeploymentOutput(deploymentId);
+            var output = _configurationService.CreateDeployerService(0).GetDeploymentOutput(deploymentId);
             View.Model.HtmlEncodedOutput = HttpUtility.HtmlEncode(output);
         }
 

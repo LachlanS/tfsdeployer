@@ -57,8 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
-    <Content Include="DeploymentOutput.aspx" />
+    <Content Include="Scripts\jquery-1.4.4.min.js" />
+    <Content Include="Scripts\jquery.query-2.1.7.js" />
+    <Content Include="ShowDeployment.aspx" />
+    <Content Include="Partials\DeploymentOutput.aspx" />
     <Content Include="Views\DeploymentOutputView.ascx" />
+    <Content Include="Views\DeploymentOutputView.js" />
     <Content Include="Views\EventListView.ascx" />
     <Content Include="Views\UptimeView.ascx" />
     <Content Include="Web.config" />
@@ -67,16 +71,24 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="DeploymentOutput.aspx.cs">
-      <DependentUpon>DeploymentOutput.aspx</DependentUpon>
+    <Compile Include="Services\DummyDeployerService.cs" />
+    <Compile Include="ShowDeployment.aspx.cs">
+      <DependentUpon>ShowDeployment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeploymentOutput.aspx.designer.cs">
-      <DependentUpon>DeploymentOutput.aspx</DependentUpon>
+    <Compile Include="ShowDeployment.aspx.designer.cs">
+      <DependentUpon>ShowDeployment.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\DeploymentOutputModel.cs" />
     <Compile Include="Models\EventListModel.cs" />
     <Compile Include="Models\UptimeModel.cs" />
+    <Compile Include="Partials\DeploymentOutput.aspx.cs">
+      <DependentUpon>DeploymentOutput.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Partials\DeploymentOutput.aspx.designer.cs">
+      <DependentUpon>DeploymentOutput.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Presenters\DeploymentOutputPresenter.cs" />
     <Compile Include="Presenters\EventListPresenter.cs" />
     <Compile Include="Presenters\UptimePresenter.cs" />

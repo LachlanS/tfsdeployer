@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TfsDeployer.Web {
+namespace TfsDeployer.Web.Partials {
     
     
     public partial class DeploymentOutput {
