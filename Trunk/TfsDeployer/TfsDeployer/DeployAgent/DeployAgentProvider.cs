@@ -1,9 +1,17 @@
-﻿using TfsDeployer.Configuration;
+﻿using Autofac;
+using TfsDeployer.Configuration;
 
 namespace TfsDeployer.DeployAgent
 {
     public class DeployAgentProvider : IDeployAgentProvider
     {
+        private readonly IComponentContext _componentContext;
+
+        public DeployAgentProvider(IComponentContext componentContext)
+        {
+            _componentContext = componentContext;
+        }
+
         public IDeployAgent GetDeployAgent(Mapping mapping)
         {
             if (string.IsNullOrEmpty(mapping.Script))
@@ -18,7 +26,7 @@ namespace TfsDeployer.DeployAgent
             }
             else
             {
-                agent = new LocalPowerShellDeployAgent();
+                agent = _componentContext.Resolve<LocalPowerShellDeployAgent>();
             }
             return agent;
         }

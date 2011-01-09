@@ -50,6 +50,7 @@ namespace TfsDeployer
 
             _containerBuilder.RegisterType<DuplicateEventDetector>().As<IDuplicateEventDetector>();
 
+            _containerBuilder.RegisterType<LocalPowerShellDeployAgent>();
             _containerBuilder.RegisterType<DeployAgentProvider>().As<IDeployAgentProvider>();
             _containerBuilder.RegisterType<EmailAlerter>().As<IAlert>();
             _containerBuilder.RegisterType<MappingEvaluator>().As<IMappingEvaluator>();

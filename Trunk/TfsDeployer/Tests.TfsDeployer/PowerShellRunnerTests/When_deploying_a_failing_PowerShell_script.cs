@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rhino.Mocks;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.PowerShellRunnerTests
@@ -13,6 +15,8 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
     {
         private static DeployAgentResult DeployFailingPowerShellScript()
         {
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             using (var scriptFile = new TemporaryFile(".ps1", PowerShellScripts.FailingPowerShellScript))
             {
                 var testDeployData = new DeployAgentData
@@ -25,7 +29,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var psAgent = new LocalPowerShellDeployAgent();
+                var psAgent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
                 return psAgent.Deploy(testDeployData);
             }
         }

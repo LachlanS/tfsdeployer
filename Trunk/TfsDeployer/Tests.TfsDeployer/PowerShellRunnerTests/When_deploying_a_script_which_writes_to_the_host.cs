@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rhino.Mocks;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.PowerShellRunnerTests
@@ -12,6 +13,8 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         [TestMethod]
         public void Should_include_written_text_in_output()
         {
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+            
             using (var scriptFile = TemporaryFile.FromResource(".ps1", "Tests.TfsDeployer.PowerShellRunnerTests.WriteHostScript.ps1"))
             {
                 var testDeployData = new DeployAgentData
@@ -24,7 +27,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var psAgent = new LocalPowerShellDeployAgent();
+                var psAgent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
                 var result = psAgent.Deploy(testDeployData);
 
                 Assert.AreEqual("Hello world\n", result.Output);

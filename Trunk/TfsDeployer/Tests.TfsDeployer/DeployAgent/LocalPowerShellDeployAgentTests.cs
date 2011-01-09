@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
+using Rhino.Mocks;
 using Tests.TfsDeployer.Resources;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.DeployAgent
@@ -17,6 +19,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_unload_assemblies_loaded_by_scripts()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             using (var scriptFile = new TemporaryFile(".ps1", Resource.AsString("LoadSystemWebAssemblyScript.ps1")))
             {
@@ -30,7 +34,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -48,6 +52,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_marshal_build_detail_across_AppDomains()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             using (var scriptFile = new TemporaryFile(".ps1", "$TfsDeployerBuildDetail | Format-List"))
             {
@@ -65,7 +71,7 @@ namespace Tests.TfsDeployer.DeployAgent
 
                 var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail, buildStatusChangeEvent);
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -79,6 +85,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_return_output_prior_to_a_script_error()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             using (var scriptFile = new TemporaryFile(".ps1", "'Output this first'\nthrow 'fail'"))
             {
@@ -92,7 +100,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -108,6 +116,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_expose_build_process_server_path_to_scripts()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             using (var scriptFile = new TemporaryFile(".ps1", @"$TfsDeployerBuildDetail.BuildDefinition.Process.ServerPath"))
             {
@@ -121,7 +131,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail { BuildDefinition = { Process = { ServerPath = "$/foo.xaml"}}}
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -137,6 +147,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_support_spaces_in_script_path()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             const string subDirectory = "white space";
             using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
@@ -151,7 +163,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -168,6 +180,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_support_apostrophes_in_script_path()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             const string subDirectory = "isn't";
             using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
@@ -182,7 +196,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -199,6 +213,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_support_dollars_in_script_path()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             const string subDirectory = "not$home$null";
             using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
@@ -213,7 +229,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -230,6 +246,8 @@ namespace Tests.TfsDeployer.DeployAgent
         public void LocalPowerShellDeployAgent_should_support_backticks_in_script_path()
         {
             // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
             DeployAgentResult result;
             const string subDirectory = "back`tick";
             using (var scriptFile = new TemporaryFile(".ps1", @"'Script path is ' + $MyInvocation.MyCommand.Path", subDirectory))
@@ -244,7 +262,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new LocalPowerShellDeployAgent();
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
 
                 // Act
                 result = agent.Deploy(testDeployData);

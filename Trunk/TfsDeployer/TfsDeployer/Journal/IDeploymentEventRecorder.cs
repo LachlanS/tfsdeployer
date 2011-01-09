@@ -1,3 +1,5 @@
+using System;
+
 namespace TfsDeployer.Journal
 {
     public interface IDeploymentEventRecorder
@@ -6,5 +8,6 @@ namespace TfsDeployer.Journal
         int RecordQueued(int eventId, string script, string queue);
         void RecordStarted(int deploymentId);
         void RecordFinished(int deploymentId, bool hasErrors, string finalOutput);
+        void SetDeploymentOutputDelegate(int deploymentId, Func<string> outputDelegate);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TfsDeployer.DeployAgent;
 using TfsDeployer.Journal;
 
 namespace Tests.TfsDeployer.Journal
@@ -140,6 +141,27 @@ namespace Tests.TfsDeployer.Journal
 
             // Act
             journal.RecordFinished(deploymentId, true, expectedOutput);
+            var actualOutput = journal.GetDeploymentOutput(deploymentId);
+
+            // Assert
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
+        [TestMethod]
+        public void DeploymentEventJournal_should_retrieve_output_from_output_delegate_on_request()
+        {
+            // Arrange 
+            const string expectedOutput = "Updated output";
+            var journal = new DeploymentEventJournal();
+            var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
+            var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
+
+            var outputContainer = new DeployAgentResult {Output = "Initial output"};
+            journal.SetDeploymentOutputDelegate(deploymentId, () => outputContainer.Output);
+            journal.GetDeploymentOutput(deploymentId); // get initial output and discard
+
+            // Act
+            outputContainer.Output = expectedOutput; // update output
             var actualOutput = journal.GetDeploymentOutput(deploymentId);
 
             // Assert

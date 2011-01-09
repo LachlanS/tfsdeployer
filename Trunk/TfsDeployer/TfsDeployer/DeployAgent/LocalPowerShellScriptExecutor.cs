@@ -8,15 +8,17 @@ namespace TfsDeployer.DeployAgent
 {
     public class LocalPowerShellScriptExecutor : MarshalByRefObject
     {
+        private DeploymentHostUI _ui;
+
         public DeployAgentResult Execute(string commandText, IDictionary<string, object> variables)
         {
             var hasErrors = true;
             string output;
 
-            var ui = new DeploymentHostUI();
+            _ui = new DeploymentHostUI();
             try
             {
-                var host = new DeploymentHost(ui);
+                var host = new DeploymentHost(_ui);
                 using (var space = RunspaceFactory.CreateRunspace(host))
                 {
                     space.Open();
@@ -38,8 +40,8 @@ namespace TfsDeployer.DeployAgent
                         pipeline.Commands.Add("Out-Default");
 
                         pipeline.Invoke();
-                        hasErrors = ui.HasErrors;
-                        output = ui.Output;
+                        hasErrors = _ui.HasErrors;
+                        output = _ui.Output;
                     }
                 }
             }
@@ -49,14 +51,25 @@ namespace TfsDeployer.DeployAgent
                 var sb = new StringBuilder();
                 sb.AppendLine(record.Exception.ToString());
                 sb.AppendLine(record.InvocationInfo.PositionMessage);
-                output = string.Format("{0}\n{1}", ui.Output, sb);
+                output = string.Format("{0}\n{1}", _ui.Output, sb);
             }
             catch (Exception ex)
             {
-                output = string.Format("{0}\n{1}", ui.Output, ex);
+                output = string.Format("{0}\n{1}", _ui.Output, ex);
             }
 
             return new DeployAgentResult { HasErrors = hasErrors, Output = output };
+        }
+
+        public string LiveOutput { 
+            get
+            {
+                if (_ui == null || _ui.Output == null)
+                {
+                    return string.Empty;
+                }
+                return _ui.Output;
+            }
         }
     }
 }

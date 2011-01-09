@@ -79,6 +79,7 @@ namespace TfsDeployer
                         var deployAgentDataFactory = new DeployAgentDataFactory();
                         var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
                                                                        mapping, buildDetail, statusChanged);
+                        deployData.DeploymentId = deploymentId;
 
                         _deploymentFolderSource.DownloadDeploymentFolder(deployData.TfsBuildDetail, workingDirectory.DirectoryInfo.FullName);
                         deployResult = deployAgent.Deploy(deployData);

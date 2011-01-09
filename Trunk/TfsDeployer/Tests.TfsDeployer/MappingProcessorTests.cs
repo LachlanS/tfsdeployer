@@ -95,6 +95,53 @@ namespace Tests.TfsDeployer
         }
 
         [TestMethod]
+        public void MappingProcessor_should_pass_deployment_id_to_deploy_agent_via_deploy_agent_data()
+        {
+            // Arrange
+            const int deploymentId = 23;
+
+            DeployAgentData deployData = null;
+            var deployAgent = MockRepository.GenerateStub<IDeployAgent>();
+            deployAgent.Stub(o => o.Deploy(null))
+                .IgnoreArguments()
+                .Return(new DeployAgentResult())
+                .WhenCalled(o => deployData = (DeployAgentData) o.Arguments[0]);
+
+            var deployAgentProvider = MockRepository.GenerateStub<IDeployAgentProvider>();
+            deployAgentProvider.Stub(o => o.GetDeployAgent(null))
+                .IgnoreArguments()
+                .Return(deployAgent);
+
+            var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
+            var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
+
+            var mapping = new Mapping();
+
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+            deploymentEventRecorder.Stub(o => o.RecordQueued(0, null, null))
+                .IgnoreArguments()
+                .Return(deploymentId);
+
+            var mappingProcessor = new MappingProcessor(deployAgentProvider, deploymentFolderSource, mappingEvaluator, deploymentEventRecorder);
+            var postDeployAction = MockRepository.GenerateStub<IPostDeployAction>();
+
+            var buildDetail = new BuildDetail();
+
+            mappingEvaluator.Stub(o => o.DoesMappingApply(null, null, null))
+                .IgnoreArguments()
+                .Return(true);
+
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+            // Act
+            mappingProcessor.ProcessMappings(new[] { mapping }, statusChanged, buildDetail, postDeployAction, 0);
+            Thread.Sleep(200);
+
+            // Assert
+            Assert.AreEqual(deploymentId, deployData.DeploymentId);
+        }
+
+        [TestMethod]
         public void MappingProcessor_should_record_mapped_event_for_applicable_mappings()
         {
             // Arrange
@@ -127,7 +174,7 @@ namespace Tests.TfsDeployer
         public void MappingProcessor_should_call_post_deploy_action_when_script_not_specified()
         {
             // Arrange
-            var deployAgentProvider = new DeployAgentProvider();
+            var deployAgentProvider = MockRepository.GenerateStub<IDeployAgentProvider>();
             var deploymentFolderSource = MockRepository.GenerateStub<IDeploymentFolderSource>();
             var mappingEvaluator = MockRepository.GenerateStub<IMappingEvaluator>();
             var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();

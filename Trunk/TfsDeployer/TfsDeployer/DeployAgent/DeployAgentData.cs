@@ -14,5 +14,6 @@ namespace TfsDeployer.DeployAgent
         public TimeSpan Timeout { get; set; }
         public ICollection<DeployScriptParameter> DeployScriptParameters { get; set; }
         public BuildDetail TfsBuildDetail { get; set; }
+        public int DeploymentId { get; set; }
     }
 }

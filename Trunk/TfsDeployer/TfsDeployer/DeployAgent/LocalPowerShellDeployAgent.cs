@@ -22,16 +22,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Policy;
+using TfsDeployer.Journal;
 
 namespace TfsDeployer.DeployAgent
 {
     public class LocalPowerShellDeployAgent : IDeployAgent
     {
+        private readonly IDeploymentEventRecorder _deploymentEventRecorder;
+
+        public LocalPowerShellDeployAgent(IDeploymentEventRecorder deploymentEventRecorder)
+        {
+            _deploymentEventRecorder = deploymentEventRecorder;
+        }
+
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var variables = CreateVariables(deployAgentData);
             var scriptPath = Path.Combine(deployAgentData.DeployScriptRoot, deployAgentData.DeployScriptFile);
-            var result = ExecuteCommand(scriptPath, variables);
+            var result = ExecuteCommand(scriptPath, variables, deployAgentData.DeploymentId);
 
             return result;
         }
@@ -61,7 +69,7 @@ namespace TfsDeployer.DeployAgent
             return dict;
         }
 
-        private DeployAgentResult ExecuteCommand(string scriptPath, IDictionary<string, object> variables)
+        private DeployAgentResult ExecuteCommand(string scriptPath, IDictionary<string, object> variables, int deploymentId)
         {
             AppDomain scriptDomain = null;
             try
@@ -74,6 +82,8 @@ namespace TfsDeployer.DeployAgent
                     typeof(LocalPowerShellScriptExecutor).Assembly.FullName,
                     typeof(LocalPowerShellScriptExecutor).FullName);
 
+                _deploymentEventRecorder.SetDeploymentOutputDelegate(deploymentId, () => proxy.LiveOutput);
+                
                 var commandText = string.Format("& '{0}'", scriptPath.Replace("'", "''"));
                 var result = proxy.Execute(commandText, variables);
 

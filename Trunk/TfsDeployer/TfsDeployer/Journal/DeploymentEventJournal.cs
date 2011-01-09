@@ -10,7 +10,7 @@ namespace TfsDeployer.Journal
 
         private readonly object _eventsLock = new object();
         private readonly IList<DeploymentEvent> _events = new List<DeploymentEvent>();
-        private readonly IDictionary<int, string> _outputs = new Dictionary<int, string>();
+        private readonly IDictionary<int, Func<string>> _outputs = new Dictionary<int, Func<string>>();
 
         public int RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
         {
@@ -67,11 +67,23 @@ namespace TfsDeployer.Journal
 
             if (_outputs.ContainsKey(deploymentId))
             {
-                _outputs[deploymentId] = finalOutput;
+                _outputs[deploymentId] = () => finalOutput;
             }
             else
             {
-                _outputs.Add(deploymentId, finalOutput);
+                _outputs.Add(deploymentId, () => finalOutput);
+            }
+        }
+
+        public void SetDeploymentOutputDelegate(int deploymentId, Func<string> outputDelegate)
+        {
+            if (_outputs.ContainsKey(deploymentId))
+            {
+                _outputs[deploymentId] = outputDelegate;
+            }
+            else
+            {
+                _outputs.Add(deploymentId, outputDelegate);
             }
         }
 
@@ -88,7 +100,7 @@ namespace TfsDeployer.Journal
         {
             if (_outputs.ContainsKey(deploymentId))
             {
-                return _outputs[deploymentId];
+                return _outputs[deploymentId]();
             }
             return string.Empty;
         }
