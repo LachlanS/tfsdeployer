@@ -59,6 +59,56 @@ namespace Tests.TfsDeployer.Journal
             Assert.IsTrue(DateTime.UtcNow.Subtract(mapped.QueuedUtc).TotalSeconds < 1, "QueuedUtc is not recent.");
         }
 
+        [TestMethod]
+        public void DeploymentEventJournal_should_provide_a_unique_id_for_each_queued_deployment_recorded()
+        {
+            // Arrange 
+            var journal = new DeploymentEventJournal();
+            var eventId = journal.RecordTriggered("Foobar_123.1", null, null, null, null, null);
+
+            // Act
+            var firstDeploymentId = journal.RecordQueued(eventId, "Foo.ps1", "A");
+            var secondDeploymentId = journal.RecordQueued(eventId, "Bar.ps1", "B");
+
+            // Assert
+            Assert.AreNotEqual(firstDeploymentId, secondDeploymentId);
+        }
+
+        [TestMethod]
+        public void DeploymentEventJournal_should_record_start_time_against_queued_deployment()
+        {
+            // Arrange 
+            var journal = new DeploymentEventJournal();
+            var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
+            var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
+            var deploymentEvent = journal.Events.First();
+
+            // Act
+            journal.RecordStarted(deploymentId);
+            var queuedDeployment = deploymentEvent.QueuedDeployments[0];
+
+            // Assert
+            Assert.IsNotNull(queuedDeployment.StartedUtc, "StartedUtc is null.");
+            Assert.IsTrue(DateTime.UtcNow.Subtract(queuedDeployment.StartedUtc.Value).TotalSeconds < 1, "StartedUtc is not recent.");
+        }
+
+        [TestMethod]
+        public void DeploymentEventJournal_should_record_finished_time_and_errors_against_queued_deployment()
+        {
+            // Arrange 
+            var journal = new DeploymentEventJournal();
+            var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
+            var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
+            var deploymentEvent = journal.Events.First();
+
+            // Act
+            journal.RecordFinished(deploymentId, true);
+            var queuedDeployment = deploymentEvent.QueuedDeployments[0];
+
+            // Assert
+            Assert.IsTrue(queuedDeployment.HasErrors, "HasErrors is false.");
+            Assert.IsNotNull(queuedDeployment.FinishedUtc, "FinishedUtc is null");
+            Assert.IsTrue(DateTime.UtcNow.Subtract(queuedDeployment.FinishedUtc.Value).TotalSeconds < 1, "FinishedUtc is not recent.");
+        }
     }
 }
-

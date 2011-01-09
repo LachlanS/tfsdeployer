@@ -6,6 +6,8 @@ namespace TfsDeployer.Journal
 {
     public class DeploymentEventJournal : IDeploymentEventRecorder, IDeploymentEventAccessor
     {
+        private const int EventIdBitShift = 5;
+
         private readonly object _eventsLock = new object();
         private readonly IList<DeploymentEvent> _events = new List<DeploymentEvent>();
 
@@ -44,8 +46,29 @@ namespace TfsDeployer.Journal
             {
                 var queuedDeployments = new List<QueuedDeployment>(_events[eventId].QueuedDeployments) {queuedDeployment};
                 _events[eventId].QueuedDeployments = queuedDeployments.ToArray();
+                return (eventId << EventIdBitShift) + _events[eventId].QueuedDeployments.Length - 1;
             }
-            return 0;
+        }
+
+        public void RecordStarted(int deploymentId)
+        {
+            var queuedDeployment = GetQueuedDeployment(deploymentId);
+            queuedDeployment.StartedUtc = DateTime.UtcNow;
+        }
+
+        public void RecordFinished(int deploymentId, bool hasErrors)
+        {
+            var queuedDeployment = GetQueuedDeployment(deploymentId);
+            queuedDeployment.HasErrors = hasErrors;
+            queuedDeployment.FinishedUtc = DateTime.UtcNow;
+
+        }
+
+        private QueuedDeployment GetQueuedDeployment(int deploymentId)
+        {
+            var eventId = deploymentId >> EventIdBitShift;
+            var deploymentIndex = eventId & (2 ^ EventIdBitShift - 1);
+            return _events[eventId].QueuedDeployments[deploymentIndex];
         }
 
         public IEnumerable<DeploymentEvent> Events { get { return _events; } }

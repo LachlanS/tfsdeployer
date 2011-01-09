@@ -15,7 +15,7 @@ namespace TfsDeployer
         private static readonly object LocksLock = new object();
         private static readonly IDictionary Locks = new Hashtable();
 
-        private delegate void ProcessMappingDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction);
+        private delegate void ProcessMappingDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction, int deploymentId);
 
         private readonly IDeployAgentProvider _deployAgentProvider;
         private readonly IDeploymentFolderSource _deploymentFolderSource;
@@ -43,9 +43,9 @@ namespace TfsDeployer
                                              mapping.Computer,
                                              mapping.Script);
 
-                _deploymentEventRecorder.RecordQueued(eventId, mapping.Script, mapping.Queue);
+                var deploymentId = _deploymentEventRecorder.RecordQueued(eventId, mapping.Script, mapping.Queue);
 
-                ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, null, null);
+                ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, deploymentId, null, null);
             }
         }
 
@@ -61,10 +61,12 @@ namespace TfsDeployer
             }
         }
         
-        private void ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction)
+        private void ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction, int deploymentId)
         {
             lock(GetLockObject(mapping))
             {
+                _deploymentEventRecorder.RecordStarted(deploymentId);
+                
                 var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
 
                 // default to "happy; did nothing" if there's no deployment agent.
@@ -84,6 +86,8 @@ namespace TfsDeployer
                 }
 
                 postDeployAction.DeploymentFinished(mapping, deployResult);
+
+                _deploymentEventRecorder.RecordFinished(deploymentId, deployResult.HasErrors);
             }
         }
 
