@@ -28,7 +28,7 @@ namespace Tests.TfsDeployer
 
             var buildDetail = new BuildDetail();
 
-            var mappings = new[] { new Mapping() };
+            var mappings = new[] { new Mapping { Queue = "AQueue"} };
 
             mappingEvaluator.Stub(o => o.DoesMappingApply(null, null, null))
                 .IgnoreArguments()
@@ -40,7 +40,7 @@ namespace Tests.TfsDeployer
             mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, eventId);
 
             // Assert
-            deploymentEventRecorder.AssertWasCalled(o => o.RecordQueued(eventId, mappings[0].Script));
+            deploymentEventRecorder.AssertWasCalled(o => o.RecordQueued(eventId, mappings[0].Script, mappings[0].Queue));
         }
 
         [TestMethod]

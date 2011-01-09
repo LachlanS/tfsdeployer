@@ -6,6 +6,7 @@ namespace TfsDeployer.Data
     public class QueuedDeployment
     {
         public string Script { get; set; }
+        public string Queue { get; set; }
         public DateTime QueuedUtc { get; set; }
         public DateTime StartedUtc { get; set; }
         public DateTime? FinishedUtc { get; set; }

@@ -36,7 +36,7 @@
                 {
                     foreach( var queuedDeployment in recentEvent.QueuedDeployments)
                     {
-                        %>Queued <%= queuedDeployment.Script %> at <%= queuedDeployment.QueuedUtc.ToString() %><br /><%
+                        %>Queued script <%= queuedDeployment.Script %> in queue <%= queuedDeployment.Queue %> at <%= queuedDeployment.QueuedUtc.ToString() %><br /><%
                     }
                 }
             %></td>

@@ -42,7 +42,7 @@ namespace Tests.TfsDeployer.Journal
         }
 
         [TestMethod]
-        public void DeploymentEventJournal_should_record_queued_script_and_time_against_triggered_event()
+        public void DeploymentEventJournal_should_record_queued_script_and_queue_and_time_against_triggered_event()
         {
             // Arrange 
             var journal = new DeploymentEventJournal();
@@ -50,11 +50,12 @@ namespace Tests.TfsDeployer.Journal
             var deploymentEvent = journal.Events.First();
 
             // Act
-            journal.RecordQueued(eventId, "Foo.ps1");
+            journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
             var mapped = deploymentEvent.QueuedDeployments[0];
 
             // Assert
             Assert.AreEqual("Foo.ps1", mapped.Script);
+            Assert.AreEqual("QueueCumber", mapped.Queue);
             Assert.IsTrue(DateTime.UtcNow.Subtract(mapped.QueuedUtc).TotalSeconds < 1, "QueuedUtc is not recent.");
         }
 

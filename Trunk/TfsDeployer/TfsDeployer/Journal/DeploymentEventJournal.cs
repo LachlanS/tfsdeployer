@@ -31,11 +31,12 @@ namespace TfsDeployer.Journal
 
         }
 
-        public int RecordQueued(int eventId, string script)
+        public int RecordQueued(int eventId, string script, string queue)
         {
             var queuedDeployment = new QueuedDeployment
                                        {
                                            Script = script,
+                                           Queue = queue,
                                            QueuedUtc = DateTime.UtcNow
                                        };
             

@@ -43,7 +43,7 @@ namespace TfsDeployer
                                              mapping.Computer,
                                              mapping.Script);
 
-                _deploymentEventRecorder.RecordQueued(eventId, mapping.Script);
+                _deploymentEventRecorder.RecordQueued(eventId, mapping.Script, mapping.Queue);
 
                 ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, null, null);
             }
