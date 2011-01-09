@@ -41,7 +41,14 @@ namespace TfsDeployer
 
             if (_duplicateEventDetector.IsUnique(changeEvent))
             {
-                _deploymentEventRecorder.RecordTriggered(changeEvent.Id, changeEvent.TeamProject, null);
+                _deploymentEventRecorder.RecordTriggered(
+                    changeEvent.Id, 
+                    changeEvent.TeamProject, 
+                    changeEvent.TeamFoundationServerUrl, 
+                    changeEvent.ChangedBy,
+                    changeEvent.StatusChange.OldValue, 
+                    changeEvent.StatusChange.NewValue
+                    );
 
                 var deployer = _deployerFactory();
                 ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;

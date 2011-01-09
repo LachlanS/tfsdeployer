@@ -8,14 +8,17 @@ namespace TfsDeployer.Journal
     {
         private readonly IList<DeploymentEvent> _events = new List<DeploymentEvent>();
 
-        public void RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri)
+        public void RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
         {
             _events.Add(new DeploymentEvent
                             {
                                 BuildNumber = buildNumber,
                                 TeamProject = teamProject,
                                 TeamProjectCollectionUri = teamProjectCollectionUri,
-                                Triggered = DateTime.UtcNow
+                                Triggered = DateTime.UtcNow,
+                                TriggeredBy = triggeredBy,
+                                OriginalQuality = originalQuality,
+                                NewQuality = newQuality
                             });
         }
 
