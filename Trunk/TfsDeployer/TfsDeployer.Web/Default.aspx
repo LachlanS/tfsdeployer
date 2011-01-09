@@ -3,6 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
+    <style type="text/css">
+        td { border: 1px solid; }
+    </style>
 </head>
 <body>
     <p>TFS Deployer has been running for <%= UptimeText %></p>
@@ -14,6 +17,7 @@
     <td>New Quality</td>
     <td>Triggered At</td>
     <td>Triggered By</td>
+    <td>Queued Deployments</td>
     </tr>
     </thead>
     <tbody>
@@ -25,8 +29,17 @@
             <td><%= recentEvent.BuildNumber %></td>
             <td><%= recentEvent.OriginalQuality %></td>
             <td><%= recentEvent.NewQuality %></td>
-            <td><%= recentEvent.Triggered.ToString() %></td>
+            <td><%= recentEvent.TriggeredUtc.ToString() %></td>
             <td><%= recentEvent.TriggeredBy %></td>
+            <td><%
+                if (recentEvent.QueuedDeployments != null && recentEvent.QueuedDeployments.Length > 0)
+                {
+                    foreach( var queuedDeployment in recentEvent.QueuedDeployments)
+                    {
+                        %>Queued <%= queuedDeployment.Script %> at <%= queuedDeployment.QueuedUtc.ToString() %><br /><%
+                    }
+                }
+            %></td>
         </tr>
         <%
     }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer.Journal;
 
@@ -41,7 +42,7 @@ namespace Tests.TfsDeployer.Journal
         }
 
         [TestMethod]
-        public void DeploymentEventJournal_should_record_mapped_script_againt_triggered_event()
+        public void DeploymentEventJournal_should_record_queued_script_and_time_against_triggered_event()
         {
             // Arrange 
             var journal = new DeploymentEventJournal();
@@ -49,11 +50,12 @@ namespace Tests.TfsDeployer.Journal
             var deploymentEvent = journal.Events.First();
 
             // Act
-            journal.RecordMapped(eventId, "Foo.ps1");
+            journal.RecordQueued(eventId, "Foo.ps1");
+            var mapped = deploymentEvent.QueuedDeployments[0];
 
             // Assert
-            // no exception
-            // TODO rewrite test when mapped event retrieval design is done.
+            Assert.AreEqual("Foo.ps1", mapped.Script);
+            Assert.IsTrue(DateTime.UtcNow.Subtract(mapped.QueuedUtc).TotalSeconds < 1, "QueuedUtc is not recent.");
         }
 
     }

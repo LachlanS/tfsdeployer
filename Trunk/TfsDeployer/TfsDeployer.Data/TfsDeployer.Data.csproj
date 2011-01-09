@@ -49,6 +49,7 @@
     </Compile>
     <Compile Include="DeploymentEvent.cs" />
     <Compile Include="IDeployerService.cs" />
+    <Compile Include="QueuedDeployment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

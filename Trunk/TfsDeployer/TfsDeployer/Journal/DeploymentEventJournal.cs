@@ -16,10 +16,11 @@ namespace TfsDeployer.Journal
                                           BuildNumber = buildNumber,
                                           TeamProject = teamProject,
                                           TeamProjectCollectionUri = teamProjectCollectionUri,
-                                          Triggered = DateTime.UtcNow,
+                                          TriggeredUtc = DateTime.UtcNow,
                                           TriggeredBy = triggeredBy,
                                           OriginalQuality = originalQuality,
-                                          NewQuality = newQuality
+                                          NewQuality = newQuality,
+                                          QueuedDeployments = new QueuedDeployment[0]
                                       };
 
             lock (_eventsLock)
@@ -30,9 +31,19 @@ namespace TfsDeployer.Journal
 
         }
 
-        public int RecordMapped(int eventId, string script)
+        public int RecordQueued(int eventId, string script)
         {
-            // noop
+            var queuedDeployment = new QueuedDeployment
+                                       {
+                                           Script = script,
+                                           QueuedUtc = DateTime.UtcNow
+                                       };
+            
+            lock (_eventsLock)
+            {
+                var queuedDeployments = new List<QueuedDeployment>(_events[eventId].QueuedDeployments) {queuedDeployment};
+                _events[eventId].QueuedDeployments = queuedDeployments.ToArray();
+            }
             return 0;
         }
 

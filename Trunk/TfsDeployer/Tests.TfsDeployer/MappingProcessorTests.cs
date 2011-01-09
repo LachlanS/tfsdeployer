@@ -40,7 +40,7 @@ namespace Tests.TfsDeployer
             mappingProcessor.ProcessMappings(mappings, statusChanged, buildDetail, postDeployAction, eventId);
 
             // Assert
-            deploymentEventRecorder.AssertWasCalled(o => o.RecordMapped(eventId, mappings[0].Script));
+            deploymentEventRecorder.AssertWasCalled(o => o.RecordQueued(eventId, mappings[0].Script));
         }
 
         [TestMethod]
