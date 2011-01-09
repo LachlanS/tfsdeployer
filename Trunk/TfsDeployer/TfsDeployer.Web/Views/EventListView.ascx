@@ -27,6 +27,18 @@
                                 foreach( var queuedDeployment in recentEvent.QueuedDeployments)
                                 {
                                      %>Queued script <%= queuedDeployment.Script %> in queue <%= queuedDeployment.Queue %> at <%= queuedDeployment.QueuedUtc.ToString() %><br /><%
+                                    if (queuedDeployment.StartedUtc.HasValue)
+                                    {
+                                        %>&gt; Started at <%= queuedDeployment.StartedUtc.Value.ToString() %><br /><%
+                                    }
+                                    if (queuedDeployment.FinishedUtc.HasValue)
+                                    {
+                                        %>&gt; Finished at <%= queuedDeployment.FinishedUtc.Value.ToString() %><br /><%
+                                    }
+                                    if (queuedDeployment.HasErrors)
+                                    {
+                                        %>&gt;&gt; Script returned errors! %><br /><%
+                                    }
                                 }
                             }
                         %></td>
