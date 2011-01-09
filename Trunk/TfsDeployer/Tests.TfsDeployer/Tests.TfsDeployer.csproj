@@ -176,6 +176,8 @@
     <Compile Include="TestHelpers\TraceListenersScope.cs" />
     <Compile Include="TfsBuildStatusTriggerTests.cs" />
     <Compile Include="VersionControlDeploymentFileSourceTests.cs" />
+    <Compile Include="Web\DataServiceStub.cs" />
+    <Compile Include="Web\DataServiceTests.cs" />
     <Compile Include="WorkingDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +208,10 @@
     <ProjectReference Include="..\TfsDeployer.Data\TfsDeployer.Data.csproj">
       <Project>{A77AD549-8F87-45EC-8868-CD18AA603432}</Project>
       <Name>TfsDeployer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.Web\TfsDeployer.Web.csproj">
+      <Project>{604D8775-9748-49E0-B058-62661A5DC742}</Project>
+      <Name>TfsDeployer.Web</Name>
     </ProjectReference>
     <ProjectReference Include="..\TfsDeployer\TfsDeployer.csproj">
       <Project>{5203BC3C-5402-415E-BEEE-62A45D4AA8A0}</Project>
