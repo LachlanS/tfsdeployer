@@ -87,7 +87,7 @@ namespace TfsDeployer
 
                 postDeployAction.DeploymentFinished(mapping, deployResult);
 
-                _deploymentEventRecorder.RecordFinished(deploymentId, deployResult.HasErrors);
+                _deploymentEventRecorder.RecordFinished(deploymentId, deployResult.HasErrors, deployResult.Output);
             }
         }
 

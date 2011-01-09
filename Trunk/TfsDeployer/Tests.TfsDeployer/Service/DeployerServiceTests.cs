@@ -47,5 +47,25 @@ namespace Tests.TfsDeployer.Service
             // Assert
             Assert.AreEqual(1, events.Length);
         }
+
+        [TestMethod]
+        public void DeployerService_should_return_output_from_accessor_by_id()
+        {
+            // Arrange
+            const int deploymentId = 17;
+            const string expectedOutput = "Howdy!";
+            var deploymentEventAccessor = MockRepository.GenerateStub<IDeploymentEventAccessor>();
+            deploymentEventAccessor.Stub(o => o.GetDeploymentOutput(deploymentId))
+                .Return(expectedOutput);
+
+            var deployerService = new DeployerService(null, deploymentEventAccessor);
+
+            // Act
+            var actualOutput = deployerService.GetDeploymentOutput(deploymentId);
+
+            // Assert
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+    
     }
 }

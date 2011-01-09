@@ -71,7 +71,25 @@ namespace Tests.TfsDeployer.Journal
             var secondDeploymentId = journal.RecordQueued(eventId, "Bar.ps1", "B");
 
             // Assert
-            Assert.AreNotEqual(firstDeploymentId, secondDeploymentId);
+            Assert.AreNotEqual(firstDeploymentId, secondDeploymentId, "first and second deployment ids are equal.");
+        }
+
+        [TestMethod]
+        public void DeploymentEventJournal_should_provide_include_deployment_id_in_events_model()
+        {
+            // Arrange 
+            var journal = new DeploymentEventJournal();
+            journal.RecordTriggered("Foobar_123.5", null, null, null, null, null); // an extra event to ensure the deploymentId != 0
+            var eventId = journal.RecordTriggered("Foobar_123.1", null, null, null, null, null);
+            var deploymentEvent = journal.Events.Last();
+
+            // Act
+            var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "A");
+            var queuedDeployment = deploymentEvent.QueuedDeployments[0];
+
+            // Assert
+            if (deploymentId == 0) Assert.Inconclusive("Cannot determine if Id property is set if it is expected to be zero.");
+            Assert.AreEqual(deploymentId, queuedDeployment.Id);
         }
 
         [TestMethod]
@@ -102,7 +120,7 @@ namespace Tests.TfsDeployer.Journal
             var deploymentEvent = journal.Events.First();
 
             // Act
-            journal.RecordFinished(deploymentId, true);
+            journal.RecordFinished(deploymentId, true, null);
             var queuedDeployment = deploymentEvent.QueuedDeployments[0];
 
             // Assert
@@ -110,5 +128,23 @@ namespace Tests.TfsDeployer.Journal
             Assert.IsNotNull(queuedDeployment.FinishedUtc, "FinishedUtc is null");
             Assert.IsTrue(DateTime.UtcNow.Subtract(queuedDeployment.FinishedUtc.Value).TotalSeconds < 1, "FinishedUtc is not recent.");
         }
+
+        [TestMethod]
+        public void DeploymentEventJournal_should_record_finished_output_against_queued_deployment()
+        {
+            // Arrange 
+            const string expectedOutput = "Goodbye!";
+            var journal = new DeploymentEventJournal();
+            var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
+            var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
+
+            // Act
+            journal.RecordFinished(deploymentId, true, expectedOutput);
+            var actualOutput = journal.GetDeploymentOutput(deploymentId);
+
+            // Assert
+            Assert.AreEqual(expectedOutput, actualOutput);
+        }
+
     }
 }

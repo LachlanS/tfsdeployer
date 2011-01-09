@@ -10,6 +10,7 @@ namespace TfsDeployer.Journal
 
         private readonly object _eventsLock = new object();
         private readonly IList<DeploymentEvent> _events = new List<DeploymentEvent>();
+        private readonly IDictionary<int, string> _outputs = new Dictionary<int, string>();
 
         public int RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
         {
@@ -45,9 +46,11 @@ namespace TfsDeployer.Journal
             lock (_eventsLock)
             {
                 var queuedDeployments = new List<QueuedDeployment>(_events[eventId].QueuedDeployments) {queuedDeployment};
+                queuedDeployment.Id = (eventId << EventIdBitShift) + queuedDeployments.Count - 1;
                 _events[eventId].QueuedDeployments = queuedDeployments.ToArray();
-                return (eventId << EventIdBitShift) + _events[eventId].QueuedDeployments.Length - 1;
             }
+
+            return queuedDeployment.Id;
         }
 
         public void RecordStarted(int deploymentId)
@@ -56,12 +59,20 @@ namespace TfsDeployer.Journal
             queuedDeployment.StartedUtc = DateTime.UtcNow;
         }
 
-        public void RecordFinished(int deploymentId, bool hasErrors)
+        public void RecordFinished(int deploymentId, bool hasErrors, string finalOutput)
         {
             var queuedDeployment = GetQueuedDeployment(deploymentId);
             queuedDeployment.HasErrors = hasErrors;
             queuedDeployment.FinishedUtc = DateTime.UtcNow;
 
+            if (_outputs.ContainsKey(deploymentId))
+            {
+                _outputs[deploymentId] = finalOutput;
+            }
+            else
+            {
+                _outputs.Add(deploymentId, finalOutput);
+            }
         }
 
         private QueuedDeployment GetQueuedDeployment(int deploymentId)
@@ -72,5 +83,10 @@ namespace TfsDeployer.Journal
         }
 
         public IEnumerable<DeploymentEvent> Events { get { return _events; } }
+        
+        public string GetDeploymentOutput(int deploymentId)
+        {
+            return _outputs[deploymentId];
+        }
     }
 }

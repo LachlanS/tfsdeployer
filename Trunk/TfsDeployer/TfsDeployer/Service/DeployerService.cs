@@ -25,5 +25,10 @@ namespace TfsDeployer.Service
         {
             return _deploymentEventAccessor.Events.Take(count).ToArray();
         }
+
+        public string GetDeploymentOutput(int deploymentId)
+        {
+            return _deploymentEventAccessor.GetDeploymentOutput(deploymentId);
+        }
     }
 }

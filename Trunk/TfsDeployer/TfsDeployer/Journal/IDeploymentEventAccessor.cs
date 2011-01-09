@@ -6,5 +6,6 @@ namespace TfsDeployer.Journal
     public interface IDeploymentEventAccessor
     {
         IEnumerable<DeploymentEvent> Events { get; }
+        string GetDeploymentOutput(int deploymentId);
     }
 }

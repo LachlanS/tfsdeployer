@@ -49,15 +49,17 @@ namespace Tests.TfsDeployer
         }
 
         [TestMethod]
-        public void MappingProcessor_should_record_finished_time_and_errors()
+        public void MappingProcessor_should_record_finished_time_and_errors_and_final_output()
         {
             // Arrange
             const int eventId = 7;
             const int deploymentId = 23;
+            var deployAgentResult = new DeployAgentResult {HasErrors = true, Output = "Done!"};
+
             var deployAgent = MockRepository.GenerateStub<IDeployAgent>();
             deployAgent.Stub(o => o.Deploy(null))
                 .IgnoreArguments()
-                .Return(new DeployAgentResult {HasErrors = true});
+                .Return(deployAgentResult);
 
             var deployAgentProvider = MockRepository.GenerateStub<IDeployAgentProvider>();
             deployAgentProvider.Stub(o => o.GetDeployAgent(null))
@@ -89,7 +91,7 @@ namespace Tests.TfsDeployer
             Thread.Sleep(200);
 
             // Assert
-            deploymentEventRecorder.AssertWasCalled(o => o.RecordFinished(deploymentId, true));
+            deploymentEventRecorder.AssertWasCalled(o => o.RecordFinished(deploymentId, deployAgentResult.HasErrors, deployAgentResult.Output));
         }
 
         [TestMethod]
