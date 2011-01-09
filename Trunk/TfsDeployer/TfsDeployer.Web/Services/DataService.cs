@@ -19,9 +19,9 @@ namespace TfsDeployer.Web.Services
             return GetDeployerService().RecentEvents(maximumEventCount);
         }
 
-        public string GetUptime()
+        public TimeSpan GetUptime()
         {
-            return GetDeployerService().GetUptime().ToString();
+            return GetDeployerService().GetUptime();
         }
 
         private IDeployerService GetDeployerService()

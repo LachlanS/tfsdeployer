@@ -57,14 +57,17 @@
   <ItemGroup>
     <Content Include="Default.aspx" />
     <Content Include="Views\EventListView.ascx" />
+    <Content Include="Views\UptimeView.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Models\EventListModel.aspx.cs" />
+    <Compile Include="Models\EventListModel.cs" />
+    <Compile Include="Models\UptimeModel.cs" />
     <Compile Include="Presenters\EventListPresenter.cs" />
+    <Compile Include="Presenters\UptimePresenter.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Default.aspx.cs">
@@ -83,6 +86,13 @@
     </Compile>
     <Compile Include="Views\EventListView.ascx.designer.cs">
       <DependentUpon>EventListView.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UptimeView.ascx.cs">
+      <DependentUpon>UptimeView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\UptimeView.ascx.designer.cs">
+      <DependentUpon>UptimeView.ascx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

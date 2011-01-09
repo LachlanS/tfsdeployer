@@ -12,9 +12,9 @@ namespace Tests.TfsDeployer.Web
             return GetDeploymentEvents(maximumCount);
         }
 
-        public string GetUptime()
+        public TimeSpan GetUptime()
         {
-            return new TimeSpan(1, 2, 3, 4).ToString();
+            return new TimeSpan(1, 2, 3, 4);
         }
 
         private static IEnumerable<DeploymentEvent> GetDeploymentEvents(int maxCount)

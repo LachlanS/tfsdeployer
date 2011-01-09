@@ -1,0 +1,2 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="UptimeView.ascx.cs" Inherits="TfsDeployer.Web.Views.UptimeView" %>
+<p>TFS Deployer instance at <%# Model.DeployerInstanceName %> has been running for <%# Model.UptimeText %></p>
