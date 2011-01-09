@@ -86,7 +86,11 @@ namespace TfsDeployer.Journal
         
         public string GetDeploymentOutput(int deploymentId)
         {
-            return _outputs[deploymentId];
+            if (_outputs.ContainsKey(deploymentId))
+            {
+                return _outputs[deploymentId];
+            }
+            return string.Empty;
         }
     }
 }

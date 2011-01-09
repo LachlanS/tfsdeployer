@@ -8,5 +8,6 @@ namespace TfsDeployer.Web.Services
     {
         IEnumerable<DeploymentEvent> GetRecentEvents(int maximumCount);
         TimeSpan GetUptime();
+        string GetDeploymentOutput(int deploymentId);
     }
 }

@@ -24,6 +24,11 @@ namespace TfsDeployer.Web.Services
             return GetDeployerService().GetUptime();
         }
 
+        public string GetDeploymentOutput(int deploymentId)
+        {
+            return GetDeployerService().GetDeploymentOutput(deploymentId);
+        }
+
         private IDeployerService GetDeployerService()
         {
             var endpointUri = _configurationService.GetDeployerInstanceAddress()[0];

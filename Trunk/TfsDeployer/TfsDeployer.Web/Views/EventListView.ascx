@@ -39,6 +39,10 @@
                                     {
                                         %>&gt;&gt; Script returned errors! %><br /><%
                                     }
+                                    if (queuedDeployment.StartedUtc.HasValue)
+                                    {
+                                        %>&gt;&gt; <a href="DeploymentOutput.aspx?deploymentid=<%= queuedDeployment.Id %>">View output</a><br /><%
+                                    }
                                 }
                             }
                         %></td>

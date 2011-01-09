@@ -17,6 +17,11 @@ namespace Tests.TfsDeployer.Web
             return new TimeSpan(1, 2, 3, 4);
         }
 
+        public string GetDeploymentOutput(int deploymentId)
+        {
+            return "Huzzah! Deployment output for " + deploymentId;
+        }
+
         private static IEnumerable<DeploymentEvent> GetDeploymentEvents(int maxCount)
         {
             for (var eventCount = 0; eventCount < maxCount; eventCount++)
