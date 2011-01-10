@@ -1,16 +1,14 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="TfsDeployer.Web._Default" %>
-<%@ Register TagPrefix="views" TagName="uptime" Src="~/Views/UptimeView.ascx" %>
-<%@ Register TagPrefix="vw" TagName="elv" Src="~/Views/EventListView.ascx" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
+﻿<%@ Page Language="C#" MasterPageFile="~/NoForm.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="TfsDeployer.Web._Default" %>
+<%@ Register TagPrefix="views" TagName="UptimeView" Src="~/Views/UptimeView.ascx" %>
+<%@ Register TagPrefix="views" TagName="EventListView" Src="~/Views/EventListView.ascx" %>
+
+<asp:Content ContentPlaceHolderID="head" runat="server">
     <style type="text/css">
         td { border: 1px solid; }
     </style>
-</head>
-<body>
-<views:uptime runat="server" />
-<vw:elv runat="server" />
-</body>
-</html>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="content" runat="server">
+    <views:UptimeView runat="server" />
+    <views:EventListView runat="server" />
+</asp:Content>
