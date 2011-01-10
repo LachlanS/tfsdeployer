@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head runat="server">
-        <title></title>
+        <title>TFS Deployer Web Management</title>
+        <link rel="stylesheet" href="~/Styles/default.css" />
         <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery-1.4.4.min.js") %>"></script>
         <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery.query-2.1.7.js") %>"></script>
         <script type="text/javascript">
@@ -12,6 +13,12 @@
         <asp:ContentPlaceHolder ID="head" runat="server" />
     </head>
     <body>
+        <div id="navigation">
+            <ul>
+                <li><a href="~/" runat="server">Home</a></li>
+                <li><a href="~/Configuration.aspx" runat="server">Configuration</a></li>
+            </ul>
+        </div>
         <div id="contentDiv">
             <asp:ContentPlaceHolder ID="content" runat="server" />
         </div>

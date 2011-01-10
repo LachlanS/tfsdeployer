@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.ServiceModel;
 using TfsDeployer.Data;
 
@@ -9,15 +10,28 @@ namespace TfsDeployer.Web.Services
     {
         private static string StoragePath
         {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"TFSDeployer\DeployerEndpoints.txt"); }
+            get
+            {
+                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TFSDeployer");
+                if (!Directory.Exists(configPath))
+                {
+                    Directory.CreateDirectory(configPath);
+                }
+                return Path.Combine(configPath, "DeployerEndpoints.txt");
+            }
         }
 
         public string[] GetDeployerInstanceAddress()
         {
-            if (!File.Exists(StoragePath)) return new[] { "http://localhost/Temporary_Listen_Addresses/TfsDeployer/IDeployerService" };
+            if (File.Exists(StoragePath))
+            {
+                var fileContent = File.ReadAllText(StoragePath);
+                var storedAddresses = fileContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            var fileContent = File.ReadAllText(StoragePath);
-            return fileContent.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                if (storedAddresses.Any()) return storedAddresses;
+            }
+
+            return new[] { "http://localhost/Temporary_Listen_Addresses/TfsDeployer/IDeployerService" };
         }
 
         public IDeployerService CreateDeployerService(int instanceIndex)
@@ -31,6 +45,13 @@ namespace TfsDeployer.Web.Services
             var binding = new WSHttpBinding { Security = { Mode = SecurityMode.None } };
             var endpointAddress = new EndpointAddress(endpointUri);
             return ChannelFactory<IDeployerService>.CreateChannel(binding, endpointAddress);
+        }
+
+        public void SetDeployerInstanceAddress(string deployerServiceUrl)
+        {
+            var addresses = GetDeployerInstanceAddress();
+            addresses[0] = deployerServiceUrl;
+            File.WriteAllLines(StoragePath, addresses);
         }
     }
 }

@@ -6,5 +6,6 @@ namespace TfsDeployer.Web.Services
     {
         string[] GetDeployerInstanceAddress();
         IDeployerService CreateDeployerService(int instanceIndex);
+        void SetDeployerInstanceAddress(string deployerServiceUrl);
     }
 }
