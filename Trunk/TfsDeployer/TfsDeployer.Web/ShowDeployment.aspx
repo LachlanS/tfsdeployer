@@ -7,6 +7,9 @@
     <title></title>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery-1.4.4.min.js") %>"></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery.query-2.1.7.js") %>"></script>
+    <script type="text/javascript">
+        var applicationPath = '<%= ResolveUrl("~/") %>';
+    </script>
 </head>
 <body>
     <!-- more deployment data will go here -->
