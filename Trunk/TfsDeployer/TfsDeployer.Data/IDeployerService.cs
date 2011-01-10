@@ -13,6 +13,6 @@ namespace TfsDeployer.Data
         DeploymentEvent[] RecentEvents(int count);
 
         [OperationContract]
-        string GetDeploymentOutput(int deploymentId);
+        DeploymentOutput GetDeploymentOutput(int deploymentId);
     }
 }

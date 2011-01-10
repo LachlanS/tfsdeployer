@@ -34,8 +34,9 @@ namespace TfsDeployer.Web.Presenters
                 return;
             }
 
-            var output = _configurationService.CreateDeployerService(0).GetDeploymentOutput(deploymentId);
-            View.Model.HtmlEncodedOutput = HttpUtility.HtmlEncode(output);
+            var deploymentOutput = _configurationService.CreateDeployerService(0).GetDeploymentOutput(deploymentId);
+            View.Model.HtmlEncodedOutput = HttpUtility.HtmlEncode(deploymentOutput.Content);
+            View.Model.IsFinal = deploymentOutput.IsFinal;
         }
 
     }

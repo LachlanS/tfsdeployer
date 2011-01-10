@@ -134,24 +134,25 @@ namespace Tests.TfsDeployer.Journal
         public void DeploymentEventJournal_should_record_finished_output_against_queued_deployment()
         {
             // Arrange 
-            const string expectedOutput = "Goodbye!";
+            const string expectedContent = "Goodbye!";
             var journal = new DeploymentEventJournal();
             var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
             var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
 
             // Act
-            journal.RecordFinished(deploymentId, true, expectedOutput);
-            var actualOutput = journal.GetDeploymentOutput(deploymentId);
+            journal.RecordFinished(deploymentId, true, expectedContent);
+            var deploymentOutput = journal.GetDeploymentOutput(deploymentId);
 
             // Assert
-            Assert.AreEqual(expectedOutput, actualOutput);
+            Assert.AreEqual(expectedContent, deploymentOutput.Content, "Content does not match expected.");
+            Assert.IsTrue(deploymentOutput.IsFinal, "IsFinal is not true");
         }
 
         [TestMethod]
         public void DeploymentEventJournal_should_retrieve_output_from_output_delegate_on_request()
         {
             // Arrange 
-            const string expectedOutput = "Updated output";
+            const string expectedContent = "Updated output";
             var journal = new DeploymentEventJournal();
             var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
             var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
@@ -161,11 +162,12 @@ namespace Tests.TfsDeployer.Journal
             journal.GetDeploymentOutput(deploymentId); // get initial output and discard
 
             // Act
-            outputContainer.Output = expectedOutput; // update output
-            var actualOutput = journal.GetDeploymentOutput(deploymentId);
+            outputContainer.Output = expectedContent; // update output
+            var deploymentOutput = journal.GetDeploymentOutput(deploymentId);
 
             // Assert
-            Assert.AreEqual(expectedOutput, actualOutput);
+            Assert.AreEqual(expectedContent, deploymentOutput.Content, "Content does not match expected.");
+            Assert.IsFalse(deploymentOutput.IsFinal, "IsFinal is not false");
         }
 
     }

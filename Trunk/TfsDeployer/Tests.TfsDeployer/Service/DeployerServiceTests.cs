@@ -53,18 +53,18 @@ namespace Tests.TfsDeployer.Service
         {
             // Arrange
             const int deploymentId = 17;
-            const string expectedOutput = "Howdy!";
+            const string expectedContent = "Howdy!";
             var deploymentEventAccessor = MockRepository.GenerateStub<IDeploymentEventAccessor>();
             deploymentEventAccessor.Stub(o => o.GetDeploymentOutput(deploymentId))
-                .Return(expectedOutput);
+                .Return(new DeploymentOutput{Content = expectedContent});
 
             var deployerService = new DeployerService(null, deploymentEventAccessor);
 
             // Act
-            var actualOutput = deployerService.GetDeploymentOutput(deploymentId);
+            var deploymentOutput = deployerService.GetDeploymentOutput(deploymentId);
 
             // Assert
-            Assert.AreEqual(expectedOutput, actualOutput);
+            Assert.AreEqual(expectedContent, deploymentOutput.Content);
         }
     
     }

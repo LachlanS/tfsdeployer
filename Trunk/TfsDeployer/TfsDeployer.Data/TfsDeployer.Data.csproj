@@ -48,6 +48,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="DeploymentEvent.cs" />
+    <Compile Include="DeploymentOutput.cs" />
     <Compile Include="IDeployerService.cs" />
     <Compile Include="QueuedDeployment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

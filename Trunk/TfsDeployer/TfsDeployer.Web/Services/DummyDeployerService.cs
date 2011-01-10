@@ -47,9 +47,15 @@ namespace TfsDeployer.Web.Services
             }
         }
 
-        public string GetDeploymentOutput(int deploymentId)
+        public DeploymentOutput GetDeploymentOutput(int deploymentId)
         {
-            return string.Format("Huzzah! Deployment output for {0}, updated at {1}", deploymentId, DateTime.UtcNow);
+            return new DeploymentOutput
+                       {
+                           Content =
+                               string.Format("Huzzah! Deployment output for {0}, updated at {1}", deploymentId,
+                                             DateTime.UtcNow),
+                           IsFinal = (new Random()).Next(0, deploymentId) < 1
+                       };
         }
     }
 }

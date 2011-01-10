@@ -25,7 +25,7 @@ namespace TfsDeployer.Web.Services
 
         public string GetDeploymentOutput(int deploymentId)
         {
-            return GetDeployerService().GetDeploymentOutput(deploymentId);
+            return GetDeployerService().GetDeploymentOutput(deploymentId).Content;
         }
 
         private IDeployerService GetDeployerService()

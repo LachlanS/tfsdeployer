@@ -65,13 +65,15 @@ namespace TfsDeployer.Journal
             queuedDeployment.HasErrors = hasErrors;
             queuedDeployment.FinishedUtc = DateTime.UtcNow;
 
-            if (_outputs.ContainsKey(deploymentId))
+            SetDeploymentOutputDelegate(deploymentId, new FinalOutput {Content = finalOutput}.OutputDelegate);
+        }
+
+        private class FinalOutput
+        {
+            public string Content { get; set; }
+            public string OutputDelegate()
             {
-                _outputs[deploymentId] = () => finalOutput;
-            }
-            else
-            {
-                _outputs.Add(deploymentId, () => finalOutput);
+                return Content;
             }
         }
 
@@ -96,13 +98,14 @@ namespace TfsDeployer.Journal
 
         public IEnumerable<DeploymentEvent> Events { get { return _events; } }
         
-        public string GetDeploymentOutput(int deploymentId)
+        public DeploymentOutput GetDeploymentOutput(int deploymentId)
         {
             if (_outputs.ContainsKey(deploymentId))
             {
-                return _outputs[deploymentId]();
+                var outputDelegate = _outputs[deploymentId];
+                return new DeploymentOutput {Content = outputDelegate(), IsFinal = outputDelegate.Method.DeclaringType == typeof(FinalOutput)};
             }
-            return string.Empty;
+            return new DeploymentOutput {Content = string.Empty, IsFinal = false};
         }
     }
 }
