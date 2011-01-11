@@ -140,7 +140,7 @@ namespace Tests.TfsDeployer
             var createSigningKeyScriptPath = Path.Combine(Path.GetDirectoryName(typeof(Encrypter).Assembly.Location), "Create-SigningKey.ps1");
             var keyPath = Path.GetTempFileName();
             var arguments = string.Format("-command & '{0}' -KeyPath '{1}'", createSigningKeyScriptPath, keyPath);
-            var process = Process.Start("powershell.exe", arguments);
+            var process = Process.Start(new ProcessStartInfo("powershell.exe", arguments) { WindowStyle = ProcessWindowStyle.Hidden });
             if (!process.WaitForExit(5000)) process.Kill();
 
             // Act
@@ -163,7 +163,7 @@ namespace Tests.TfsDeployer
             var keyPath = Path.GetTempFileName();
             Encrypter.CreateKey(keyPath);
             var arguments = string.Format("-command & '{0}' -DeploymentMappingsPath '{1}' -KeyPath '{2}'", signScriptPath, mappingsPath, keyPath);
-            var process = Process.Start("powershell.exe", arguments);
+            var process = Process.Start(new ProcessStartInfo("powershell.exe", arguments) { WindowStyle = ProcessWindowStyle.Hidden });
             if (!process.WaitForExit(5000)) process.Kill();
 
             // Act
