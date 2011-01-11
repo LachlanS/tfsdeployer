@@ -5,6 +5,9 @@ param (
     [string]
     $Publish,
     
+    [string]
+    $Version,
+    
     [switch]
     $Force
 )
@@ -16,6 +19,10 @@ $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path -Resolve
 
 $Configuration = 'Debug'
 if ($Publish) {
+    if ($Version -notmatch '^\d+\.\d+$') {
+        throw 'Version parameter must in the form "<major>.<minor>", eg: 1.2'
+    }
+
     $Configuration = 'Release' 
 
     Write-Output 'Connecting to TFS workspace'
@@ -38,9 +45,9 @@ if ($Publish) {
     $ItemSpec = New-Object -TypeName $ItemSpecType -ArgumentList $PSScriptRoot,'Full'
     $Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
         Measure-Object -Property Version -Maximum).Maximum
-    $ReleaseVersion = "1.4.0.$Changeset"
+    $ReleaseVersion = "$Version.0.$Changeset"
 
-    Write-Output 'Writing version number to assembly attributes'
+    Write-Output ('Writing version number {0} to assembly attributes' -f $ReleaseVersion)
     $SolutionInfoPath = $PSScriptRoot | Join-Path -ChildPath SolutionInfo.cs
     $UndoSolutionInfo = $Workspace.GetPendingChanges($SolutionInfoPath).Length -eq 0
     $Workspace.PendEdit($SolutionInfoPath) | Out-Null
@@ -137,8 +144,6 @@ if ($Publish) {
             -Files @($ReleaseFile) `
             -Credential $CodePlexCred
             
-        Remove-Item -Path $ZipPath
-
         Write-Output "Release '$ReleaseName' published"
         Write-Output $Release.Uri
     }
