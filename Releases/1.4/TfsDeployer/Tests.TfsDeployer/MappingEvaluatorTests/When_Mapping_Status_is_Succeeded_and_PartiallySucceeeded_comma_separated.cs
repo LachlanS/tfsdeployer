@@ -1,0 +1,38 @@
+using System;
+using Microsoft.TeamFoundation.Build.Client;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer;
+using TfsDeployer.Configuration;
+
+namespace Tests.TfsDeployer.MappingEvaluatorTests
+{
+    [TestClass]
+    public class When_Mapping_Status_is_Succeeded_and_PartiallySucceeeded_comma_separated
+    {
+        private bool DoesMappingApply(string buildStatus)
+        {
+            var mappingEvaluator = new MappingEvaluator();
+            return mappingEvaluator.DoesMappingApply(new MappingBuilder().Mapping, new BuildStatusChangeEventBuilder().BuildStatusChangeEvent, buildStatus);
+        }
+
+        [TestMethod]
+        public void Should_match_Succeeded_build_status()
+        {
+            Assert.IsTrue(DoesMappingApply(BuildStatus.Succeeded.ToString()));
+        }
+
+        [TestMethod]
+        public void Should_match_PartiallySucceeded_build_status()
+        {
+            Assert.IsTrue(DoesMappingApply(BuildStatus.PartiallySucceeded.ToString()));
+        }
+
+        [TestMethod]
+        public void Should_not_match_Failed_build_status()
+        {
+            Assert.IsFalse(DoesMappingApply(BuildStatus.Failed.ToString()));
+        }
+
+    }
+}
