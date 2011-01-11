@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
@@ -33,6 +34,27 @@ namespace Tests.TfsDeployer.DeployAgent
             // Assert
             Assert.AreEqual(oldQuality, data.OriginalQuality, "OriginalQuality");
             Assert.AreEqual(newQuality, data.NewQuality, "NewQuality");
+        }
+
+        [TestMethod]
+        public void DeployAgentDataFactory_should_convert_zero_timeout_seconds_to_timespan_maxvalue()
+        {
+            // Arrange
+            var deployScriptRoot = Path.GetTempPath();
+            var mapping = new Mapping { TimeoutSeconds = 0 };
+            var buildDetail = new BuildDetail();
+            var changeEvent = new BuildStatusChangeEvent
+            {
+                StatusChange = new Change()
+            };
+
+            var factory = new DeployAgentDataFactory();
+
+            // Act
+            var data = factory.Create(deployScriptRoot, mapping, buildDetail, changeEvent);
+
+            // Assert
+            Assert.AreEqual(TimeSpan.MaxValue, data.Timeout);
         }
     }
 }
