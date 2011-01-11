@@ -33,6 +33,7 @@ namespace TfsDeployer.DeployAgent
                 RedirectStandardInput = true,
                 RedirectStandardError = true,
                 WorkingDirectory = deployAgentData.DeployScriptRoot,
+                CreateNoWindow = true,
                 Arguments = CreateArguments(deployAgentData),
             };
             TraceHelper.TraceInformation(TraceSwitches.TfsDeployer, "BatchRunner - Executing Scripts: {0} with arguments {1} in working directory {2}", scriptToRun, psi.Arguments, psi.WorkingDirectory);
@@ -53,7 +54,10 @@ namespace TfsDeployer.DeployAgent
                         // FIXME we should extract this to an instance method but this class needs to be refactored first so that it's a single-use,
                         // throw-away class.  -andrewh 22/12/2010
 
-                        var timeoutMilliseconds = (int)Math.Floor(deployAgentData.Timeout.TotalMilliseconds);
+                        var timeoutMilliseconds = int.MaxValue;
+                        if (deployAgentData.Timeout != TimeSpan.MaxValue) {
+                            timeoutMilliseconds = (int)Math.Floor(deployAgentData.Timeout.TotalMilliseconds);
+                        }
                         var hasExited = proc.WaitForExit(timeoutMilliseconds);
 
                         if (hasExited) return;

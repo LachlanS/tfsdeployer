@@ -11,14 +11,13 @@ namespace Tests.TfsDeployer.DeployAgent
     public class BatchFileDeployAgentTests
     {
         [TestMethod]
-        public void AgentShouldKillScriptsThatExceedTimeoutConstraints()
+        public void BatchFileDeployAgent__should_not_terminate_a_script_when_the_timeout_is_maximum()
         {
             // Arrange
-            var agent = new BatchFileDeployAgent();
             const string deployScriptFilename = "SlowDeployment.bat";
-            var deployScriptDirectory = Directory.GetCurrentDirectory();
+            var deployScriptDirectory = Path.GetTempPath();
 
-            File.WriteAllText(deployScriptFilename, @"ping -n 100 127.0.0.1");    // script that just takes about nn seconds to execute
+            File.WriteAllText(Path.Combine(deployScriptDirectory, deployScriptFilename), @"ping -n 2 127.0.0.1");    // script that just takes about nn seconds to execute
 
             // required because the deploy agent builds its own parameter list
             var tfsBuildDetail = new BuildDetail
@@ -31,7 +30,46 @@ namespace Tests.TfsDeployer.DeployAgent
             {
                 DeployScriptRoot = deployScriptDirectory,
                 DeployScriptFile = deployScriptFilename,
-                Timeout = TimeSpan.FromSeconds(5),
+                Timeout = TimeSpan.MaxValue,
+                TfsBuildDetail = tfsBuildDetail,
+                DeployScriptParameters = Enumerable.Empty<DeployScriptParameter>().ToList(),
+            };
+
+            var agent = new BatchFileDeployAgent();
+
+            // Act
+            var deployAgentResult = agent.Deploy(deployAgentData);
+
+            // Absterge
+            File.Delete(deployScriptFilename);
+
+            // Assert
+            StringAssert.Contains(deployAgentResult.Output, @"Pinging 127.0.0.1");
+            StringAssert.Contains(deployAgentResult.Output, @"Ping statistics");
+        }
+
+        [TestMethod]
+        public void AgentShouldKillScriptsThatExceedTimeoutConstraints()
+        {
+            // Arrange
+            var agent = new BatchFileDeployAgent();
+            const string deployScriptFilename = "SlowDeployment.bat";
+            var deployScriptDirectory = Directory.GetCurrentDirectory();
+
+            File.WriteAllText(deployScriptFilename, @"ping -n 10 127.0.0.1");    // script that just takes about nn seconds to execute
+
+            // required because the deploy agent builds its own parameter list
+            var tfsBuildDetail = new BuildDetail
+            {
+                DropLocation = string.Empty,
+                BuildNumber = string.Empty,
+            };
+
+            var deployAgentData = new DeployAgentData
+            {
+                DeployScriptRoot = deployScriptDirectory,
+                DeployScriptFile = deployScriptFilename,
+                Timeout = TimeSpan.FromSeconds(2),
                 TfsBuildDetail = tfsBuildDetail,
                 DeployScriptParameters = Enumerable.Empty<DeployScriptParameter>().ToList(),
             };
