@@ -94,6 +94,7 @@ if ($Publish) {
     
     Write-Output 'Packaging files to be published'
 
+    $WebPath = $CommonOutDirPath | Join-Path -ChildPath _PublishedWebsites\TfsDeployer.Web
     $BinariesPath = $CommonOutDirPath | Join-Path -ChildPath TfsDeployer
     $PackagePath = $BinariesPath #$Env:TEMP | Join-Path -ChildPath ([Guid]::NewGuid())
 <#
@@ -101,6 +102,7 @@ if ($Publish) {
     Get-ChildItem -Path $BinariesPath\* |
         Copy-Item -Destination $PackagePath -Recurse
 #>
+    Copy-Item -Path $WebPath -Destination $PackagePath\Web -Recurse
     Get-ChildItem -Path $PackagePath\* -Include *.pdb |
         Remove-Item
     
