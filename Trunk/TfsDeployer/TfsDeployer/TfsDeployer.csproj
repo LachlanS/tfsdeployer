@@ -200,7 +200,9 @@
     <Compile Include="WorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Add-TfsCreateSoapSubscriptionPermission.cmd" />
+    <None Include="Install\Add-TfsCreateSoapSubscriptionPermission.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config" />
     <None Include="Configuration\DeploymentMappings.xsd">
       <SubType>Designer</SubType>
