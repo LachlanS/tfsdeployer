@@ -19,8 +19,8 @@
                 <li><a href="~/Configuration.aspx" runat="server">Configuration</a></li>
             </ul>
         </div>
-        <div id="contentDiv">
-            <asp:ContentPlaceHolder ID="content" runat="server" />
+        <div id="content">
+            <asp:ContentPlaceHolder ID="contentPlaceHolder" runat="server" />
         </div>
     </body>
 </html>

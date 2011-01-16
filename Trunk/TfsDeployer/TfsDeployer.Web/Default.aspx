@@ -3,12 +3,10 @@
 <%@ Register TagPrefix="views" TagName="EventListView" Src="~/Views/EventListView.ascx" %>
 
 <asp:Content ContentPlaceHolderID="head" runat="server">
-    <style type="text/css">
-        td { border: 1px solid; }
-    </style>
 </asp:Content>
 
-<asp:Content ContentPlaceHolderID="content" runat="server">
+<asp:Content ContentPlaceHolderID="contentPlaceHolder" runat="server">
     <views:UptimeView runat="server" />
     <views:EventListView runat="server" />
 </asp:Content>
+

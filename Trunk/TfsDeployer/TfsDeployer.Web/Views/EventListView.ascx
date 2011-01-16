@@ -1,4 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="EventListView.ascx.cs" Inherits="TfsDeployer.Web.Views.EventListView" %>
+<%@ Import Namespace="System.Linq" %>
 <table>
     <thead>
         <tr>
@@ -7,7 +8,7 @@
             <td>New Quality</td>
             <td>Triggered At</td>
             <td>Triggered By</td>
-            <td>Queued Deployments</td>
+            <td>Status</td>
         </tr>
     </thead>
     <tbody>
@@ -22,30 +23,19 @@
                         <td><%= recentEvent.TriggeredUtc.ToString() %></td>
                         <td><%= recentEvent.TriggeredBy %></td>
                         <td><%
-                            if (recentEvent.QueuedDeployments != null && recentEvent.QueuedDeployments.Length > 0)
-                            {
-                                foreach( var queuedDeployment in recentEvent.QueuedDeployments)
+                                if (recentEvent.QueuedDeployments.Count(d => d.FinishedUtc == null && d.StartedUtc.HasValue) > 0)
                                 {
-                                     %>Queued script <%= queuedDeployment.Script %> in queue <%= queuedDeployment.Queue %> at <%= queuedDeployment.QueuedUtc.ToString() %><br /><%
-                                    if (queuedDeployment.StartedUtc.HasValue)
-                                    {
-                                        %>&gt; Started at <%= queuedDeployment.StartedUtc.Value.ToString() %><br /><%
-                                    }
-                                    if (queuedDeployment.FinishedUtc.HasValue)
-                                    {
-                                        %>&gt; Finished at <%= queuedDeployment.FinishedUtc.Value.ToString() %><br /><%
-                                    }
-                                    if (queuedDeployment.HasErrors)
-                                    {
-                                        %>&gt;&gt; Script returned errors! %><br /><%
-                                    }
-                                    if (queuedDeployment.StartedUtc.HasValue)
-                                    {
-                                        %>&gt;&gt; <a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=" + queuedDeployment.Id) %>">View details</a><br /><%
-                                    }
+                                    %><a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=" + recentEvent.QueuedDeployments.Where(d=> !d.FinishedUtc.HasValue && d.StartedUtc.HasValue).Max(d => d.Id)) %>">In Progress</a><%
                                 }
-                            }
-                        %></td>
+                                else if (recentEvent.QueuedDeployments.Count(d => d.FinishedUtc == null && d.StartedUtc == null) > 0)
+                                {
+                                    %><a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=" + recentEvent.QueuedDeployments.Where(d => !d.FinishedUtc.HasValue && !d.StartedUtc.HasValue).Max(d => d.Id)) %>">No Action Required</a><%
+                                }
+                                else if (recentEvent.QueuedDeployments.Count(d => d.FinishedUtc.HasValue) > 0)
+                                {
+                                    %><a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=" + recentEvent.QueuedDeployments.Where(d => d.FinishedUtc.HasValue).Max(d => d.Id))%>">Deployed</a><%
+                                }%>                                 
+                        </td>
                     </tr>
                 <%
             }
