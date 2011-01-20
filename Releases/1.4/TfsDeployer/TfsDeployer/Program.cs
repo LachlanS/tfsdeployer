@@ -46,6 +46,8 @@ namespace TfsDeployer
 
         public static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += DomainUnhandledException;
+
             if (args.Length > 0)
             {
                 if (args[0] == "-i")
@@ -65,6 +67,11 @@ namespace TfsDeployer
             {
                 Run(RunMode.WindowsService);
             }
+        }
+
+        private static void DomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Trace.TraceError("Primary AppDomain unhandled exception. Terminating: {0}, Exception:\n{1}", e.IsTerminating, e.ExceptionObject);
         }
 
         private static void Run(RunMode mode)
