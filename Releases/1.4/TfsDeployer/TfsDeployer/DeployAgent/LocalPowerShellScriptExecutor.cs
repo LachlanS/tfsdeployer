@@ -36,8 +36,10 @@ namespace TfsDeployer.DeployAgent
                         pipeline.Commands.Add(scriptCommand);
 
                         pipeline.Commands.Add("Out-Default");
-
+                        
+                        pipeline.Commands.AddScript(@"Get-Job | Remove-Job -Force");
                         pipeline.Invoke();
+
                         hasErrors = ui.HasErrors;
                         output = ui.Output;
                     }
