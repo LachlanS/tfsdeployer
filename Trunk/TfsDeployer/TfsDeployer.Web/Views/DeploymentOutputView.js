@@ -2,7 +2,7 @@
 
 var deploymentOutputLoad = function () {
     var isFinal = $('#DeploymentOutput .IsFinal').length != 0;
-    console.log(isFinal);
+    // console.log(isFinal);
     if (isFinal) {
         window.clearInterval(deploymentOutputLoadIntervalId);
         return;
