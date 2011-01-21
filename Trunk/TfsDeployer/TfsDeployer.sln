@@ -25,8 +25,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readify.Useful.TeamFoundati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.TfsDeployer", "Tests.TfsDeployer\Tests.TfsDeployer.csproj", "{2E5C759A-7EBE-4928-B673-7B124F1E607E}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{97E76AAC-E95B-4447-AC00-5070817369F4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.Web", "TfsDeployer.Web\TfsDeployer.Web.csproj", "{604D8775-9748-49E0-B058-62661A5DC742}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.Data", "TfsDeployer.Data\TfsDeployer.Data.csproj", "{A77AD549-8F87-45EC-8868-CD18AA603432}"
@@ -87,12 +85,6 @@ Global
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Release|x86.ActiveCfg = Release|x86
 		{2E5C759A-7EBE-4928-B673-7B124F1E607E}.Release|x86.Build.0 = Release|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Debug|x86.ActiveCfg = Debug|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Debug|x86.Build.0 = Debug|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|Any CPU.ActiveCfg = Release|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.ActiveCfg = Release|x86
-		{97E76AAC-E95B-4447-AC00-5070817369F4}.Release|x86.Build.0 = Release|x86
 		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{604D8775-9748-49E0-B058-62661A5DC742}.Debug|x86.ActiveCfg = Debug|Any CPU

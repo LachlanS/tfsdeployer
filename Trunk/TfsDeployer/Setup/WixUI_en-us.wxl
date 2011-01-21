@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
-  <String Id="LaunchCondition_WindowsVista">You must be running Windows Vista or Windows Server 2008 or later to install this product.</String>
-  <String Id="LaunchCondition_Administrator">You need to be an administrator to install this product.</String>
-  <String Id="LaunchCondition_DotNetFramework35">Microsoft .NET Framework 3.5 SP1 is required.</String>
-  <String Id="LaunchCondition_TeamExplorerMustBeInstalled">Microsoft Visual Studio 2010 Team Explorer is required.</String>
-  <String Id="ServiceInstall_DisplayName">Tfs Deployer</String>
-  <String Id="ServiceInstall_Description">Performs Deployments for Team Foundation Server Builds</String>
-</WixLocalization>
