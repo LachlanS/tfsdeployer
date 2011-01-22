@@ -275,5 +275,35 @@ namespace Tests.TfsDeployer.DeployAgent
             StringAssert.Contains(result.Output, subDirectory, "Output subdirectory");
         }
 
+        [TestMethod]
+        public void LocalPowerShellDeployAgent_should_finish_cleanly_when_scripts_leave_background_jobs_running()
+        {
+            // Arrange
+            var deploymentEventRecorder = MockRepository.GenerateStub<IDeploymentEventRecorder>();
+
+            DeployAgentResult result;
+            using (var scriptFile = new TemporaryFile(".ps1", @"Start-Job { Get-Date; Start-Sleep -Seconds 1} ; 'ExpectedOutput'"))
+            {
+                var testDeployData = new DeployAgentData
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName,
+                    DeployScriptParameters = new List<DeployScriptParameter>(),
+                    TfsBuildDetail = new BuildDetail()
+                };
+
+                var agent = new LocalPowerShellDeployAgent(deploymentEventRecorder);
+
+                // Act
+                result = agent.Deploy(testDeployData);
+
+            }
+
+            // Assert
+            Assert.IsFalse(result.HasErrors, "HasErrors: {0}", result.Output);
+            StringAssert.Contains(result.Output, "ExpectedOutput", "Output");
+        }
     }
 }

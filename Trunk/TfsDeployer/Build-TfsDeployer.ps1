@@ -32,19 +32,20 @@ if ($Publish) {
     $Collection = [Microsoft.TeamFoundation.Client.TfsTeamProjectCollectionFactory]::GetTeamProjectCollection($WorkspaceInfo.ServerUri)
     $Workspace = $WorkspaceInfo.GetWorkspace($Collection)
 
-    Write-Output 'Calculating latest changeset number'
+	Write-Output 'Calculating latest changeset number'
+    $ItemSpecType = [Microsoft.TeamFoundation.VersionControl.Client.ItemSpec]
+    $ItemSpec = New-Object -TypeName $ItemSpecType -ArgumentList $PSScriptRoot,'Full'
+    $Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
+        Measure-Object -Property Version -Maximum).Maximum
     if ($Workspace.GetPendingChanges($PSScriptRoot, 'Full', $false)) {
+        $Changeset = 0
         $Message = 'Commit or undo pending changes before building a release.'
-        if ($Force -or $Publish -eq 'Local') {
+		if ($Force -or $Publish -eq 'Local') {
             Write-Warning $Message
         } else {
             throw $Message
         }
     }
-    $ItemSpecType = [Microsoft.TeamFoundation.VersionControl.Client.ItemSpec]
-    $ItemSpec = New-Object -TypeName $ItemSpecType -ArgumentList $PSScriptRoot,'Full'
-    $Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
-        Measure-Object -Property Version -Maximum).Maximum
     $ReleaseVersion = "$Version.0.$Changeset"
 
     Write-Output ('Writing version number {0} to assembly attributes' -f $ReleaseVersion)

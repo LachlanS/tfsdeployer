@@ -33,6 +33,8 @@ namespace TfsDeployer
 
         public static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += DomainUnhandledException;
+
             var mode = DeployerContainerBuilder.RunMode.WindowsService;
 
             if (args.Length > 0)
@@ -58,6 +60,11 @@ namespace TfsDeployer
 
             Trace.Listeners.Add(_container.Resolve<TraceListener>());
             _container.Resolve<IProgramEntryPoint>().Run();
+        }
+
+        private static void DomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Trace.TraceError("Primary AppDomain unhandled exception. Terminating: {0}, Exception:\n{1}", e.IsTerminating, e.ExceptionObject);
         }
 
         private static void Install()
