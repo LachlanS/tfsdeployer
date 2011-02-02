@@ -50,9 +50,9 @@ table
 thead
 {
     background: #2983A6;
-     color: White;
-     font-size: 125%;
-     border-bottom: 1px solid black;
+    color: White;
+    font-size: 125%;
+    border-bottom: 1px solid black;
 }
 
 tbody tr
@@ -71,14 +71,19 @@ td
     padding-right: 50px;
 }
 
+tr.revealRow
+{
+    display: none;
+}
+
 p
 {
     margin-bottom: 20px;
 }
 
-fieldset 
+fieldset
 {
-    border:none;
+    border: none;
     font-size: 125%;
 }
 
@@ -89,7 +94,7 @@ fieldset ol li
     display: inline-block;
 }
 
-legend 
+legend
 {
     font-weight: bold;
 }
@@ -105,4 +110,9 @@ fieldset input[type="submit"]
 div.hover
 {
     background: #EEE;
+}
+
+p.buildDetail
+{
+    padding-left: 20px;
 }

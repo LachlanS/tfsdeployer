@@ -16,13 +16,13 @@
             foreach(var recentEvent in Model.RecentEvents)
             {
                 %>
-                    <tr>
-                        <td><%= recentEvent.BuildNumber %></td>
-                        <td><%= recentEvent.OriginalQuality %></td>
-                        <td><%= recentEvent.NewQuality %></td>
-                        <td><%= recentEvent.TriggeredUtc.ToString() %></td>
-                        <td><%= recentEvent.TriggeredBy %></td>
-                        <td><%
+                    <tr class="row">
+                        <td class=""><%= recentEvent.BuildNumber %></td>
+                        <td class=""><%= recentEvent.OriginalQuality %></td>
+                        <td class=""><%= recentEvent.NewQuality %></td>
+                        <td class=""><%= recentEvent.TriggeredUtc.ToString() %></td>
+                        <td class=""><%= recentEvent.TriggeredBy %></td>
+                        <td class="" ><%
                                 if (recentEvent.QueuedDeployments.Count(d => d.FinishedUtc == null && d.StartedUtc.HasValue) > 0)
                                 {
                                     %><a href="<%= ResolveUrl("~/ShowDeployment.aspx?deploymentid=" + recentEvent.QueuedDeployments.Where(d=> !d.FinishedUtc.HasValue && d.StartedUtc.HasValue).Max(d => d.Id)) %>">In Progress</a><%
@@ -37,8 +37,22 @@
                                 }%>                                 
                         </td>
                     </tr>
+                    <tr id="<%=recentEvent.BuildNumber%>" class="revealRow">
+                        <td colspan="6">
+                            <div> 
+                                <p class="buildDetail">Last Deployed at <%= recentEvent.QueuedDeployments.Max(d => d.FinishedUtc) %> using the script <%= recentEvent.QueuedDeployments.Max(d => d.Script) %> </p>
+                            </div>
+                        </td>
+                    </tr>
                 <%
             }
         %>
     </tbody>
 </table>
+<script type="text/javascript" >
+    $(document).ready(function () {
+       $('.row').live('click', function () {
+            $(this).next().toggle();           
+        });
+    });
+</script>
