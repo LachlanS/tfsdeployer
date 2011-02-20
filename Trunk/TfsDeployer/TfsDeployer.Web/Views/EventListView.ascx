@@ -16,7 +16,7 @@
             foreach(var recentEvent in Model.RecentEvents)
             {
                 %>
-                    <tr class="row">
+                    <tr class="expanding-row">
                         <td class=""><%= recentEvent.BuildNumber %></td>
                         <td class=""><%= recentEvent.OriginalQuality %></td>
                         <td class=""><%= recentEvent.NewQuality %></td>
@@ -37,10 +37,14 @@
                                 }%>                                 
                         </td>
                     </tr>
-                    <tr id="<%=recentEvent.BuildNumber%>" class="revealRow">
+                    <tr id="<%=recentEvent.BuildNumber%>" class="reveal-row">
                         <td colspan="6">
                             <div> 
-                                <p class="buildDetail">Last Deployed at <%= recentEvent.QueuedDeployments.Max(d => d.FinishedUtc) %> using the script <%= recentEvent.QueuedDeployments.Max(d => d.Script) %> </p>
+                                <% foreach(var deployment in recentEvent.QueuedDeployments)
+                                {%>
+                                    <p class="buildDetail">Deployed at <%=deployment.FinishedUtc %> using the script <%=deployment.Script%> </p>
+                                  <%
+                                }%>
                             </div>
                         </td>
                     </tr>
@@ -49,10 +53,3 @@
         %>
     </tbody>
 </table>
-<script type="text/javascript" >
-    $(document).ready(function () {
-       $('.row').live('click', function () {
-            $(this).next().toggle();           
-        });
-    });
-</script>

@@ -43,6 +43,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -58,6 +59,9 @@
   <ItemGroup>
     <Content Include="Configuration.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="Scripts\global.js" />
+    <Content Include="Scripts\jquery-1.4.4-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.4.4.js" />
     <Content Include="Scripts\jquery-1.4.4.min.js" />
     <Content Include="Scripts\jquery.query-2.1.7.js" />
     <Content Include="ShowDeployment.aspx" />
@@ -65,7 +69,6 @@
     <Content Include="Styles\Default.css" />
     <Content Include="Views\ConfigurationView.ascx" />
     <Content Include="Views\DeploymentOutputView.ascx" />
-    <Content Include="Views\DeploymentOutputView.js" />
     <Content Include="Views\EventListView.ascx" />
     <Content Include="Views\UptimeView.ascx" />
     <Content Include="Web.config" />

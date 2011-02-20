@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using TfsDeployer.Data;
 
@@ -19,26 +20,29 @@ namespace TfsDeployer.Web.Services
 
         private static IEnumerable<DeploymentEvent> GenerateDeploymentEvents(int maxCount)
         {
+            var deployments = new Collection<QueuedDeployment>();
             for (var eventCount = 0; eventCount < maxCount; eventCount++)
             {
+                var deploymentCount = deployments.Count();
+
+                deployments.Add(new QueuedDeployment
+                {
+                    Id = deploymentCount * 10,
+                    FinishedUtc = DateTime.Now.AddMinutes(-deploymentCount),
+                    HasErrors = false,
+                    Queue = "Queue " + deploymentCount,
+                    QueuedUtc = DateTime.Now.AddMinutes(-deploymentCount + 2),
+                    Script = "Deploy_" + deploymentCount + ".ps1",
+                    StartedUtc = DateTime.Now.AddMinutes(-(deploymentCount + 1))
+                });
+
+
                 yield return new DeploymentEvent
                                  {
                                      BuildNumber = "MagicBuild.20110109." + eventCount,
                                      NewQuality = "Fantastic",
                                      OriginalQuality = "Less than desirable",
-                                     QueuedDeployments = new[]
-                                                             {
-                                                                 new QueuedDeployment
-                                                                     {
-                                                                         Id = eventCount * 10,
-                                                                         FinishedUtc = DateTime.Now,
-                                                                         HasErrors = false,
-                                                                         Queue = "Huh",
-                                                                         QueuedUtc = DateTime.Now.AddMinutes(-eventCount),
-                                                                         Script = "Deploy.ps1",
-                                                                         StartedUtc = DateTime.Now.AddMinutes(-(eventCount + 1))
-                                                                     }
-                                                             },
+                                     QueuedDeployments = deployments.ToArray(),
                                      TeamProject = "Whoop, there it is",
                                      TeamProjectCollectionUri = "http://nowhere.com:8080/tfs/defaultcollection",
                                      TriggeredBy = "Jason 'PS1' Stangroome",
