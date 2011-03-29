@@ -18,10 +18,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="TeamProjectCollectionUri" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://MyTfs.MyDomain/tfs/MyProjectCollection/</Value>
+      <Value Profile="(Default)">http://MyTfsServer:8080/tfs/MyProjectCollection/</Value>
     </Setting>
     <Setting Name="BaseAddress" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://MyHostname/Temporary_Listen_Addresses/TfsDeployer</Value>
+      <Value Profile="(Default)">http://MyDeployerMachine/Temporary_Listen_Addresses/TfsDeployer</Value>
     </Setting>
   </Settings>
 </SettingsFile>
