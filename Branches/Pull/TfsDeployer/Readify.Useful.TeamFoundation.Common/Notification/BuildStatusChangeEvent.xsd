@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="BuildStatusChangeEvent" nillable="true" type="BuildStatusChangeEvent" />
+  <xs:complexType name="BuildStatusChangeEvent">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="TeamFoundationServerUrl" type="xs:anyURI" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TeamProject" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Title" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Subscriber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Id" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Url" type="xs:anyURI" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TimeZone" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TimeZoneOffset" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ChangedTime" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="StatusChange" type="Change" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ChangedBy" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Change">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="FieldName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OldValue" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="NewValue" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

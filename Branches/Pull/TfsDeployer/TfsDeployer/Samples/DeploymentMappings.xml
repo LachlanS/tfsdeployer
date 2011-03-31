@@ -1,0 +1,35 @@
+<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
+
+  <Mapping BuildDefinitionPattern="MyBuildDefA"
+           Computer="BuildServerA"
+           OriginalQuality="*"
+           NewQuality="Under Investigation"
+           Script="PrepareForInvestigation.ps1" 
+           NotificationAddress="someperson@nowhere.test.com"
+           Queue="DefAQueue" />
+
+  <Mapping BuildDefinitionPattern="MyBuildDefB"
+           Computer="AnotherBuildServer"
+           OriginalQuality="Under Investigation"
+           NewQuality="Ready for Deployment"
+           Script="PrepareForDeployment.cmd"
+           RunnerType="BatchFile"
+           NotificationAddress="someperson@nowhere.test.com"
+           Status="Succeeded,PartiallySucceeded" />
+
+  <Mapping BuildDefinitionPattern="MyBuildDef[AB]"
+           Computer="FinalBuildServer"
+           OriginalQuality="Ready for Deployment"
+           NewQuality="Released"
+           Script="Publish.ps1"
+           RunnerType="PowerShell"
+           NotificationAddress="adifferentperson@nowhere.test.com"
+           PermittedUsers="MYDOMAIN\Boss;OTHERDOMAIN\Admin"
+           Status="Succeeded"
+           RetainBuild="true"
+           TimeoutSeconds="300"
+           Queue="DefAQueue" >
+    <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
+  </Mapping>
+
+</DeploymentMappings>
