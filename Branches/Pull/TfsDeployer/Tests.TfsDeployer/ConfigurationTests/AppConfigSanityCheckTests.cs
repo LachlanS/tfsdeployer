@@ -15,13 +15,13 @@ namespace Tests.TfsDeployer.ConfigurationTests
             [TestMethod]
             public void The_team_project_uri_should_be_an_example_one()
             {
-                Assert.AreEqual("https://MyTfs.MyDomain/tfs/MyProjectCollection/", Settings.Default.TeamProjectCollectionUri);
+                Assert.AreEqual("http://MyTfsServer:8080/tfs/MyProjectCollection/", Settings.Default.TeamProjectCollectionUri);
             }
 
             [TestMethod]
             public void The_base_address_should_be_an_example_one()
             {
-                Assert.AreEqual("http://MyHostname/Temporary_Listen_Addresses/TfsDeployer", Settings.Default.BaseAddress);
+                Assert.AreEqual("http://MyDeployerMachine/Temporary_Listen_Addresses/TfsDeployer", Settings.Default.BaseAddress);
             }
 
             public void The_credentials_should_be_empty()

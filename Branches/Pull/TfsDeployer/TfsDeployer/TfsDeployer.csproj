@@ -93,6 +93,7 @@
     <Reference Include="AutoMapper">
       <HintPath>..\Dependencies\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.TeamFoundation, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.TeamFoundation.Build.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.TeamFoundation.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -139,6 +140,7 @@
     <Compile Include="IPostDeployAction.cs" />
     <Compile Include="LargeEventLogTraceListener.cs" />
     <Compile Include="MappingProcessor.cs" />
+    <Compile Include="TfsBuildStatusPoll.cs" />
     <Compile Include="PostDeployAction.cs" />
     <Compile Include="ProcessExtensions.cs" />
     <Compile Include="TeamFoundation\BuildDefinition.cs" />
@@ -186,7 +188,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Add-TfsCreateSoapSubscriptionPermission.cmd" />
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Configuration\DeploymentMappings.xsd">
       <SubType>Designer</SubType>
     </None>

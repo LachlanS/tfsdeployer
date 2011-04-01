@@ -5,6 +5,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Listener;
 using TfsDeployer.Configuration;
+using TfsDeployer.Properties;
 
 namespace TfsDeployer
 {
@@ -13,6 +14,7 @@ namespace TfsDeployer
         public static readonly DateTime StartTime = DateTime.UtcNow;
 
         private TfsBuildStatusTrigger _trigger;
+        private TfsBuildStatusPoll _poll;
 
         public void Start()
         {
@@ -32,8 +34,12 @@ namespace TfsDeployer
             var listener = new TfsListener(eventService, baseAddress);
             var duplicateEventDetector = new DuplicateEventDetector();
 
-            _trigger = new TfsBuildStatusTrigger(listener, new DeployerFactory(buildServer, configurationReader, deploymentFolderSource), duplicateEventDetector);
+            var deployerFactory = new DeployerFactory(buildServer, configurationReader, deploymentFolderSource);
+            _trigger = new TfsBuildStatusTrigger(listener, deployerFactory, duplicateEventDetector);
+            _poll = new TfsBuildStatusPoll(buildServer, deployerFactory);
+
             _trigger.Start();
+            if (Settings.Default.UsePolling) _poll.Start();
         }
 
         #region IDisposable Members
@@ -64,6 +70,11 @@ namespace TfsDeployer
                     {
                         _trigger.Stop();
                         _trigger = null;
+                    }
+                    if (_poll != null)
+                    {
+                        _poll.Stop();
+                        _poll = null;
                     }
                 }
                 catch (Exception)
