@@ -6,6 +6,8 @@ namespace TfsDeployer.DeployAgent
     // Based on Microsoft.Windows.PowerShell.Gui.Internal.GPSHostRawUserInterface, Microsoft.PowerShell.GPowerShell, Version=1.0.0.0
     public sealed class DeploymentHostRawUi : PSHostRawUserInterface
     {
+        private int _bufferWidth = 100;
+        
         public DeploymentHostRawUi()
         {
             ForegroundColor = ConsoleColor.Black;
@@ -62,8 +64,14 @@ namespace TfsDeployer.DeployAgent
 
         public override Size BufferSize
         {
-            get { return new Size(80, 0); }
-            set { /* noop */ }
+            get
+            {
+                return new Size(_bufferWidth, 0);
+            }
+            set 
+            {
+                _bufferWidth = value.Width > 80 ? value.Width : 80;
+            }
         }
 
         public override Size WindowSize
