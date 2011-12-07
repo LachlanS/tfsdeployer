@@ -18,42 +18,82 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Configuration.Install;
-using System.Diagnostics;
+using System.Linq;
 using System.ServiceProcess;
+
 namespace TfsDeployer
 {
     [RunInstaller(true)]
     public class TfsDeployerInstaller : Installer
     {
-        private EventLogInstaller _eventLogInstaller;
-        private ServiceInstaller _tfsDeployerInstaller;
-        private ServiceProcessInstaller _processInstaller;
-
         public TfsDeployerInstaller()
         {
-            _processInstaller = new ServiceProcessInstaller();
-            _eventLogInstaller = new EventLogInstaller();
-            _tfsDeployerInstaller = new ServiceInstaller();
+            var processInstaller = new ServiceProcessInstaller();
+            Installers.Add(processInstaller);
 
-            _eventLogInstaller.CategoryCount = 0;
-            _eventLogInstaller.CategoryResourceFile = null;
-            _eventLogInstaller.Log = "Application";
-            _eventLogInstaller.MessageResourceFile = null;
-            _eventLogInstaller.ParameterResourceFile = null;
-            _eventLogInstaller.Source = "TfsDeployer";
+            var deployerServiceInstaller = new ServiceInstaller
+                                               {
+                                                   DisplayName = "TFS Deployer",
+                                                   ServiceName = "TfsDeployer",
+                                                   Description = "Performs deployment for Team Foundation Server builds.",
+                                                   StartType = ServiceStartMode.Automatic,
+                                                   ServicesDependedOn = new[] {"HTTP"}
+                                               };
+            processInstaller.Installers.Add(deployerServiceInstaller);
 
-            _tfsDeployerInstaller.DisplayName = "TFS Deployer";
-            _tfsDeployerInstaller.ServiceName = "TfsDeployer";
-            _tfsDeployerInstaller.Description = "Performs deployment for Team Foundation Server builds.";
-            _tfsDeployerInstaller.StartType = ServiceStartMode.Automatic;
-            _tfsDeployerInstaller.ServicesDependedOn = new[] {"HTTP"};
-            _processInstaller.Account = ServiceAccount.LocalSystem; 
+            SetServiceAccount(null, null);
+        }
 
-            Installers.Add(_eventLogInstaller);
-            Installers.Add(_tfsDeployerInstaller);
-            Installers.Add(_processInstaller);
+        private ServiceProcessInstaller ProcessInstaller
+        {
+            get { return Installers.OfType<ServiceProcessInstaller>().Single(); }
+        }
+
+        public void SetServiceAccount(string username, string password)
+        {
+            var processInstaller = ProcessInstaller;
+            if (String.IsNullOrEmpty(username))
+            {
+                processInstaller.Account = ServiceAccount.LocalService;
+            }
+            else
+            {
+                processInstaller.Account = ServiceAccount.User;
+                processInstaller.Username = username;
+                processInstaller.Password = password;
+            }
+        }
+
+        public static void Install(string username, string password)
+        {
+            using (var deployerInstaller = new TfsDeployerInstaller())
+            {
+                deployerInstaller.SetServiceAccount(username, password);
+                InstallAssemblyInTransaction(deployerInstaller, i => i.Install(new Hashtable()));
+            }
+        }
+
+        public static void Uninstall()
+        {
+            using (var deployerInstaller = new TfsDeployerInstaller())
+                InstallAssemblyInTransaction(deployerInstaller, i => i.Uninstall(null  /* requires null */));
+        }
+
+        private static void InstallAssemblyInTransaction(Installer installer, Action<Installer> installerAction)
+        {
+            var path = String.Format("/assemblypath={0}", installer.GetType().Assembly.Location);
+            var context = new InstallContext("", new[] { path });
+
+            using (var ti = new TransactedInstaller())
+            {
+                ti.Installers.Add(installer);
+                ti.Context = context;
+                installerAction(ti);
+            }
         }
     }
 }

@@ -35,23 +35,33 @@ namespace TfsDeployer
         {
             AppDomain.CurrentDomain.UnhandledException += DomainUnhandledException;
 
-            var mode = DeployerContainerBuilder.RunMode.WindowsService;
+            var mode = DeployerContainerBuilder.RunMode.InteractiveConsole;
 
             if (args.Length > 0)
             {
                 if (args[0] == "-i")
                 {
-                    Install();
+                    string username = null;
+                    string password = null;
+                    if (args.Length > 1)
+                    {
+                        username = args[1];
+                    }
+                    if (args.Length > 2)
+                    {
+                        password = args[2];
+                    }
+                    TfsDeployerInstaller.Install(username, password);
                     return;
                 }
                 if (args[0] == "-u")
                 {
-                    Uninstall();
+                    TfsDeployerInstaller.Uninstall();
                     return;
                 }
-                if (args[0] == "-d")
+                if (!Environment.UserInteractive || args[0].StartsWith("-s", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    mode = DeployerContainerBuilder.RunMode.InteractiveConsole;
+                    mode = DeployerContainerBuilder.RunMode.WindowsService;
                 }
             }
 
@@ -66,29 +76,5 @@ namespace TfsDeployer
         {
             Trace.TraceError("Primary AppDomain unhandled exception. Terminating: {0}, Exception:\n{1}", e.IsTerminating, e.ExceptionObject);
         }
-
-        private static void Install()
-        {
-            RunInstaller(i => i.Install(new Hashtable()));
-        }
-
-        private static void Uninstall()
-        {
-            RunInstaller(i => i.Uninstall(null)); // requires null.
-        }
-
-        private static void RunInstaller(Action<Installer> installerAction)
-        {
-            using (var ti = new TransactedInstaller())
-            using (var mi = new TfsDeployerInstaller())
-            {
-                ti.Installers.Add(mi);
-                var path = String.Format("/assemblypath={0}", Assembly.GetExecutingAssembly().Location);
-                var ctx = new InstallContext("", new[] { path });
-                ti.Context = ctx;
-                installerAction(ti);
-            }
-        }
-
     }
 }
