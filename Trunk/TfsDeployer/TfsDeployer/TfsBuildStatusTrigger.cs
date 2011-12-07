@@ -52,12 +52,18 @@ namespace TfsDeployer
 
                 var deployer = _deployerFactory();
                 ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
-                edpd.BeginInvoke(changeEvent, eventId, null, null);
+                edpd.BeginInvoke(changeEvent, eventId, ExecuteDeploymentProcessCallback, edpd);
             }
             else
             {
                 TraceHelper.TraceWarning(TraceSwitches.TfsDeployer, "Received duplicate event '{0}' from TFS.", changeEvent.Title);
             }
+        }
+
+        private void ExecuteDeploymentProcessCallback(IAsyncResult asyncResult)
+        {
+            var edpd = (ExecuteDeploymentProcessDelegate) asyncResult.AsyncState;
+            edpd.EndInvoke(asyncResult);
         }
     }
 }

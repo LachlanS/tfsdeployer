@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Readify.Useful.TeamFoundation.Common;
@@ -45,8 +46,15 @@ namespace TfsDeployer
 
                 var deploymentId = _deploymentEventRecorder.RecordQueued(eventId, mapping.Script, mapping.Queue);
 
-                ((ProcessMappingDelegate)ProcessMapping).BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, deploymentId, null, null);
+                var processMappingDelegate = (ProcessMappingDelegate)ProcessMapping;
+                processMappingDelegate.BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, deploymentId, ProcessMappingDelegateCallback, processMappingDelegate);
             }
+        }
+
+        private void ProcessMappingDelegateCallback(IAsyncResult asyncResult)
+        {
+            var processMappingDelegate = (ProcessMappingDelegate) asyncResult.AsyncState;
+            processMappingDelegate.EndInvoke(asyncResult);
         }
 
         private static object GetLockObject(Mapping mapping)
