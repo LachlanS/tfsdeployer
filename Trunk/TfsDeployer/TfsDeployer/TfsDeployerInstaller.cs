@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.Linq;
@@ -44,52 +45,27 @@ namespace TfsDeployer
                                                    ServicesDependedOn = new[] {"HTTP"}
                                                };
             processInstaller.Installers.Add(deployerServiceInstaller);
-
-            SetServiceAccount(null, null);
         }
 
-        private ServiceProcessInstaller ProcessInstaller
+        public static void Install(IEnumerable<string> commandLine)
         {
-            get { return Installers.OfType<ServiceProcessInstaller>().Single(); }
-        }
-
-        public void SetServiceAccount(string username, string password)
-        {
-            var processInstaller = ProcessInstaller;
-            if (String.IsNullOrEmpty(username))
-            {
-                processInstaller.Account = ServiceAccount.LocalService;
-            }
-            else
-            {
-                processInstaller.Account = ServiceAccount.User;
-                processInstaller.Username = username;
-                processInstaller.Password = password;
-            }
-        }
-
-        public static void Install(string username, string password)
-        {
-            using (var deployerInstaller = new TfsDeployerInstaller())
-            {
-                deployerInstaller.SetServiceAccount(username, password);
-                InstallAssemblyInTransaction(deployerInstaller, i => i.Install(new Hashtable()));
-            }
+            InstallAssemblyInTransaction(i => i.Install(new Hashtable()), commandLine);
         }
 
         public static void Uninstall()
         {
-            using (var deployerInstaller = new TfsDeployerInstaller())
-                InstallAssemblyInTransaction(deployerInstaller, i => i.Uninstall(null  /* requires null */));
+            InstallAssemblyInTransaction(i => i.Uninstall(null  /* requires null */), new string[0]);
         }
 
-        private static void InstallAssemblyInTransaction(Installer installer, Action<Installer> installerAction)
+        private static void InstallAssemblyInTransaction(Action<Installer> installerAction, IEnumerable<string> commandLine)
         {
-            var path = String.Format("/assemblypath={0}", installer.GetType().Assembly.Location);
-            var context = new InstallContext("", new[] { path });
-
+            using (var installer = new TfsDeployerInstaller())
             using (var ti = new TransactedInstaller())
             {
+                var assemblyPath = String.Format("/assemblypath={0}", installer.GetType().Assembly.Location);
+                var commandLineWithAssemblyPath = (new[] {assemblyPath}).Concat(commandLine).ToArray();
+                var context = new InstallContext(null, commandLineWithAssemblyPath);
+
                 ti.Installers.Add(installer);
                 ti.Context = context;
                 installerAction(ti);

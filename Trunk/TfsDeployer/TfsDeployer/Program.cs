@@ -19,10 +19,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
-using System.Configuration.Install;
 using System.Diagnostics;
-using System.Reflection;
+using System.Linq;
 using Autofac;
 
 namespace TfsDeployer
@@ -39,19 +37,10 @@ namespace TfsDeployer
 
             if (args.Length > 0)
             {
-                if (args[0] == "-i")
+                if (args[0].StartsWith("-i", StringComparison.InvariantCultureIgnoreCase) || args[0].StartsWith("/i", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string username = null;
-                    string password = null;
-                    if (args.Length > 1)
-                    {
-                        username = args[1];
-                    }
-                    if (args.Length > 2)
-                    {
-                        password = args[2];
-                    }
-                    TfsDeployerInstaller.Install(username, password);
+                    var remainingArgs = args.Skip(1).ToArray();
+                    TfsDeployerInstaller.Install(remainingArgs);
                     return;
                 }
                 if (args[0] == "-u")
