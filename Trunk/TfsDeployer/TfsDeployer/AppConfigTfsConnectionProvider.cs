@@ -21,7 +21,7 @@ namespace TfsDeployer
             var uri = new Uri(Properties.Settings.Default.TeamProjectCollectionUri);
             if (_credentials == null)
             {
-                return TfsTeamProjectCollectionFactory.GetTeamProjectCollection(uri);
+                return new TfsTeamProjectCollection(uri);
             }
 
             return new TfsTeamProjectCollection(uri, _credentials);
