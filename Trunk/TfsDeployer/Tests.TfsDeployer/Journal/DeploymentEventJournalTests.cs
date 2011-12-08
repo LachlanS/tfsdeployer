@@ -98,13 +98,14 @@ namespace Tests.TfsDeployer.Journal
         {
             // Arrange 
             var journal = new DeploymentEventJournal();
+            journal.RecordTriggered("Foobar_123.5", null, null, null, null, null); // an extra event to ensure the eventId != 0
             var eventId = journal.RecordTriggered("Foobar_123.2", null, null, null, null, null);
+            var testEvent = journal.Events.Last();
             var deploymentId = journal.RecordQueued(eventId, "Foo.ps1", "QueueCumber");
-            var deploymentEvent = journal.Events.First();
 
             // Act
             journal.RecordStarted(deploymentId);
-            var queuedDeployment = deploymentEvent.QueuedDeployments[0];
+            var queuedDeployment = testEvent.QueuedDeployments[0];
 
             // Assert
             Assert.IsNotNull(queuedDeployment.StartedUtc, "StartedUtc is null.");

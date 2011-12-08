@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TfsDeployer.Data;
 
@@ -79,20 +80,23 @@ namespace TfsDeployer.Journal
 
         public void SetDeploymentOutputDelegate(int deploymentId, Func<string> outputDelegate)
         {
-            if (_outputs.ContainsKey(deploymentId))
+            lock (((ICollection)_outputs).SyncRoot)
             {
-                _outputs[deploymentId] = outputDelegate;
-            }
-            else
-            {
-                _outputs.Add(deploymentId, outputDelegate);
+                if (_outputs.ContainsKey(deploymentId))
+                {
+                    _outputs[deploymentId] = outputDelegate;
+                }
+                else
+                {
+                    _outputs.Add(deploymentId, outputDelegate);
+                }
             }
         }
 
         private QueuedDeployment GetQueuedDeployment(int deploymentId)
         {
             var eventId = deploymentId >> EventIdBitShift;
-            var deploymentIndex = eventId & (2 ^ EventIdBitShift - 1);
+            var deploymentIndex = deploymentId & ((int)Math.Pow(2, EventIdBitShift) - 1);
             return _events[eventId].QueuedDeployments[deploymentIndex];
         }
 
