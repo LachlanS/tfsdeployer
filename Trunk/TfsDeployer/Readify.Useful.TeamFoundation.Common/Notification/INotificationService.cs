@@ -9,7 +9,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
             Action = "http://schemas.microsoft.com/TeamFoundation/2005/06/Services/Notification/03/Notify",
             ReplyAction = "*")]
         [XmlSerializerFormat(Style = OperationFormatStyle.Document)] // Took me hours to figure this out!
-        void Notify(string eventXml, string tfsIdentityXml);
+        void Notify(string eventXml, string tfsIdentityXml); // SubscriptionInfo parameter
         
     }
 }

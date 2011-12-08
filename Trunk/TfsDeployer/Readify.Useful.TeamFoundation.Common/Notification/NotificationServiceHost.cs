@@ -48,9 +48,12 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
 
         protected virtual void Unsubscribe()
         {
+            if (_subscriptionId == 0) return;
+
             Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose,
                               string.Format("Unsubscribing from Notification event id {0}", _subscriptionId),
                               Constants.NotificationServiceHost);
+            
             _eventService.UnsubscribeEvent(_subscriptionId);
         }
 
