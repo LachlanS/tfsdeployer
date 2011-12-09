@@ -116,6 +116,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,8 @@
     <Compile Include="DeployerContainerBuilderTests.cs" />
     <Compile Include="DeployerTests.cs" />
     <Compile Include="Journal\DeploymentEventJournalTests.cs" />
+    <Compile Include="Load\Stability.cs" />
+    <Compile Include="MappingExecutorTests.cs" />
     <Compile Include="MappingProcessorTests.cs" />
     <Compile Include="DeploymentHostUITests\When_ReadLine_is_called.cs" />
     <Compile Include="DuplicateEventDetectorTests\DuplicateEventTests.cs" />

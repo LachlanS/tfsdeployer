@@ -51,8 +51,8 @@ namespace TfsDeployer
                     );
 
                 var deployer = _deployerFactory();
-                ExecuteDeploymentProcessDelegate edpd = deployer.ExecuteDeploymentProcess;
-                edpd.BeginInvoke(changeEvent, eventId, ExecuteDeploymentProcessCallback, edpd);
+                ExecuteDeploymentProcessDelegate executeDelegate = deployer.ExecuteDeploymentProcess;
+                executeDelegate.BeginInvoke(changeEvent, eventId, ExecuteDeploymentProcessCallback, executeDelegate);
             }
             else
             {
@@ -62,8 +62,16 @@ namespace TfsDeployer
 
         private void ExecuteDeploymentProcessCallback(IAsyncResult asyncResult)
         {
-            var edpd = (ExecuteDeploymentProcessDelegate) asyncResult.AsyncState;
-            edpd.EndInvoke(asyncResult);
+            var executeDelegate = (ExecuteDeploymentProcessDelegate) asyncResult.AsyncState;
+            var deployer = (IDeployer) executeDelegate.Target;
+            try
+            {
+                executeDelegate.EndInvoke(asyncResult);
+            }
+            finally
+            {
+                deployer.Dispose();
+            }
         }
     }
 }

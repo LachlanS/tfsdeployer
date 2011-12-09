@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Readify.Useful.TeamFoundation.Common;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
-using TfsDeployer.DeployAgent;
 using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
@@ -13,22 +11,18 @@ namespace TfsDeployer
 {
     public class MappingProcessor : IMappingProcessor
     {
-        private static readonly object LocksLock = new object();
-        private static readonly IDictionary Locks = new Hashtable();
 
-        private delegate void ProcessMappingDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction, int deploymentId);
+        private delegate void ExecuteDelegate(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction, int deploymentId);
 
-        private readonly IDeployAgentProvider _deployAgentProvider;
-        private readonly IDeploymentFolderSource _deploymentFolderSource;
         private readonly IMappingEvaluator _mappingEvaluator;
         private readonly IDeploymentEventRecorder _deploymentEventRecorder;
+        private readonly Func<IMappingExecutor> _executorFactory;
 
-        public MappingProcessor(IDeployAgentProvider deployAgentProvider, IDeploymentFolderSource deploymentFolderSource, IMappingEvaluator mappingEvaluator, IDeploymentEventRecorder deploymentEventRecorder)
+        public MappingProcessor(IMappingEvaluator mappingEvaluator, IDeploymentEventRecorder deploymentEventRecorder, Func<IMappingExecutor> executorFactory)
         {
-            _deployAgentProvider = deployAgentProvider;
-            _deploymentFolderSource = deploymentFolderSource;
             _mappingEvaluator = mappingEvaluator;
             _deploymentEventRecorder = deploymentEventRecorder;
+            _executorFactory = executorFactory;
         }
 
         public void ProcessMappings(IEnumerable<Mapping> mappings, BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, IPostDeployAction postDeployAction, int eventId)
@@ -46,57 +40,23 @@ namespace TfsDeployer
 
                 var deploymentId = _deploymentEventRecorder.RecordQueued(eventId, mapping.Script, mapping.Queue);
 
-                var processMappingDelegate = (ProcessMappingDelegate)ProcessMapping;
-                processMappingDelegate.BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, deploymentId, ProcessMappingDelegateCallback, processMappingDelegate);
+                var executor = _executorFactory();
+                ExecuteDelegate executeDelegate = executor.Execute;
+                executeDelegate.BeginInvoke(statusChanged, buildDetail, mapping, postDeployAction, deploymentId, ExecuteDelegateCallback, executeDelegate);
             }
         }
 
-        private void ProcessMappingDelegateCallback(IAsyncResult asyncResult)
+        private void ExecuteDelegateCallback(IAsyncResult asyncResult)
         {
-            var processMappingDelegate = (ProcessMappingDelegate) asyncResult.AsyncState;
-            processMappingDelegate.EndInvoke(asyncResult);
-        }
-
-        private static object GetLockObject(Mapping mapping)
-        {
-            if (string.IsNullOrEmpty(mapping.Queue)) return new object();
-
-            lock (LocksLock)
+            var executeDelegate = (ExecuteDelegate)asyncResult.AsyncState;
+            var executor = (IMappingExecutor)executeDelegate.Target;
+            try
             {
-                TraceHelper.TraceVerbose(TraceSwitches.TfsDeployer, "Providing lock object for queue: {0}", mapping.Queue);
-                if (!Locks.Contains(mapping.Queue)) Locks.Add(mapping.Queue, new object());
-                return Locks[mapping.Queue];
-            }
-        }
-        
-        private void ProcessMapping(BuildStatusChangeEvent statusChanged, BuildDetail buildDetail, Mapping mapping, IPostDeployAction postDeployAction, int deploymentId)
-        {
-            lock(GetLockObject(mapping))
+                executeDelegate.EndInvoke(asyncResult);
+            } 
+            finally
             {
-                _deploymentEventRecorder.RecordStarted(deploymentId);
-                
-                var deployAgent = _deployAgentProvider.GetDeployAgent(mapping);
-
-                // default to "happy; did nothing" if there's no deployment agent.
-                var deployResult = new DeployAgentResult { HasErrors = false, Output = string.Empty };
-
-                if (deployAgent != null)
-                {
-                    using (var workingDirectory = new WorkingDirectory())
-                    {
-                        var deployAgentDataFactory = new DeployAgentDataFactory();
-                        var deployData = deployAgentDataFactory.Create(workingDirectory.DirectoryInfo.FullName,
-                                                                       mapping, buildDetail, statusChanged);
-                        deployData.DeploymentId = deploymentId;
-
-                        _deploymentFolderSource.DownloadDeploymentFolder(deployData.TfsBuildDetail, workingDirectory.DirectoryInfo.FullName);
-                        deployResult = deployAgent.Deploy(deployData);
-                    }
-                }
-
-                postDeployAction.DeploymentFinished(mapping, deployResult);
-
-                _deploymentEventRecorder.RecordFinished(deploymentId, deployResult.HasErrors, deployResult.Output);
+                executor.Dispose();
             }
         }
 

@@ -84,5 +84,9 @@ namespace TfsDeployer
             return detail;
         }
 
+        public void Dispose()
+        {
+            // noop
+        }
     }
 }

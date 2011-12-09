@@ -27,6 +27,7 @@ namespace TfsDeployer
 
         private static void ApplyRetainBuild(Mapping mapping, DeployAgentResult deployAgentResult, IBuildDetail detail)
         {
+            //TODO make thread safe
             if (!mapping.RetainBuildSpecified) return;
             if (deployAgentResult.HasErrors) return;
 
