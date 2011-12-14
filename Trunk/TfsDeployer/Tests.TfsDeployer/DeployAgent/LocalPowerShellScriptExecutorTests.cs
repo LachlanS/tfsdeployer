@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer.DeployAgent;
 
@@ -27,6 +28,34 @@ namespace Tests.TfsDeployer.DeployAgent
             Assert.IsFalse(result.HasErrors, "HasErrors");
             StringAssert.Contains(result.Output, Environment.GetEnvironmentVariable("TEMP"));
         }
+
+        [TestMethod]
+        [TestCategory("Sanity")]
+        public void LocalPowerShellScriptExecutor_verify_that_a_script_can_change_the_working_directory_of_future_scripts()
+        {
+            var workingDirectory = Environment.CurrentDirectory;
+            var testPath = Path.Combine(Path.GetTempPath(), GetType().Name);
+            Directory.CreateDirectory(testPath);
+
+            var setExecutor = new LocalPowerShellScriptExecutor();
+            setExecutor.Execute(string.Format("[Environment]::CurrentDirectory = '{0}'", testPath), null);
+
+            var getExecutor = new LocalPowerShellScriptExecutor();
+
+            try
+            {
+                var result = getExecutor.Execute("[Environment]::CurrentDirectory", null);
+
+                Assert.IsFalse(result.HasErrors, "HasErrors");
+                StringAssert.Contains(result.Output, testPath);
+            }
+            finally
+            {
+                Environment.CurrentDirectory = workingDirectory;
+                Directory.Delete(testPath);
+            }
+        }
+
 
     }
 }
