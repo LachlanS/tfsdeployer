@@ -109,7 +109,7 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
+      <HintPath>..\Dependencies\PowerShell.2\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -133,6 +133,7 @@
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
     <Compile Include="DeployAgent\DeploymentHostRawUI.cs" />
+    <Compile Include="DeployAgent\DeploymentHostTextWriter.cs" />
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutor.cs" />

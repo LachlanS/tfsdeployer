@@ -5,7 +5,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\CodePlexFunctions.ps1 = Dependencies\CodePlexFunctions.ps1
 		Dependencies\ICSharpCode.SharpZipLib.dll = Dependencies\ICSharpCode.SharpZipLib.dll
-		Dependencies\System.Management.Automation.dll = Dependencies\System.Management.Automation.dll
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0D74C99-9FDC-403C-811A-0DD9B466AF50}"

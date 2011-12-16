@@ -13,13 +13,23 @@ namespace TfsDeployer.DeployAgent
             ForegroundColor = ConsoleColor.Black;
             BackgroundColor = ConsoleColor.White;
         }
-        
+
+        public override void FlushInputBuffer()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override BufferCell[,] GetBufferContents(Rectangle rectangle)
+        {
+            throw new NotSupportedException();
+        }
+
         public override KeyInfo ReadKey(ReadKeyOptions options)
         {
             throw new NotSupportedException();
         }
 
-        public override void FlushInputBuffer()
+        public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, BufferCell fill)
         {
             throw new NotSupportedException();
         }
@@ -34,33 +44,7 @@ namespace TfsDeployer.DeployAgent
             throw new NotSupportedException();
         }
 
-        public override BufferCell[,] GetBufferContents(Rectangle rectangle)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, BufferCell fill)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override ConsoleColor ForegroundColor { get; set; }
-
         public override ConsoleColor BackgroundColor { get; set; }
-
-        public override Coordinates CursorPosition { get; set; }
-
-        public override Coordinates WindowPosition
-        {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
-        }
-
-        public override int CursorSize
-        {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
-        }
 
         public override Size BufferSize
         {
@@ -68,21 +52,25 @@ namespace TfsDeployer.DeployAgent
             {
                 return new Size(_bufferWidth, 0);
             }
-            set 
+            set
             {
                 _bufferWidth = value.Width > 80 ? value.Width : 80;
             }
         }
 
-        public override Size WindowSize
+        public override Coordinates CursorPosition { get; set; }
+
+        public override int CursorSize
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
 
-        public override Size MaxWindowSize
+        public override ConsoleColor ForegroundColor { get; set; }
+
+        public override bool KeyAvailable
         {
-            get { throw new NotSupportedException(); }
+            get { return false; }
         }
 
         public override Size MaxPhysicalWindowSize
@@ -90,9 +78,21 @@ namespace TfsDeployer.DeployAgent
             get { throw new NotSupportedException(); }
         }
 
-        public override bool KeyAvailable
+        public override Size MaxWindowSize
         {
-            get { return false; }
+            get { throw new NotSupportedException(); }
+        }
+
+        public override Coordinates WindowPosition
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        public override Size WindowSize
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
         }
 
         public override string WindowTitle { get; set; }

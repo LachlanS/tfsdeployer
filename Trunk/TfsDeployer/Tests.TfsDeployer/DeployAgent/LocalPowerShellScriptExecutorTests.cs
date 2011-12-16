@@ -8,7 +8,6 @@ namespace Tests.TfsDeployer.DeployAgent
     [TestClass]
     public class LocalPowerShellScriptExecutorTests
     {
-
         [TestMethod]
         public void LocalPowerShellScriptExecutor_should_return_value_of_environment_variable()
         {
@@ -27,6 +26,38 @@ namespace Tests.TfsDeployer.DeployAgent
 
             Assert.IsFalse(result.HasErrors, "HasErrors");
             StringAssert.Contains(result.Output, Environment.GetEnvironmentVariable("TEMP"));
+        }
+
+        [TestMethod]
+        public void LocalPowerShellScriptExecutor_should_return_output_from_Console_WriteLine()
+        {
+            var executor = new LocalPowerShellScriptExecutor();
+            var result = executor.Execute("[Console]::WriteLine('written to the console')", null);
+
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "written to the console");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellScriptExecutor_should_return_output_from_native_executable()
+        {
+            var executor = new LocalPowerShellScriptExecutor();
+            var result = executor.Execute("cmd /c echo Written by native executable", null);
+
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "Written by native executable");
+        }
+
+        [TestMethod]
+        public void LocalPowerShellScriptExecutor_should_return_output_from_CLR_executable()
+        {
+            var executor = new LocalPowerShellScriptExecutor();
+            var MSBuildPath = Path.Combine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory(), "msbuild.exe");
+            var command = string.Format("& \"{0}\" /version", MSBuildPath);
+            var result = executor.Execute(command, null);
+
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "Build Engine");
         }
 
         [TestMethod]

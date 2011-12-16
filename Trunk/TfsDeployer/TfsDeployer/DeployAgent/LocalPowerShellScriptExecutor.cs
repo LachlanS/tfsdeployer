@@ -12,6 +12,9 @@ namespace TfsDeployer.DeployAgent
 
         public DeployAgentResult Execute(string commandText, IDictionary<string, object> variables)
         {
+            var registerHostScript = string.Format("[{0}]::{1}($Host.UI)", typeof(DeploymentHostTextWriter).FullName, "RegisterHostUserInterface");
+            var setOutputEncodingScript = "$OutputEncoding = [System.Console]::OutputEncoding";
+
             var hasErrors = true;
             string output;
 
@@ -21,6 +24,7 @@ namespace TfsDeployer.DeployAgent
                 var host = new DeploymentHost(_ui);
                 using (var space = RunspaceFactory.CreateRunspace(host))
                 {
+                    space.ThreadOptions = PSThreadOptions.ReuseThread;
                     space.Open();
 
                     if (null != variables)
@@ -35,6 +39,9 @@ namespace TfsDeployer.DeployAgent
                     {
                         var scriptCommand = new Command(commandText, true);
                         scriptCommand.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                        pipeline.Commands.AddScript(registerHostScript);
+                        pipeline.Commands.AddScript(setOutputEncodingScript);
+                        
                         pipeline.Commands.Add(scriptCommand);
 
                         pipeline.Commands.Add("Out-Default");
