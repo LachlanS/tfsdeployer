@@ -39,6 +39,16 @@ namespace Tests.TfsDeployer.DeployAgent
         }
 
         [TestMethod]
+        public void LocalPowerShellScriptExecutor_should_return_output_from_Console_Error_WriteLine()
+        {
+            var executor = new LocalPowerShellScriptExecutor();
+            var result = executor.Execute("[Console]::Error.WriteLine('written to console error')", null);
+
+            Assert.IsFalse(result.HasErrors, "HasErrors");
+            StringAssert.Contains(result.Output, "written to console error");
+        }
+
+        [TestMethod]
         public void LocalPowerShellScriptExecutor_should_return_output_from_native_executable()
         {
             var executor = new LocalPowerShellScriptExecutor();
