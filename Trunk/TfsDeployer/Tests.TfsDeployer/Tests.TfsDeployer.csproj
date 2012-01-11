@@ -140,6 +140,7 @@
     <Compile Include="DeployAgent\BatchFileDeployAgentTests.cs" />
     <Compile Include="DeployAgent\DeploymentHostRawUITests.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
+    <Compile Include="DeployAgent\OutOfProcessPowerShellDeployAgentTests.cs" />
     <Compile Include="DeployerContainerBuilderTests.cs" />
     <Compile Include="DeployerTests.cs" />
     <Compile Include="Journal\DeploymentEventJournalTests.cs" />

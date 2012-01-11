@@ -44,7 +44,7 @@ namespace TfsDeployer.DeployAgent
             return result;
         }
 
-        private static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
+        public static IDictionary<string, object> CreateCommonVariables(DeployAgentData deployAgentData)
         {
             var dict = new Dictionary<string, object>
                            {

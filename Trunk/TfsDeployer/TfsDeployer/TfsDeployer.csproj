@@ -129,6 +129,7 @@
     <Compile Include="Configuration\IConfigurationReader.cs" />
     <Compile Include="Configuration\ConfigurationReader.cs" />
     <Compile Include="ConsoleEntryPoint.cs" />
+    <Compile Include="DeployAgent\AsyncProcessOutputAndErrorReader.cs" />
     <Compile Include="DeployAgent\DeployAgentDataFactory.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgent.cs" />
     <Compile Include="DeployAgent\DeployAgentProvider.cs" />
@@ -137,6 +138,9 @@
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutor.cs" />
+    <Compile Include="DeployAgent\OutOfProcessPowerShellAgent.cs" />
+    <Compile Include="DeployAgent\OutOfProcessPowerShellDeployAgent.cs" />
+    <Compile Include="DeployAgent\SynchronizedStringBuilder.cs" />
     <Compile Include="Deployer.cs" />
     <Compile Include="Alert\IAlert.cs" />
     <Compile Include="DeployerContainerBuilder.cs" />
@@ -251,6 +255,10 @@
     <ProjectReference Include="..\TfsDeployer.Data\TfsDeployer.Data.csproj">
       <Project>{A77AD549-8F87-45EC-8868-CD18AA603432}</Project>
       <Name>TfsDeployer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.PowerShellAgent\TfsDeployer.PowerShellAgent.csproj">
+      <Project>{FF1BAD65-C39B-4983-8562-3F5C379F98AE}</Project>
+      <Name>TfsDeployer.PowerShellAgent</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
