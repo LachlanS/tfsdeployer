@@ -27,7 +27,7 @@ namespace Tests.TfsDeployer.DeployAgent
                                    TfsBuildDetail = new BuildDetail()
                                };
 
-                var agent = new OutOfProcessPowerShellDeployAgent(null);
+                var agent = new OutOfProcessPowerShellDeployAgent(null, ClrVersion.Version2);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=Bar None");
@@ -51,7 +51,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new OutOfProcessPowerShellDeployAgent(null);
+                var agent = new OutOfProcessPowerShellDeployAgent(null, ClrVersion.Version2);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=Who's going to pay $15 for a \"good\" beer?");
@@ -75,7 +75,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new OutOfProcessPowerShellDeployAgent(null);
+                var agent = new OutOfProcessPowerShellDeployAgent(null, ClrVersion.Version2);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=False");
@@ -103,7 +103,7 @@ namespace Tests.TfsDeployer.DeployAgent
 
                 var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail, buildStatusChangeEvent);
 
-                var agent = new OutOfProcessPowerShellDeployAgent(null);
+                var agent = new OutOfProcessPowerShellDeployAgent(null, ClrVersion.Version2);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -126,7 +126,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     DeployScriptRoot = scriptFile.FileInfo.DirectoryName
                 };
 
-                var agent = new OutOfProcessPowerShellDeployAgent(deploymentEventRecorder);
+                var agent = new OutOfProcessPowerShellDeployAgent(deploymentEventRecorder, ClrVersion.Version2);
                 agent.Deploy(data);
             }
 

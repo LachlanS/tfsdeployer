@@ -71,6 +71,7 @@ namespace TfsDeployer.Configuration
     public enum RunnerType
     {
         PowerShell,
+        PowerShellV3,
         BatchFile,
     }
 

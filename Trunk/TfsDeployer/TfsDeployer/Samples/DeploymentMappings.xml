@@ -32,4 +32,11 @@
     <ScriptParameter name="ProductionServerName" value="ProdSvr1" />
   </Mapping>
 
+  <Mapping BuildDefinitionPattern="MyBuildDefA"
+           Computer="BuildServerWithPowerShellV3"
+           OriginalQuality="*"
+           NewQuality="A Custom Quality"
+           Script="PowerShellVersion3Script.ps1"
+           RunnerType="PowerShellV3" />
+
 </DeploymentMappings>

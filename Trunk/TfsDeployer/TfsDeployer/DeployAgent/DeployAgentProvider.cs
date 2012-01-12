@@ -26,7 +26,12 @@ namespace TfsDeployer.DeployAgent
             }
             else
             {
-                agent = _componentContext.Resolve<OutOfProcessPowerShellDeployAgent>();
+                var clrVersion = ClrVersion.Version2;
+                if (mapping.RunnerTypeSpecified && mapping.RunnerType == RunnerType.PowerShellV3)
+                {
+                    clrVersion = ClrVersion.Version4;
+                }
+                agent = _componentContext.Resolve<OutOfProcessPowerShellDeployAgent>(new TypedParameter(typeof(ClrVersion), clrVersion));
             }
             return agent;
         }

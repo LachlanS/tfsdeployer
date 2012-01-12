@@ -11,10 +11,12 @@ namespace TfsDeployer.DeployAgent
     public class OutOfProcessPowerShellDeployAgent : IDeployAgent
     {
         private readonly IDeploymentEventRecorder _deploymentEventRecorder;
+        private readonly ClrVersion _clrVersion;
 
-        public OutOfProcessPowerShellDeployAgent(IDeploymentEventRecorder deploymentEventRecorder)
+        public OutOfProcessPowerShellDeployAgent(IDeploymentEventRecorder deploymentEventRecorder, ClrVersion clrVersion)
         {
             _deploymentEventRecorder = deploymentEventRecorder;
+            _clrVersion = clrVersion;
         }
 
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
@@ -25,7 +27,7 @@ namespace TfsDeployer.DeployAgent
                                   Command = PrepareImportGlobalVariablesScript(deployAgentData) + PrepareDeploymentScript(deployAgentData)
                               };
 
-            var runner = new PowerShellAgentRunner(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout, ClrVersion.Version2);
+            var runner = new PowerShellAgentRunner(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout, _clrVersion);
 
             if (_deploymentEventRecorder != null)
             {

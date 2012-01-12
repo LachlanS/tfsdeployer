@@ -41,6 +41,7 @@
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:enumeration value="PowerShell" />
+      <xs:enumeration value="PowerShellV3" />
       <xs:enumeration value="BatchFile" />
     </xs:restriction>
   </xs:simpleType>

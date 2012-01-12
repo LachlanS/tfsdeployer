@@ -138,6 +138,7 @@
     <Compile Include="DeployAgentDataFactoryTests\When_Create_is_passed_null_ScriptParameters.cs" />
     <Compile Include="DeployAgent\DeployAgentDataFactoryTests.cs" />
     <Compile Include="DeployAgent\BatchFileDeployAgentTests.cs" />
+    <Compile Include="DeployAgent\DeployAgentProviderTests.cs" />
     <Compile Include="DeployAgent\DeploymentHostRawUITests.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
     <Compile Include="DeployAgent\OutOfProcessPowerShellDeployAgentTests.cs" />
