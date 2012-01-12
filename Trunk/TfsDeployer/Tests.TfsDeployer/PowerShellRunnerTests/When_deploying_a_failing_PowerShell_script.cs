@@ -39,7 +39,7 @@ namespace Tests.TfsDeployer.PowerShellRunnerTests
         {
             var result = DeployFailingPowerShellScript();
             Assert.IsTrue(result.HasErrors, "HasErrors");
-            StringAssert.Contains(result.Output, "<<<<", "Output"); // <<<< is pointer to error position
+            StringAssert.Contains(result.Output, "char:", "Output"); // "char:" refers to error position
         }
 
         [TestMethod]
