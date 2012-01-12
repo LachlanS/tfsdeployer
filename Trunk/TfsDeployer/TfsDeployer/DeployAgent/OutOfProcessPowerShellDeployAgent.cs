@@ -44,8 +44,19 @@ namespace TfsDeployer.DeployAgent
                     if (commandInfo.Parameters.ContainsKey(deployParam.Name))
                     {
                         var commandParam = commandInfo.Parameters[deployParam.Name];
-                        commandBuilder.AppendFormat(" -{0} {1}", commandParam.Name, deployParam.Value);
-                        //TODO switches, strings with spaces
+                        if (commandParam.SwitchParameter)
+                        {
+                            var value = "$false";
+                            if (Convert.ToBoolean(deployParam.Value))
+                            {
+                                value = "$true";
+                            }
+                            commandBuilder.AppendFormat(" -{0}:{1}", commandParam.Name, value);
+                        }
+                        else
+                        {
+                            commandBuilder.AppendFormat(" -{0} '{1}'", commandParam.Name, deployParam.Value.Replace("'","''"));
+                        }
                         //TODO aliases, shortest unique name
                     }
                 }
