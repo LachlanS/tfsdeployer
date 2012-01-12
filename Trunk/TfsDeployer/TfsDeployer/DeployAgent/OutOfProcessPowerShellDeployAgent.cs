@@ -17,7 +17,7 @@ namespace TfsDeployer.DeployAgent
                                   Command = PrepareImportGlobalVariablesScript(deployAgentData) + PrepareDeploymentScript(deployAgentData)
                               };
 
-            var agent = new OutOfProcessPowerShellAgent(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout);
+            var agent = new PowerShellAgentRunner(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout, ClrVersion.Version2);
             var exitCode = agent.Run();
             var result = new DeployAgentResult {HasErrors = exitCode != 0, Output = agent.Output};
             return result;

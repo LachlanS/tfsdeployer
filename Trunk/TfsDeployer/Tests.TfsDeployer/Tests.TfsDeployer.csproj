@@ -141,6 +141,7 @@
     <Compile Include="DeployAgent\DeploymentHostRawUITests.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgentTests.cs" />
     <Compile Include="DeployAgent\OutOfProcessPowerShellDeployAgentTests.cs" />
+    <Compile Include="DeployAgent\PowerShellAgentRunnerTests.cs" />
     <Compile Include="DeployerContainerBuilderTests.cs" />
     <Compile Include="DeployerTests.cs" />
     <Compile Include="Journal\DeploymentEventJournalTests.cs" />
@@ -213,6 +214,10 @@
     <ProjectReference Include="..\TfsDeployer.Data\TfsDeployer.Data.csproj">
       <Project>{A77AD549-8F87-45EC-8868-CD18AA603432}</Project>
       <Name>TfsDeployer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TfsDeployer.PowerShellAgent\TfsDeployer.PowerShellAgent.csproj">
+      <Project>{FF1BAD65-C39B-4983-8562-3F5C379F98AE}</Project>
+      <Name>TfsDeployer.PowerShellAgent</Name>
     </ProjectReference>
     <ProjectReference Include="..\TfsDeployer.Web\TfsDeployer.Web.csproj">
       <Project>{604D8775-9748-49E0-B058-62661A5DC742}</Project>

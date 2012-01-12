@@ -138,7 +138,7 @@
     <Compile Include="DeployAgent\IDeployAgentProvider.cs" />
     <Compile Include="DeployAgent\LocalPowerShellDeployAgent.cs" />
     <Compile Include="DeployAgent\LocalPowerShellScriptExecutor.cs" />
-    <Compile Include="DeployAgent\OutOfProcessPowerShellAgent.cs" />
+    <Compile Include="DeployAgent\PowerShellAgentRunner.cs" />
     <Compile Include="DeployAgent\OutOfProcessPowerShellDeployAgent.cs" />
     <Compile Include="DeployAgent\SynchronizedStringBuilder.cs" />
     <Compile Include="Deployer.cs" />

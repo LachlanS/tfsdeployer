@@ -31,11 +31,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.Data", "TfsDepl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.PowerShellAgent", "TfsDeployer.PowerShellAgent\TfsDeployer.PowerShellAgent.csproj", "{FF1BAD65-C39B-4983-8562-3F5C379F98AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsDeployer.PowerShellAgent.CLR4", "TfsDeployer.PowerShellAgent\TfsDeployer.PowerShellAgent.CLR4.csproj", "{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}"
-EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -57,9 +55,6 @@ Global
 		SccProjectUniqueName6 = TfsDeployer.PowerShellAgent\\TfsDeployer.PowerShellAgent.csproj
 		SccProjectName6 = TfsDeployer.PowerShellAgent
 		SccLocalPath6 = TfsDeployer.PowerShellAgent
-		SccProjectUniqueName7 = TfsDeployer.PowerShellAgent\\TfsDeployer.PowerShellAgent.CLR4.csproj
-		SccProjectName7 = TfsDeployer.PowerShellAgent
-		SccLocalPath7 = TfsDeployer.PowerShellAgent
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = TfsDeployer.vsmdi
@@ -139,15 +134,6 @@ Global
 		{FF1BAD65-C39B-4983-8562-3F5C379F98AE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FF1BAD65-C39B-4983-8562-3F5C379F98AE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FF1BAD65-C39B-4983-8562-3F5C379F98AE}.Release|x86.ActiveCfg = Release|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9E078ECB-E74D-4683-B0B1-2AB5CEE67248}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
