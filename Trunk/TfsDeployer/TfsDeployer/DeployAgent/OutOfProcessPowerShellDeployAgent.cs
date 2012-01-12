@@ -3,12 +3,20 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
+using TfsDeployer.Journal;
 using TfsDeployer.PowerShellAgent;
 
 namespace TfsDeployer.DeployAgent
 {
     public class OutOfProcessPowerShellDeployAgent : IDeployAgent
     {
+        private readonly IDeploymentEventRecorder _deploymentEventRecorder;
+
+        public OutOfProcessPowerShellDeployAgent(IDeploymentEventRecorder deploymentEventRecorder)
+        {
+            _deploymentEventRecorder = deploymentEventRecorder;
+        }
+
         public DeployAgentResult Deploy(DeployAgentData deployAgentData)
         {
             var request = new AgentRequest
@@ -17,9 +25,15 @@ namespace TfsDeployer.DeployAgent
                                   Command = PrepareImportGlobalVariablesScript(deployAgentData) + PrepareDeploymentScript(deployAgentData)
                               };
 
-            var agent = new PowerShellAgentRunner(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout, ClrVersion.Version2);
-            var exitCode = agent.Run();
-            var result = new DeployAgentResult {HasErrors = exitCode != 0, Output = agent.Output};
+            var runner = new PowerShellAgentRunner(request, deployAgentData.DeployScriptRoot, deployAgentData.Timeout, ClrVersion.Version2);
+
+            if (_deploymentEventRecorder != null)
+            {
+                _deploymentEventRecorder.SetDeploymentOutputDelegate(deployAgentData.DeploymentId, () => runner.Output);
+            }
+            
+            var exitCode = runner.Run();
+            var result = new DeployAgentResult {HasErrors = exitCode != 0, Output = runner.Output};
             return result;
         }
 
@@ -30,7 +44,7 @@ namespace TfsDeployer.DeployAgent
             var commandBuilder = new StringBuilder();
             commandBuilder.AppendFormat("& '{0}'", fullDeployScriptPath.Replace("'", "''"));
 
-            if (deployAgentData.DeployScriptParameters.Any())
+            if (deployAgentData.DeployScriptParameters != null && deployAgentData.DeployScriptParameters.Any())
             {
                 CommandInfo commandInfo;
                 using (var shell = PowerShell.Create())
@@ -72,9 +86,12 @@ namespace TfsDeployer.DeployAgent
             const string scriptTemplate = "(Import-Clixml -Path {0}).GetEnumerator() | ForEach-Object {{ Set-Variable -Name $_.Key -Value $_.Value -Scope global }};";
 
             var globalVariables = LocalPowerShellDeployAgent.CreateCommonVariables(deployAgentData);
-            foreach (var deployParam in deployAgentData.DeployScriptParameters)
+            if (deployAgentData.DeployScriptParameters != null)
             {
-                globalVariables[deployParam.Name] = deployParam.Value;
+                foreach (var deployParam in deployAgentData.DeployScriptParameters)
+                {
+                    globalVariables[deployParam.Name] = deployParam.Value;
+                }
             }
 
             using (var shell = PowerShell.Create())

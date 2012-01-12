@@ -3,7 +3,7 @@ using System.Text;
 
 namespace TfsDeployer.DeployAgent
 {
-    class SynchronizedStringBuilder
+    public class SynchronizedStringBuilder
     {
         private readonly StringBuilder _builder;
 
@@ -17,6 +17,14 @@ namespace TfsDeployer.DeployAgent
         {
             _builder.Append(value, startIndex, count);
             return this;
+        }
+
+        public int Length
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get { return _builder.Length; }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set { _builder.Length = value; }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

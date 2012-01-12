@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Readify.Useful.TeamFoundation.Common.Notification;
 using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
+using TfsDeployer.Journal;
 using TfsDeployer.TeamFoundation;
 
 namespace Tests.TfsDeployer.DeployAgent
@@ -25,7 +27,7 @@ namespace Tests.TfsDeployer.DeployAgent
                                    TfsBuildDetail = new BuildDetail()
                                };
 
-                var agent = new OutOfProcessPowerShellDeployAgent();
+                var agent = new OutOfProcessPowerShellDeployAgent(null);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=Bar None");
@@ -49,7 +51,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new OutOfProcessPowerShellDeployAgent();
+                var agent = new OutOfProcessPowerShellDeployAgent(null);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=Who's going to pay $15 for a \"good\" beer?");
@@ -73,7 +75,7 @@ namespace Tests.TfsDeployer.DeployAgent
                     TfsBuildDetail = new BuildDetail()
                 };
 
-                var agent = new OutOfProcessPowerShellDeployAgent();
+                var agent = new OutOfProcessPowerShellDeployAgent(null);
                 var result = agent.Deploy(data);
 
                 StringAssert.Contains(result.Output, "Foo=False");
@@ -101,7 +103,7 @@ namespace Tests.TfsDeployer.DeployAgent
 
                 var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail, buildStatusChangeEvent);
 
-                var agent = new OutOfProcessPowerShellDeployAgent();
+                var agent = new OutOfProcessPowerShellDeployAgent(null);
 
                 // Act
                 result = agent.Deploy(testDeployData);
@@ -109,6 +111,56 @@ namespace Tests.TfsDeployer.DeployAgent
 
             // Assert
             StringAssert.Contains(result.Output, "Description:My Process Template");
+        }
+
+        [TestMethod]
+        public void OutOfProcessPowerShellDeployAgent_should_expose_live_output_to_the_deployment_event_recorder()
+        {
+            var deploymentEventRecorder = new StubDeploymentEventRecorder();
+
+            using (var scriptFile = new TemporaryFile(".ps1", "'hello there'"))
+            {
+                var data = new DeployAgentData
+                {
+                    DeployScriptFile = scriptFile.FileInfo.Name,
+                    DeployScriptRoot = scriptFile.FileInfo.DirectoryName
+                };
+
+                var agent = new OutOfProcessPowerShellDeployAgent(deploymentEventRecorder);
+                agent.Deploy(data);
+            }
+
+            StringAssert.Contains(deploymentEventRecorder.OutputDelegate(), "hello there");
+        }
+
+        class StubDeploymentEventRecorder : IDeploymentEventRecorder
+        {
+            public Func<string> OutputDelegate;
+
+            public int RecordTriggered(string buildNumber, string teamProject, string teamProjectCollectionUri, string triggeredBy, string originalQuality, string newQuality)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int RecordQueued(int eventId, string script, string queue)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void RecordStarted(int deploymentId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void RecordFinished(int deploymentId, bool hasErrors, string finalOutput)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetDeploymentOutputDelegate(int deploymentId, Func<string> outputDelegate)
+            {
+                OutputDelegate = outputDelegate;
+            }
         }
 
     }

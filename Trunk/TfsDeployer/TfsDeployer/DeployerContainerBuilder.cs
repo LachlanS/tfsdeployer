@@ -56,6 +56,7 @@ namespace TfsDeployer
                 .SingleInstance();
 
             _containerBuilder.RegisterType<LocalPowerShellDeployAgent>();
+            _containerBuilder.RegisterType<OutOfProcessPowerShellDeployAgent>();
             _containerBuilder.RegisterType<DeployAgentProvider>().As<IDeployAgentProvider>();
             _containerBuilder.RegisterType<EmailAlerter>().As<IAlert>();
             _containerBuilder.RegisterType<MappingEvaluator>().As<IMappingEvaluator>();

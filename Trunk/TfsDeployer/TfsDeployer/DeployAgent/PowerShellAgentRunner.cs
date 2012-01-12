@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
-using System.Text.RegularExpressions;
 using TfsDeployer.PowerShellAgent;
 
 namespace TfsDeployer.DeployAgent
@@ -20,11 +19,11 @@ namespace TfsDeployer.DeployAgent
         private readonly string _workingDirectory;
         private readonly TimeSpan _timeout;
         private readonly ClrVersion _clrVersion;
-        private readonly StringBuilder _outputBuilder;
+        private readonly SynchronizedStringBuilder _outputBuilder;
 
         public PowerShellAgentRunner(AgentRequest request, string workingDirectory, TimeSpan timeout, ClrVersion clrVersion)
         {
-            _outputBuilder = new StringBuilder();
+            _outputBuilder = new SynchronizedStringBuilder(new StringBuilder(0x1000));
             _request = request;
             _workingDirectory = workingDirectory;
             _timeout = timeout;
@@ -33,7 +32,7 @@ namespace TfsDeployer.DeployAgent
 
         public int Run()
         {
-            _outputBuilder.Remove(0, _outputBuilder.Length);
+            _outputBuilder.Length = 0;
 
             var process = StartProcessWithRequest(_request, _workingDirectory);
 

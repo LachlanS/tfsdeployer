@@ -11,9 +11,9 @@ namespace TfsDeployer.DeployAgent
         private readonly SynchronizedStringBuilder _combinedOutput;
         private readonly Thread[] _threads;
 
-        public AsyncProcessOutputAndErrorReader(Process process, StringBuilder combinedOutput)
+        public AsyncProcessOutputAndErrorReader(Process process, SynchronizedStringBuilder combinedOutput)
         {
-            _combinedOutput = new SynchronizedStringBuilder(combinedOutput);
+            _combinedOutput = combinedOutput;
             _threads = new[]
                            {
                                new Thread(() => CopyReaderToOutput(process.StandardOutput, _combinedOutput)),
