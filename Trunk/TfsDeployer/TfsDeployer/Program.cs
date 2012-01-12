@@ -48,10 +48,15 @@ namespace TfsDeployer
                     TfsDeployerInstaller.Uninstall();
                     return;
                 }
-                if (!Environment.UserInteractive || args[0].StartsWith("-s", StringComparison.InvariantCultureIgnoreCase))
+                if (args[0].StartsWith("-s", StringComparison.InvariantCultureIgnoreCase))
                 {
                     mode = DeployerContainerBuilder.RunMode.WindowsService;
                 }
+            }
+
+            if (!Environment.UserInteractive)
+            {
+                mode = DeployerContainerBuilder.RunMode.WindowsService;
             }
 
             var containerBuilder = new DeployerContainerBuilder(mode);
