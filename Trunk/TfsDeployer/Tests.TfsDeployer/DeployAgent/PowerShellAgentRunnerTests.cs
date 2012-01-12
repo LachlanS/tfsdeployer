@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.PowerShellAgent;
@@ -142,6 +143,38 @@ namespace Tests.TfsDeployer.DeployAgent
 
             StringAssert.Contains(runner.Output, "Build Engine");
         }
+
+        [TestMethod]
+        public void PowerShellAgentRunner_should_return_output_prior_to_a_script_error()
+        {
+            var request = new AgentRequest
+            {
+                NoProfile = true,
+                Command = string.Format("'Output this first'\nthrow 'fail'")
+            };
+
+            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.Zero, ClrVersion.Version2);
+            runner.Run();
+
+            StringAssert.Contains(runner.Output, "Output this first");
+        }
+
+        [TestMethod]
+        public void PowerShellAgentRunner_should_return_readable_errors_instead_of_CliXml()
+        {
+            var request = new AgentRequest
+            {
+                NoProfile = true,
+                Command = string.Format("'Output this first'\nthrow 'my error message'")
+            };
+
+            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.Zero, ClrVersion.Version2);
+            runner.Run();
+
+            StringAssert.Contains(runner.Output, "my error message");
+            StringAssert.DoesNotMatch(runner.Output, new Regex("CLIXML"));
+        }
+
 
     }
 }

@@ -52,8 +52,7 @@ namespace TfsDeployer.PowerShellAgent
                 arguments.Add("-mta");
             }
 
-            var encodedCommand = Convert.ToBase64String(Encoding.Unicode.GetBytes(request.Command));
-            arguments.AddRange(new[] { "-encodedcommand", encodedCommand });
+            arguments.AddRange(new[] { "-command", request.Command });
 
             return arguments.ToArray();
         }
