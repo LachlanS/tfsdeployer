@@ -175,6 +175,21 @@ namespace Tests.TfsDeployer.DeployAgent
             StringAssert.DoesNotMatch(runner.Output, new Regex("CLIXML"));
         }
 
+        [TestMethod]
+        public void PowerShellAgentRunner_should_return_formatted_objects()
+        {
+            var request = new AgentRequest
+            {
+                NoProfile = true,
+                Command = string.Format("Get-ChildItem -Path Env:")
+            };
+
+            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.Zero, ClrVersion.Version2);
+            runner.Run();
+
+            StringAssert.Contains(runner.Output, Environment.GetEnvironmentVariable("TEMP"));
+        }
+
 
     }
 }

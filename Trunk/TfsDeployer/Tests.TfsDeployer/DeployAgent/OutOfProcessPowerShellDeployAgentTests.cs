@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Readify.Useful.TeamFoundation.Common.Notification;
+using TfsDeployer.Configuration;
 using TfsDeployer.DeployAgent;
 using TfsDeployer.TeamFoundation;
 
@@ -77,6 +79,36 @@ namespace Tests.TfsDeployer.DeployAgent
                 StringAssert.Contains(result.Output, "Foo=False");
             }
 
+        }
+
+        [TestMethod]
+        public void OutOfProcessPowerShellDeployAgent_should_serialize_build_detail_across_processes()
+        {
+            DeployAgentResult result;
+            using (var scriptFile = new TemporaryFile(".ps1", "'Description:' + $TfsDeployerBuildDetail.BuildDefinition.Process.Description"))
+            {
+                var buildDetail = new BuildDetail {BuildDefinition = {Process = {Description = "My Process Template"}}};
+
+                var mapping = new Mapping
+                {
+                    NewQuality = "Released",
+                    OriginalQuality = null,
+                    ScriptParameters = new ScriptParameter[0],
+                    Script = scriptFile.FileInfo.Name
+                };
+
+                var buildStatusChangeEvent = new BuildStatusChangeEvent { StatusChange = new Change() };
+
+                var testDeployData = (new DeployAgentDataFactory()).Create(scriptFile.FileInfo.DirectoryName, mapping, buildDetail, buildStatusChangeEvent);
+
+                var agent = new OutOfProcessPowerShellDeployAgent();
+
+                // Act
+                result = agent.Deploy(testDeployData);
+            }
+
+            // Assert
+            StringAssert.Contains(result.Output, "Description:My Process Template");
         }
 
     }
