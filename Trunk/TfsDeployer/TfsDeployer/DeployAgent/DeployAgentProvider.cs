@@ -26,7 +26,7 @@ namespace TfsDeployer.DeployAgent
             }
             else
             {
-                agent = _componentContext.Resolve<LocalPowerShellDeployAgent>();
+                agent = _componentContext.Resolve<OutOfProcessPowerShellDeployAgent>();
             }
             return agent;
         }
