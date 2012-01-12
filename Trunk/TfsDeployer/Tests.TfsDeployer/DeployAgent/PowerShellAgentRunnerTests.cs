@@ -91,7 +91,7 @@ namespace Tests.TfsDeployer.DeployAgent
                 Command = "[Console]::WriteLine('written to the console')"
             };
 
-            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.Zero, ClrVersion.Version2);
+            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.MaxValue, ClrVersion.Version2);
             runner.Run();
 
             StringAssert.Contains(runner.Output, "written to the console");
@@ -188,6 +188,23 @@ namespace Tests.TfsDeployer.DeployAgent
             runner.Run();
 
             StringAssert.Contains(runner.Output, Environment.GetEnvironmentVariable("TEMP"));
+        }
+
+        [TestMethod]
+        public void PowerShellAgentRunner_should_terminate_if_timeout_period_exceeded()
+        {
+            var request = new AgentRequest
+            {
+                NoProfile = true,
+                Command = string.Format("'Begin'; Start-Sleep -Seconds 10; 'End'")
+            };
+
+            var runner = new PowerShellAgentRunner(request, Path.GetTempPath(), TimeSpan.FromSeconds(2), ClrVersion.Version2);
+            var exitCode = runner.Run();
+
+            StringAssert.Contains(runner.Output, "Begin");
+            StringAssert.DoesNotMatch(runner.Output, new Regex("End"));
+            Assert.AreNotEqual(0, exitCode);
         }
 
 
