@@ -1,4 +1,5 @@
-﻿using System.IO.Pipes;
+﻿using System;
+using System.IO.Pipes;
 
 namespace TfsDeployer.PowerShellAgent
 {
@@ -6,6 +7,12 @@ namespace TfsDeployer.PowerShellAgent
     {
         static int Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                Console.WriteLine("This program is designed to be used by TFS Deployer only and not used directly");
+                return -1;
+            }
+
             var pipeName = args[0];
             var request = ReadRequest(pipeName);
 
