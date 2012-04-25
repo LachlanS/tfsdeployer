@@ -1,0 +1,26 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="NoForm.master.cs" Inherits="TfsDeployer.Web.NoForm" %>
+<!doctype html>
+<html>
+    <head runat="server">
+        <title>TFS Deployer Web Management</title>
+        <link rel="stylesheet" href="~/Styles/default.css" />      
+        <asp:ContentPlaceHolder ID="head" runat="server" />
+    </head>
+    <body>
+        <div id="navigation">
+            <ul>
+                <li><a href="~/" runat="server">Home</a></li>
+                <li><a href="~/Configuration.aspx" runat="server">Configuration</a></li>
+            </ul>
+        </div>
+        <div id="content">
+            <asp:ContentPlaceHolder ID="contentPlaceHolder" runat="server" />
+        </div>
+        <script type="text/javascript">
+            var applicationPath = '<%= ResolveUrl("~/") %>';
+        </script>
+        <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery-1.4.4.min.js") %>"></script>
+        <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery.query-2.1.7.js") %>"></script>
+        <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/global.js") %>"></script>                
+    </body>
+</html>

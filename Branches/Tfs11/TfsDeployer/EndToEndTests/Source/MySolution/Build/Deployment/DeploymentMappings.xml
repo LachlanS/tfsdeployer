@@ -1,0 +1,9 @@
+<DeploymentMappings xmlns="http://www.readify.net/TfsDeployer/DeploymentMappings20100214">
+
+  <Mapping BuildDefinitionPattern="^MyBuild$"
+           Computer="(DeployerMachineName)"
+           OriginalQuality="*"
+           NewQuality="Under Investigation"
+           Script="Deploy.ps1" />
+
+</DeploymentMappings>
