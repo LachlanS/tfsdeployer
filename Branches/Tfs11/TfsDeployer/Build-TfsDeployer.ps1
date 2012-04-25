@@ -35,7 +35,7 @@ if ($Publish) {
 	Write-Output 'Calculating latest changeset number'
     $ItemSpecType = [Microsoft.TeamFoundation.VersionControl.Client.ItemSpec]
     $ItemSpec = New-Object -TypeName $ItemSpecType -ArgumentList $PSScriptRoot,'Full'
-    $Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
+    [int]$Changeset = ($Workspace.GetLocalVersions(@($ItemSpec), $false)[0] |
         Measure-Object -Property Version -Maximum).Maximum
     if ($Workspace.GetPendingChanges($PSScriptRoot, 'Full', $false)) {
         $Changeset = 0
@@ -46,8 +46,12 @@ if ($Publish) {
             throw $Message
         }
     }
-    $ReleaseVersion = "$Version.0.$Changeset"
-
+	$ResetCounter = 0
+	while ($Changeset -ge 60000) { 
+		$Changeset -= 60000 
+		$ResetCounter += 1
+	}
+    $ReleaseVersion = "$Version.$ResetCounter.$Changeset"
     Write-Output ('Writing version number {0} to assembly attributes' -f $ReleaseVersion)
     $SolutionInfoPath = $PSScriptRoot | Join-Path -ChildPath SolutionInfo.cs
     $UndoSolutionInfo = $Workspace.GetPendingChanges($SolutionInfoPath).Length -eq 0
