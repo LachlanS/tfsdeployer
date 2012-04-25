@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.TeamFoundation.Build.Client;
 using Rhino.Mocks;
@@ -19,6 +20,11 @@ namespace Tests.TfsDeployer
         }
 
         public int SaveCount { get { return _saveCount; } }
+
+        public void Connect(int pollingInterval, int timeout, ISynchronizeInvoke synchronizingObject)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Connect(int pollingInterval, ISynchronizeInvoke synchronizingObject)
         {
@@ -85,6 +91,21 @@ namespace Tests.TfsDeployer
             throw new NotImplementedException();
         }
 
+        public bool Wait(TimeSpan pollingInterval, TimeSpan timeout)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Wait(TimeSpan pollingInterval, TimeSpan timeout, ISynchronizeInvoke synchronizingObject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid RequestIntermediateLogs()
+        {
+            throw new NotImplementedException();
+        }
+
         public string BuildNumber { get; set; }
         public BuildPhaseStatus CompilationStatus { get; set; }
         public string ConfigurationFolderPath { get; set; }
@@ -108,9 +129,26 @@ namespace Tests.TfsDeployer
         public IBuildInformation Information { get; set; }
         public Uri ConfigurationFolderUri { get; set; }
         public string LastChangedBy { get; set; }
+
+        public string LastChangedByDisplayName
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public DateTime LastChangedOn { get; set; }
         public string ProcessParameters { get; set; }
         public BuildReason Reason { get; set; }
+
+        public ReadOnlyCollection<int> RequestIds
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public ReadOnlyCollection<IQueuedBuild> Requests
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public string RequestedBy { get; set; }
         public string RequestedFor { get; set; }
         public string ShelvesetName { get; set; }
