@@ -8,7 +8,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
 {
     public abstract class NotificationService<TEventType> : INotificationService
     {
-        protected abstract void OnNotificationEvent(TEventType eventRaised, TfsIdentity identity);
+        protected abstract void OnNotificationEvent(TEventType eventRaised, TfsIdentity identity, SubscriptionInfo subscriptionInfo);
 
         public void Notify(string eventXml, string tfsIdentityXml, SubscriptionInfo subscriptionInfo)
         {
@@ -19,7 +19,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
 
             TraceHelper.TraceInformation(Constants.CommonSwitch, "Event Properties:\n{0}\n", eventReceived.ToFieldDump());
 
-            OnNotificationEvent(eventReceived, identity);
+            OnNotificationEvent(eventReceived, identity, subscriptionInfo);
         }
 
         private static T DeserializeEvent<T>(string eventXml)

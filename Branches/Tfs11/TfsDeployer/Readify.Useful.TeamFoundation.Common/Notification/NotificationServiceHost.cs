@@ -23,6 +23,11 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
             _eventService = eventService;
         }
 
+        public int SubscriptionId
+        {
+            get { return _subscriptionId; }
+        }
+
         private static DeliveryPreference CreateDeliveryPreference(string endPointAddress)
         {
             var preference = new DeliveryPreference
@@ -48,13 +53,13 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
 
         protected virtual void Unsubscribe()
         {
-            if (_subscriptionId == 0) return;
+            if (SubscriptionId == 0) return;
 
             Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose,
-                              string.Format("Unsubscribing from Notification event id {0}", _subscriptionId),
+                              string.Format("Unsubscribing from Notification event id {0}", SubscriptionId),
                               Constants.NotificationServiceHost);
             
-            _eventService.UnsubscribeEvent(_subscriptionId);
+            _eventService.UnsubscribeEvent(SubscriptionId);
         }
 
         protected virtual void Subscribe()
@@ -68,7 +73,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
             _subscriptionId = _eventService.SubscribeEvent(typeof (TEventType).Name, null, preference);
 
             Trace.WriteLineIf(Constants.CommonSwitch.Level == TraceLevel.Verbose,
-                              string.Format("Subscribed to Notification event at address {0} as id {1}", address, _subscriptionId),
+                              string.Format("Subscribed to Notification event at address {0} as id {1}", address, SubscriptionId),
                               Constants.NotificationServiceHost);
         }
       

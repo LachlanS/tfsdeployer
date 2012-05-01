@@ -85,8 +85,13 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
             return host;
         }
 
-        protected override void OnNotificationEvent(T eventRaised, TfsIdentity identity)
+        protected override void OnNotificationEvent(T eventRaised, TfsIdentity identity, SubscriptionInfo subscriptionInfo)
         {
+            if (subscriptionInfo.ID != _host.SubscriptionId)
+            {
+                TraceHelper.TraceWarning(_traceSwitch, "Received notification event for subscription ID '{0}' which conflicts with expected subscription ID '{1}'", subscriptionInfo.ID, _host.SubscriptionId);
+                return;
+            }
             if (NotificationDelegate != null)
             {
                 NotificationDelegate(eventRaised, identity);
