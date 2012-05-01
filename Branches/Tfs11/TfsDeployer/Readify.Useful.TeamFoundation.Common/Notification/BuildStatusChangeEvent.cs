@@ -6,6 +6,9 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
     [Serializable]
     public class BuildStatusChangeEvent
     {
+        [XmlElement(DataType = "anyURI")]
+        public string BuildUri { get; set; }
+
         public string ChangedBy { get; set; }
         public string ChangedTime { get; set; }
         public string Id  { get; set; }
