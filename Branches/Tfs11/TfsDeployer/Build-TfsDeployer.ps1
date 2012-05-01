@@ -86,8 +86,11 @@ $TestContainerPath = Join-Path -Path $PSScriptRoot -ChildPath Tests.TfsDeployer\
 $TestSettingsPath = Join-Path -Path $PSScriptRoot -ChildPath LocalTestRun.testrunconfig
 
 Write-Output "Executing tests"
-& $MSTestExe /testContainer:"$TestContainerPath" /testSettings:"$TestSettingsPath"
+& $MSTestExe /testContainer:"$TestContainerPath" /testSettings:"$TestSettingsPath" |
+    Tee-Object -Variable TestOutput
 if (-not $?) {
+    ''
+    $TestOutput -match '^Failed\s*'
     throw 'Tests failed.'
 }
 
