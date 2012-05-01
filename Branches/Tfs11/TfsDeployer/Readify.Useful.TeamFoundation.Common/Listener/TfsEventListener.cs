@@ -13,7 +13,6 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
     {
         public delegate void OnNotificationEventReceived(T eventRaised, TfsIdentity identity);
 
-        //public static event EventHandler<NotificationEventArgs<T>> NotificationReceived;
         public static OnNotificationEventReceived NotificationDelegate { get; set; }
 
         private readonly TraceSwitch _traceSwitch = new TraceSwitch("TFSEventListener", string.Empty);
@@ -63,7 +62,6 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
 
         private static Binding CreateHostBinding()
         {
-            // Setup a basic binding to use NTLM authentication.
             var quotas = new XmlDictionaryReaderQuotas
             {
                 MaxArrayLength = int.MaxValue,
@@ -73,10 +71,11 @@ namespace Readify.Useful.TeamFoundation.Common.Listener
                 MaxStringContentLength = int.MaxValue
             };
 
-            var binding = new WSHttpBinding {ReaderQuotas = quotas};
-            binding.Security.Mode = SecurityMode.None;
-
-            return binding;
+            // use BasicHttpBinding with SOAP 1.2 because TFS 11 Beta sends SOAP 1.2 message bodies with a SOAP 1.1 SOAPAction HTTP Header.
+            var customBinding = new CustomBinding(new BasicHttpBinding { ReaderQuotas = quotas});
+            var messageEncoding = customBinding.Elements.Find<TextMessageEncodingBindingElement>();
+            messageEncoding.MessageVersion = MessageVersion.Soap12;
+            return customBinding;
         }
 
         private NotificationServiceHost<T> CreateHostInstance()
