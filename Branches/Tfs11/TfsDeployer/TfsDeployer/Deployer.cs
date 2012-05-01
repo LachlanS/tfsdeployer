@@ -79,9 +79,7 @@ namespace TfsDeployer
 
         private IBuildDetail GetBuildDetail(BuildStatusChangeEvent statusChanged)
         {
-            var buildSpec = _buildServer.CreateBuildDefinitionSpec(statusChanged.TeamProject);
-            var detail = _buildServer.GetBuild(buildSpec, statusChanged.Id, null, QueryOptions.All);
-            return detail;
+            return _buildServer.GetBuild(new Uri(statusChanged.BuildUri));
         }
 
         public void Dispose()

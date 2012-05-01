@@ -19,12 +19,12 @@ namespace Tests.TfsDeployer
             // Arrange
             BuildDetail buildDetail = null;
 
-            var statusChanged = new BuildStatusChangeEvent {StatusChange = new Change()};
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change(), BuildUri = "vstfs:///Build/Build/1" };
             var mappingProcessor = MockRepository.GenerateStub<IMappingProcessor>();
 
             var tfsBuildDetail = new StubBuildDetail {BuildDefinition = {Name = "foo"}};
             var buildServer = MockRepository.GenerateStub<IBuildServer>();
-            buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
+            buildServer.Stub(o => o.GetBuild(null))
                 .IgnoreArguments()
                 .Return(tfsBuildDetail);
 
@@ -48,12 +48,12 @@ namespace Tests.TfsDeployer
             // Arrange
             const int eventId = 11;
 
-            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change(), BuildUri = "vstfs:///Build/Build/1" };
             var reader = MockRepository.GenerateStub<IConfigurationReader>();
 
             var tfsBuildDetail = new StubBuildDetail { Status = Microsoft.TeamFoundation.Build.Client.BuildStatus.PartiallySucceeded };
             var buildServer = MockRepository.GenerateStub<IBuildServer>();
-            buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
+            buildServer.Stub(o => o.GetBuild(null))
                 .IgnoreArguments()
                 .Return(tfsBuildDetail);
 
@@ -82,12 +82,12 @@ namespace Tests.TfsDeployer
             // Arrange
             BuildDetail buildDetail = null;
 
-            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change() };
+            var statusChanged = new BuildStatusChangeEvent { StatusChange = new Change(), BuildUri = "vstfs:///Build/Build/1" };
             var reader = MockRepository.GenerateStub<IConfigurationReader>();
 
             var tfsBuildDetail = new StubBuildDetail { Status = Microsoft.TeamFoundation.Build.Client.BuildStatus.PartiallySucceeded };
             var buildServer = MockRepository.GenerateStub<IBuildServer>();
-            buildServer.Stub(o => o.GetBuild(null, null, null, QueryOptions.None))
+            buildServer.Stub(o => o.GetBuild(null))
                 .IgnoreArguments()
                 .Return(tfsBuildDetail);
 
