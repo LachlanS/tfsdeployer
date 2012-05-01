@@ -10,7 +10,7 @@ using Readify.Useful.TeamFoundation.Common.Notification;
 
 namespace Tests.TfsDeployer.Load
 {
-    public delegate void NotifyDelegate(string eventXml, string tfsIdentityXml);
+    public delegate void NotifyDelegate(string eventXml, string tfsIdentityXml, SubscriptionInfo subscriptionInfo);
 
     public class NotifyWcfClient : ClientBase<INotificationService>, INotificationService
     {
@@ -18,9 +18,9 @@ namespace Tests.TfsDeployer.Load
             : base(new WSHttpBinding(SecurityMode.None), remoteAddress)
         { }
 
-        public void Notify(string eventXml, string tfsIdentityXml)
+        public void Notify(string eventXml, string tfsIdentityXml, SubscriptionInfo subscriptionInfo)
         {
-            Channel.Notify(eventXml, tfsIdentityXml);
+            Channel.Notify(eventXml, tfsIdentityXml, subscriptionInfo);
         }
     }
 
@@ -86,6 +86,7 @@ namespace Tests.TfsDeployer.Load
                     var result = d.BeginInvoke(
                         eventXml, 
                         @"<TeamFoundationServer url=""http://MyTfsServer:8080/tfs/MyProjectCollection/Services/v3.0/LocationService.asmx"" />",
+                        new SubscriptionInfo(), 
                         NotifyCallback,
                         d);
                     asyncResults.Add(result);

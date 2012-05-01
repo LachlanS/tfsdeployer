@@ -10,7 +10,7 @@ namespace Readify.Useful.TeamFoundation.Common.Notification
     {
         protected abstract void OnNotificationEvent(TEventType eventRaised, TfsIdentity identity);
 
-        public void Notify(string eventXml, string tfsIdentityXml)
+        public void Notify(string eventXml, string tfsIdentityXml, SubscriptionInfo subscriptionInfo)
         {
             TraceHelper.TraceVerbose(Constants.CommonSwitch, "Notification Event Received Details as follows.\n\nEventXml:\n{0}\n\nTfsIdentityXml:\n{1}\n\n", eventXml, tfsIdentityXml);
 

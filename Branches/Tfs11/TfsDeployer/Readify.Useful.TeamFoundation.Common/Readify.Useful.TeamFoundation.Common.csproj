@@ -94,6 +94,7 @@
     <Compile Include="Notification\BuildStatusChangeEvent.cs" />
     <Compile Include="Notification\Change.cs" />
     <Compile Include="Notification\NotificationService.cs" />
+    <Compile Include="Notification\SubscriptionInfo.cs" />
     <Compile Include="Notification\TfsIdentify.cs" />
     <Compile Include="Notification\INotificationService.cs" />
     <Compile Include="Notification\NotificationServiceHost.cs" />
